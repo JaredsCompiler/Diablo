@@ -13,4 +13,48 @@ Toy language compiler for CS 323 at CSUF
 
 Different components of the compiler so it can be smashed together to make a working compiler.
 
-- Preprocessor (just filler)
+- Lexical Analyzer
+
+
+## Keywords
+
+This is a C-based language:
+
+### Control Flow
+
+```c
+if
+else
+if else
+while
+do
+```
+
+### Operators
+
+```c
+!
+%
+&
+|
+&&
+||
+<
+>
+>=
+<=
+--
+++
+==
+```
+
+### Misc
+
+```c
+[
+]
+{
+}
+(
+)
+```

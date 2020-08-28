@@ -13,7 +13,10 @@ Toy language compiler for CS 323 at CSUF
 
 Different components of the compiler so it can be smashed together to make a working compiler.
 
-- Lexical Analyzer
+- [ ] Lexical Analyzer
+- [ ] Syntax Analyzer
+- [ ] Semantic Analyzer
+- [ ] Intermediate Code Generator
 
 
 ## Keywords

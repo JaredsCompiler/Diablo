@@ -6,3 +6,10 @@ This is a page to put essential information in the construction and implementati
 
 - [FILLER]
 
+## Visualizers
+
+- [Regex Simulator](https://regex101.com/)
+
+## Lexer Code
+
+- [Simple Lexer with Enumerations](https://codereview.stackexchange.com/questions/179732/simple-lexer-in-c)

@@ -9,7 +9,7 @@ int main(){
   std::ifstream sourceFile;
   std::vector<std::string> content;
 
-  sourceFile.open("./source.c");
+  sourceFile.open("./source.txt");
   if(!sourceFile.is_open()){
     std::cerr << "file cannot be opened" << std::endl;
   }

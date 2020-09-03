@@ -55,7 +55,7 @@ std::string slice(std::string line, size_t start, size_t end){
 
 int main (){
   std::vector<std::string> content = {
-    "! Find the largest dick!",
+    "! Find the largest!",
     "if(condition)"
   };
 

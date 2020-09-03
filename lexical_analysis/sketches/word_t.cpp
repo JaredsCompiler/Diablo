@@ -3,6 +3,29 @@
 #include <regex>
 #include <tuple>
 
+class lexeme {
+  public:
+    lexeme(size_t, size_t, size_t);
+    std::tuple<size_t, size_t> get_slice();
+    size_t get_line_number();
+  private:
+    std::tuple<size_t, size_t> slice;
+    size_t line_no;
+};
+
+lexeme::lexeme(size_t line, size_t begin, size_t end){
+  this->line_no = line;
+  this->slice = std::make_tuple(begin, end);
+}
+
+std::tuple<size_t, size_t> lexeme::get_slice(){
+  return this->slice;
+}
+
+size_t lexeme::get_line_number(){
+  return this->line_no;
+}
+
 std::vector<std::tuple<size_t, size_t>> span(std::string str, std::string regexp){
   /* Given a string, find all matches with their specified spans, from begin to end
    * Example:
@@ -26,11 +49,37 @@ std::vector<std::tuple<size_t, size_t>> span(std::string str, std::string regexp
   return collection;
 }
 
+std::string slice(std::string line, size_t start, size_t end){
+  return line.substr(start, end);
+}
+
 int main (){
-  auto element = span("! Find largest!", "\\!.*\\!");
-  for(auto e : element){
-    const auto[s, t] = e;
-    std::cout << s << " " << t << std::endl;
+  std::vector<std::string> content = {
+    "! Find the largest dick!",
+    "if(condition)"
+  };
+
+  std::map<std::string, std::string> tokeMap = {
+    {"COMMENT", "\\!.*\\!"}
+  };
+
+  std::vector<lexeme> collection;
+
+  for(size_t i = 0; i < content.size(); ++i){
+    for(auto& identifier : tokeMap){
+      auto match = span(content[i], identifier.second);
+      for(auto tup : match){
+        const auto[s, e] = tup;
+        collection.emplace_back(lexeme(i, s, e));
+      }
+    }
+  }
+
+  for(auto element : collection){
+    auto l = element.get_line_number();
+    auto span = element.get_slice();
+    const auto[s, e] = span;
+    std::cout << l << " " << s << " " << e << std::endl;
   }
   return 0;
 }

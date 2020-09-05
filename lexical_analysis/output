@@ -1,0 +1,311 @@
+./lexi source.txt
+lineno: 0
+span: (0, 41)
+identifier: COMMENT
+! Find largest value between two numbers!
+
+lineno: 0
+span: (0, 41)
+identifier: COMMENT
+! Find largest value between two numbers!
+
+lineno: 0
+span: (1, 2)
+identifier: SEPARATORS
+ F
+
+lineno: 0
+span: (1, 2)
+identifier: SEPARATORS
+ F
+
+lineno: 0
+span: (1, 2)
+identifier: SEPARATORS
+ F
+
+lineno: 1
+span: (0, 22)
+identifier: IDENTIFIER
+int num1, num2, large$
+
+lineno: 1
+span: (0, 22)
+identifier: IDENTIFIER
+int num1, num2, large$
+
+lineno: 1
+span: (0, 3)
+identifier: KEYWORD
+int
+
+lineno: 1
+span: (0, 3)
+identifier: KEYWORD
+int
+
+lineno: 1
+span: (22, 22)
+identifier: KEYWORD
+
+
+lineno: 1
+span: (22, 22)
+identifier: KEYWORD
+
+
+lineno: 1
+span: (22, 22)
+identifier: KEYWORD
+
+
+lineno: 1
+span: (22, 22)
+identifier: KEYWORD
+
+
+lineno: 1
+span: (22, 22)
+identifier: KEYWORD
+
+
+lineno: 1
+span: (3, 4)
+identifier: SEPARATORS
+ num
+
+lineno: 1
+span: (3, 4)
+identifier: SEPARATORS
+ num
+
+lineno: 1
+span: (3, 4)
+identifier: SEPARATORS
+ num
+
+lineno: 2
+span: (0, 15)
+identifier: IDENTIFIER
+if(num1 > num2)
+
+lineno: 2
+span: (0, 15)
+identifier: IDENTIFIER
+if(num1 > num2)
+
+lineno: 2
+span: (0, 2)
+identifier: KEYWORD
+if
+
+lineno: 2
+span: (0, 2)
+identifier: KEYWORD
+if
+
+lineno: 2
+span: (15, 15)
+identifier: KEYWORD
+
+
+lineno: 2
+span: (15, 15)
+identifier: KEYWORD
+
+
+lineno: 2
+span: (15, 15)
+identifier: KEYWORD
+
+
+lineno: 2
+span: (15, 15)
+identifier: KEYWORD
+
+
+lineno: 2
+span: (15, 15)
+identifier: KEYWORD
+
+
+lineno: 2
+span: (8, 9)
+identifier: OPERATORS
+> num2)
+
+lineno: 2
+span: (8, 9)
+identifier: OPERATORS
+> num2)
+
+lineno: 2
+span: (2, 3)
+identifier: SEPARATORS
+(nu
+
+lineno: 2
+span: (2, 3)
+identifier: SEPARATORS
+(nu
+
+lineno: 2
+span: (2, 3)
+identifier: SEPARATORS
+(nu
+
+lineno: 3
+span: (0, 1)
+identifier: SEPARATORS
+{
+
+lineno: 3
+span: (0, 1)
+identifier: SEPARATORS
+{
+
+lineno: 3
+span: (0, 1)
+identifier: SEPARATORS
+{
+
+lineno: 4
+span: (7, 8)
+identifier: OPERATORS
+= num1$;
+
+lineno: 4
+span: (7, 8)
+identifier: OPERATORS
+= num1$;
+
+lineno: 4
+span: (0, 1)
+identifier: SEPARATORS
+	
+
+lineno: 4
+span: (0, 1)
+identifier: SEPARATORS
+	
+
+lineno: 4
+span: (0, 1)
+identifier: SEPARATORS
+	
+
+lineno: 5
+span: (0, 1)
+identifier: SEPARATORS
+}
+
+lineno: 5
+span: (0, 1)
+identifier: SEPARATORS
+}
+
+lineno: 5
+span: (0, 1)
+identifier: SEPARATORS
+}
+
+lineno: 6
+span: (0, 4)
+identifier: IDENTIFIER
+else
+
+lineno: 6
+span: (0, 4)
+identifier: IDENTIFIER
+else
+
+lineno: 6
+span: (0, 4)
+identifier: KEYWORD
+else
+
+lineno: 6
+span: (0, 4)
+identifier: KEYWORD
+else
+
+lineno: 6
+span: (4, 4)
+identifier: KEYWORD
+
+
+lineno: 6
+span: (4, 4)
+identifier: KEYWORD
+
+
+lineno: 6
+span: (4, 4)
+identifier: KEYWORD
+
+
+lineno: 6
+span: (4, 4)
+identifier: KEYWORD
+
+
+lineno: 6
+span: (4, 4)
+identifier: KEYWORD
+
+
+lineno: 7
+span: (0, 1)
+identifier: SEPARATORS
+{
+
+lineno: 7
+span: (0, 1)
+identifier: SEPARATORS
+{
+
+lineno: 7
+span: (0, 1)
+identifier: SEPARATORS
+{
+
+lineno: 8
+span: (7, 8)
+identifier: OPERATORS
+= num2$;
+
+lineno: 8
+span: (7, 8)
+identifier: OPERATORS
+= num2$;
+
+lineno: 8
+span: (0, 1)
+identifier: SEPARATORS
+	
+
+lineno: 8
+span: (0, 1)
+identifier: SEPARATORS
+	
+
+lineno: 8
+span: (0, 1)
+identifier: SEPARATORS
+	
+
+lineno: 9
+span: (0, 1)
+identifier: SEPARATORS
+}
+
+lineno: 9
+span: (0, 1)
+identifier: SEPARATORS
+}
+
+lineno: 9
+span: (0, 1)
+identifier: SEPARATORS
+}
+

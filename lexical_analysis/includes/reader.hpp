@@ -6,6 +6,7 @@
 class sourceFile {
   public:
     sourceFile(std::string);
+    sourceFile();
 
     std::string get_path();
     size_t get_length();

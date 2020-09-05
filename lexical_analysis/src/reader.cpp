@@ -8,6 +8,11 @@ sourceFile::sourceFile(std::string path){
   this->content = this->read_contents();
 }
 
+sourceFile::sourceFile(){
+  this->path = "";
+  this->content = std::vector<std::string>();
+}
+
 std::string sourceFile::get_path(){
   return this->path;
 }

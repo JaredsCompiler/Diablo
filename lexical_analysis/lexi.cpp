@@ -19,10 +19,9 @@ const char* INSTITUTION = "California State University Fullerton";
 void print_version(){
   printf(
     "lexi (%s) 1.0\n"
-    "Copyright (C) 2020 Free Software Foundation, Inc.\n"
-    "License GPLv3+: GNU GPL version 3 or later <https://gnu.org/licenses/gpl.html>."
-    "This is free software: you are free to change and redistribute it.\n"
-    "There is NO WARRANTY, to the extent permitted by law.\n"
+    "Copyright (C) 2020 Comrade Software Foundation, Inc.\n"
+    "MIT License"
+    "This is free software, and provided as is without warranty\n"
     "Written by %s and %s\n",
   INSTITUTION, AUTHORS[0], AUTHORS[1]); 
 }
@@ -36,28 +35,13 @@ std::map<std::string, std::regex> tokenMap = {
 };
 
 int main(int argc, const char* argv[]){
-  auto f = sourceFile("source.txt");
-  auto contents = f.get_content();
-  std::vector<std::string>::iterator begin = contents.begin();
-  std::vector<std::string>::iterator end = contents.end();
-  auto rules = lexerRules(tokenMap);
+  sourceFile source = sourceFile("inputs/1_line.txt");
+  lexerRules rules = lexerRules(tokenMap);
 
-  auto lex = lexer(rules, f, begin, end);
-  
-  std::vector<lexeme> lexeme_collection;
+  lexer lex = lexer(rules, source);
+  lex.processFile();
 
-  for(auto i = lex.get_begin(); i != lex.get_end(); ++i){
-    for(auto& identifier : tokenMap){
-      auto match = lex.span(*i, identifier.second);
-      for(auto tup : match){
-        auto position = (i - lex.get_begin());
-        const auto[alpha,omega] = tup;
-        lexeme_collection.emplace_back(lexeme(position, alpha, omega, lex.get_begin(), identifier.first));
-      }
-    }
-  }
-
-  for(auto element : lexeme_collection){
+  for(auto element : lex.get_tokens()){
     std::cout << element << std::endl;
   }
 

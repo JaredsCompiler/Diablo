@@ -25,6 +25,14 @@ size_t sourceFile::get_length(){
   return this->content.size();
 }
 
+std::vector<std::string>::iterator sourceFile::get_begin(){
+  return this->content.begin();
+}
+
+std::vector<std::string>::iterator sourceFile::get_end(){
+  return this->content.end();
+}
+
 std::vector<std::string> sourceFile::read_contents(){
   std::ifstream file;
   file.open(this->path);

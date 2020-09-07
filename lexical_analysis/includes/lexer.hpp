@@ -13,7 +13,7 @@ class lexer {
   public:
     lexer(lexerRules, sourceFile);
    
-    std::vector<std::tuple<size_t, size_t>> span(std::string, std::regex);
+    std::tuple<size_t, size_t> span(std::string, std::regex);
     void processFile();
 
     std::vector<std::string>::iterator get_begin();

@@ -35,7 +35,7 @@ std::map<std::string, std::regex> tokenMap = {
 };
 
 int main(int argc, const char* argv[]){
-  sourceFile source = sourceFile("inputs/1_line.txt");
+  sourceFile source = sourceFile("inputs/source.txt");
   lexerRules rules = lexerRules(tokenMap);
 
   lexer lex = lexer(rules, source);

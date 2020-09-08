@@ -7,6 +7,7 @@
 #include <regex>
 #include <string>
 #include <tuple>
+#include <cmath>
 
 
 lexer::lexer(lexerRules lexRules, sourceFile inputFile){
@@ -42,13 +43,16 @@ std::tuple<size_t, size_t> lexer::span(std::string str, std::regex regexp){
 void lexer::processFile(){
   auto begin = this->ingestedFile.get_begin();
   auto end = this->ingestedFile.get_end();
+
   for(auto i = begin; i != end; ++i){
     for(auto& identifier : this->rules.get_rules()){
       auto match = this->span(*i, identifier.second);
       const auto[start, end] = match;
-      if(start > 0){ continue; }
-      auto position = (i - begin);
-      this->tokens.emplace_back(lexeme(position, start, end, begin, identifier.first));
+      size_t delta = std::llabs(start - end);
+      if(start >= 0 && delta > 0){ 
+        auto position = (i - begin);
+        this->tokens.emplace_back(lexeme(position, start, end, begin, identifier.first));
+      }
     }
   }
 }

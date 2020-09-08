@@ -48,10 +48,11 @@ void lexer::processFile(){
     for(auto& identifier : this->rules.get_rules()){
       auto match = this->span(*i, identifier.second);
       const auto[start, end] = match;
-      size_t delta = std::llabs(start - end);
+      size_t delta = (start - end);
       if(start >= 0 && delta > 0){ 
         auto position = (i - begin);
         this->tokens.emplace_back(lexeme(position, start, end, begin, identifier.first));
+        if(identifier.first == "COMMENT"){ break; }
       }
     }
   }

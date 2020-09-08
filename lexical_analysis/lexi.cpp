@@ -40,9 +40,12 @@ int main(int argc, const char* argv[]){
 
   lexer lex = lexer(rules, source);
   lex.processFile();
+  
+  printf("TOKENS\t\tLexemes\n\n");
+
 
   for(auto element : lex.get_tokens()){
-    std::cout << element << std::endl;
+    std::cout << element.get_tag() << "\t\t" << element.get_substring() << std::endl;
   }
 
   return 0;

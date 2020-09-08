@@ -9,6 +9,7 @@ class lexeme {
     lexeme(size_t, size_t, size_t, std::vector<std::string>::iterator, std::string);
     friend std::ostream& operator<<(std::ostream& out, const lexeme& lex);
     const std::string get_substring();
+    std::string get_tag();
 
   private:
     std::tuple<size_t, size_t> slice;

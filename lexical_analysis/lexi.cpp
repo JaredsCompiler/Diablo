@@ -31,7 +31,7 @@ std::map<std::string, std::regex> tokenMap = {
   {"IDENTIFIER", std::regex("(^[a-zA-Z].*\\$?\\;?)")},
   {"KEYWORD", std::regex("(int|float|bool|true|false|(end)?if|else|then|while(end)?|do(end)?|for(end)?|(in|out)put|and|or|not)")},
   {"SEPARATORS", std::regex("(((\\(|\\)|\\[|\\]|\\{|\\}|\\'|\"){1})|(\\s+))")},
-  {"OPERATORS", std::regex("(\\+|-|\\*|\\/|=|>|<|>=|<=|&+|\\|+|%|!|\\^)")}
+  {"OPERATORS", std::regex("(\\+|-|\\*|\\/|=|>|<|>=|<=|&+|\\|+|%|^!$|\\^)")}
 };
 
 int main(int argc, const char* argv[]){

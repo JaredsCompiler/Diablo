@@ -4,16 +4,13 @@
 COMPILER = clang++
 CFLAGS = -Wc++17-extensions -Wall
 OUTPUT = diablo
-INCS = -Ilexical_analysis/includes
-LIBS = -L lexical_analysis/bin/static/lexiLib
-
 
 all: diablo.cpp prereqs lexical syntax collate
 
 run: all
 	./$(OUTPUT)
 collate:
-	$(COMPILER) $(CFLAGS) diablo.cpp $(INCS) $(shell ls -d build/*) $(LIBS) -o $(OUTPUT)
+	$(COMPILER) $(CFLAGS) diablo.cpp $(shell ls -d build/*) -o $(OUTPUT)
 clean:
 	rm -rf build/* $(OUTPUT)
 	cd lexical_analysis/ && $(MAKE) clean

@@ -52,7 +52,7 @@ def parseLine(string: str, lineno: int):
 
             if(match):
                 x, y = match.span()
-                string = re.sub(string[x:y], '', string)
+                string = re.sub(match.group(), '', string)
                 collection.append(Lexeme(expression, lineno, match))
             else:
                 counter+=1

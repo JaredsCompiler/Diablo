@@ -8,13 +8,15 @@
 #include <regex>
 #include <string>
 #include <tuple>
+#include <vector>
 
 class lexer {
   public:
     lexer(lexerRules, sourceFile);
    
-    std::tuple<size_t, size_t> span(std::string, std::regex);
+    std::tuple<int, int> span(std::string, std::regex);
     void processFile();
+    void processLine(std::vector<std::string>::iterator);
 
     std::vector<std::string>::iterator get_begin();
     std::vector<std::string>::iterator get_end();

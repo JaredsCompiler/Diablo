@@ -15,6 +15,7 @@ filters = {
 temp = '(?:% s)' % '|'.join(test_list) 
 test_str = "int match"
 match = re.findall(temp, test_str)
+print(temp)
 for m in match:
     print(m)
 if(match):

@@ -59,47 +59,17 @@ void lexer::remove_substring(std::string* line, std::string substring){
 }
 
 void lexer::processLine(int lineno, std::vector<std::string>::iterator* begin, std::string* line){
-  std::smatch match;
-  int counter = 0;
-  int max_passes = 10;
-  int offset = 0;
+  //const std::regex r("(\\!.*\\!) (int|bool) (\\w+)");  
+  const std::regex r("(?:(^\\!.*\\!)|(\\w+))");  
+  std::smatch sm;
+  std::string id = "FUCK MY LIFE";
 
-
-  while((std::all_of(line->begin(), line->end(), isspace) || !line->empty()) && counter <= max_passes){
-    for(auto& identifier : this->rules.get_rules()){
-      auto match = this->span(*line, identifier.second, &offset);
-      std::string id = identifier.first;
-      auto[start, end] = match;
-
-      if(start >= 0 && end >= 0){
-        if(identifier.first == "IDENTIFIER"){
-          auto submatch = this->span(*line, this->rules.get_rules()["KEYWORD"], &offset);
-          const auto[x, y] = submatch;
-          if(x >= 0 && y >= 0){
-            start = x;
-            end = y;
-            id = "KEYWORD";
-            counter = 0;
-          }
-        }
-        this->tokens.emplace_back(lexeme(lineno, start, end, (*begin)->substr(start, end), id));
-        std::cout << "before: " << *line << std::endl;
-        std::cout << start << " " << end << std::endl;
-        auto substring = (*begin)->substr(start, end);
-        //this->remove_substring(line, substring);
-        offset+=substring.length();
-        //line->erase(start, end);
-        //auto zed = (*line).begin();
-        //while(*zed == ' '){ zed++; string_offset++; }
-        std::cout << "aftere: " << *line << std::endl;
-        //counter--;
-      } else {
-        counter++;
+  if (std::regex_search(*line, sm, r)) {
+      for (unsigned long int i=1; i<sm.size(); i++) {
+          unsigned long int start = sm.position(i);
+          unsigned long int end = start + sm.length(i);
+          this->tokens.emplace_back(lexeme(lineno, start, end, (*begin)->substr(start, end), id));
       }
-    }
-  }
-  if(std::all_of(line->begin(), line->end(), isspace) || line->empty()){
-    std::cout << "line is exhausted" << std::endl;
   }
 }
 

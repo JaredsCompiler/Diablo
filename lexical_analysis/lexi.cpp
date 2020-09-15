@@ -28,20 +28,24 @@ void print_version(){
 
 std::map<std::string, std::regex> tokenMap = {
   {"COMMENT", std::regex("(\\!.*\\!)")},
-  {"IDENTIFIER", std::regex("(^[a-zA-Z].*\\$?\\;?)")},
-  {"KEYWORD", std::regex("(int|float|bool|true|false|(end)?if|else|then|while(end)?|do(end)?|for(end)?|(in|out)put|and|or|not)")},
-  {"SEPARATORS", std::regex("(\\(|\\)|\\{|\\}|\\[|\\]|\"|\')")},
+  //{"KEYWORD", std::regex("(int|float|bool|true|false|(end)?if|else|then|while(end)?|do(end)?|for(end)?|(in|out)put|and|or|not)")},
+  {"KEYWORD", std::regex("(int)")},
+  {"IDENTIFIER", std::regex("(\\w+)")},
+  //{"IDENTIFIER", std::regex("(?!\\s+)([a-zA-Z]+)")},
+  {"SEPARATORS", std::regex("^(\\(|\\)|\\{|\\}|\\[|\\]|\"|\'|\\,)$")},
   {"OPERATORS", std::regex("(\\+|-|\\*|\\/|=|>|<|>=|<=|&+|\\|+|%|^!$|\\^)")}
 };
 
 int main(int argc, const char* argv[]){
-  sourceFile source = sourceFile("inputs/source.txt");
+  sourceFile source = sourceFile("inputs/2_lines.txt");
   lexerRules rules = lexerRules(tokenMap);
 
   lexer lex = lexer(rules, source);
   lex.processFile();
   
   printf("TOKENS\t\tLexemes\n\n");
+
+  std::cout << "amount of tokens: " << lex.get_tokens().size() << std::endl;
 
 
   for(auto element : lex.get_tokens()){

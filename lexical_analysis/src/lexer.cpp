@@ -9,6 +9,7 @@
 #include <tuple>
 #include <cmath>
 #include <stdio.h>
+#include <ctype.h>
 
 
 lexer::lexer(lexerRules lexRules, sourceFile inputFile){
@@ -20,8 +21,7 @@ lexer::lexer(lexerRules lexRules, sourceFile inputFile){
 
 }
 
-std::tuple<int, int> lexer::span(std::string str, std::regex regexp){
-  std::cout << "calling span" << std::endl;
+std::tuple<int, int> lexer::span(std::string str, std::regex regexp, int offset){
   /* Given a string, find all matches with their specified spans, from begin to end
    * Example:
    * input: ! Find largest!
@@ -31,59 +31,72 @@ std::tuple<int, int> lexer::span(std::string str, std::regex regexp){
    * these correspond to slices in the string given
    * line numbers would be the ith position iterating over the collection of strings representing the source document
    */
-
   std::smatch match;
   std::regex_search(str, match, regexp);
-
-  int last_pos = -1;
-  int start, end = -1;
-
-  for(unsigned int i = 0; i < match.size(); ++i) {
-    unsigned int curr = match.position(i);
-    if(match.position(i) >= 0 && last_pos > match.position(i)){
-        std::cout << curr << " " << (match.position(i) + match.length(i)) << std::endl;
-        std::cout << "Before " << str << std::endl;
-        str = std::regex_replace(str, std::regex(str.substr(match.position(i), (match.position(i) + match.length(i)))), "");
-        printf("After: %s\n", str.c_str());
-        last_pos = match.position(i);
-        //start =  match.position(i);
-        //end = match.position(i) + match.length(i);
-    }
+  int i = 0;
+  int current_pos = int(match.position(i)) + offset;
+  int length = int(match.length(i));
+  if(current_pos > EOF && length > 0){
+    std::cout << "Match of: " << match[i] << std::endl;
+    std::cout << "Prefix of: " << match.prefix() << std::endl;
+    return std::make_tuple(current_pos, current_pos + length);
   }
-
-  return std::make_tuple(start, end);
+  return std::make_tuple(EOF, EOF);
 }
 
-bool valid_string(std::string line){
-  if(line.empty()){ return false; }
-  std::string copy = line;
-  std::regex_replace(copy, std::regex("\\s+"), "");
-  return (copy.empty()) ? false : true;
+void lexer::remove_substring(std::string* line, std::string substring){
+  size_t index = 0;
+  while(true){
+    index = line->find(substring, index);
+    if(index == std::string::npos){ break; }
+    line->replace(index, substring.size(), std::string(substring.size(), ' '));
+    index+=substring.size();
+  }
 }
 
-void lexer::processLine(std::vector<std::string>::iterator it){
-  std::string line =  *it;
+void lexer::processLine(int lineno, std::vector<std::string>::iterator* begin, std::string* line){
+  std::smatch match;
   int counter = 0;
-  int max_passes = 5;
-  while(valid_string(line) && counter < max_passes){
+  int max_passes = 10;
+  int offset = 0;
 
+
+  while((std::all_of(line->begin(), line->end(), isspace) || !line->empty()) && counter <= max_passes){
     for(auto& identifier : this->rules.get_rules()){
-      auto match = this->span(line, identifier.second);
-      const auto[start, end] = match;
-      int delta = (start - end);
-      if(start >= 0 && delta >= 0){
-        auto lineno = (it - begin);
-        this->tokens.emplace_back(lexeme(lineno, start, end, begin, identifier.first));
-        std::cout << "Before: " << line << std::endl;
-        line.erase(start, end);
-        std::cout << "After: " << line << std::endl;
+      auto match = this->span(*line, identifier.second, offset);
+      std::string id = identifier.first;
+      auto[start, end] = match;
+
+      if(start >= 0 && end >= 0){
+        if(identifier.first == "IDENTIFIER"){
+          auto submatch = this->span(*line, this->rules.get_rules()["KEYWORD"], offset);
+          const auto[x, y] = submatch;
+          if(x >= 0 && y >= 0){
+            start = x;
+            end = y;
+            id = "KEYWORD";
+            counter = 0;
+          }
+        }
+        this->tokens.emplace_back(lexeme(lineno, start, end, (*begin)->substr(start, end), id));
+        std::cout << "before: " << *line << std::endl;
+        std::cout << start << " " << end << std::endl;
+        auto substring = (*begin)->substr(start, end);
+        //this->remove_substring(line, substring);
+        offset+=substring.length();
+        //line->erase(start, end);
+        //auto zed = (*line).begin();
+        //while(*zed == ' '){ zed++; string_offset++; }
+        std::cout << "aftere: " << *line << std::endl;
+        //counter--;
+      } else {
+        counter++;
       }
-      else{ counter++; }
     }
   }
-  //if(!line.empty()){
-    //std::cerr << "Malformed!: " << line << std::endl;
-  //}
+  if(std::all_of(line->begin(), line->end(), isspace) || line->empty()){
+    std::cout << "line is exhausted" << std::endl;
+  }
 }
 
 void lexer::processFile(){
@@ -91,7 +104,9 @@ void lexer::processFile(){
   auto end = this->ingestedFile.get_end();
 
   for(auto i = begin; i != end; ++i){
-    this->processLine(i);
+    std::string* line = &*i;
+    auto lineno = (i - begin);
+    this->processLine(lineno, &i, line);
   }
 }
 

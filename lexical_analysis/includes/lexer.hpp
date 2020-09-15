@@ -14,13 +14,15 @@ class lexer {
   public:
     lexer(lexerRules, sourceFile);
    
-    std::tuple<int, int> span(std::string, std::regex);
+    std::tuple<int, int> span(std::string, std::regex, int);
     void processFile();
-    void processLine(std::vector<std::string>::iterator);
+    void processLine(int, std::vector<std::string>::iterator*, std::string*);
 
     std::vector<std::string>::iterator get_begin();
     std::vector<std::string>::iterator get_end();
     std::vector<lexeme> get_tokens();
+
+    void remove_substring(std::string*, std::string);
 
   private:
     lexerRules rules;

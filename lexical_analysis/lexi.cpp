@@ -81,7 +81,7 @@ void init(int argc, const char* argv[]) {
     setoption(arg, "-v",    "--version",   &showversion);
     setoption(arg, "-h",    "--help",      &showhelp);
 
-}
+  }
 
   // ================================= //
 
@@ -91,8 +91,6 @@ void init(int argc, const char* argv[]) {
 }
 
 void setoption(const char* arg, const char* s, const char* t, int* value) {
-    
   if ((strcmp(arg, s) == 0) || ((t != NULL && strcmp(arg, t) == 0))) { *value = 1; }
-    
 }
 

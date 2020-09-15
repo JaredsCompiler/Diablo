@@ -14,7 +14,7 @@ class lexer {
   public:
     lexer(lexerRules, sourceFile);
    
-    std::tuple<int, int> span(std::string, std::regex, int);
+    std::tuple<int, int> span(std::string, std::regex, int*);
     void processFile();
     void processLine(int, std::vector<std::string>::iterator*, std::string*);
 

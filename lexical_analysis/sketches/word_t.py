@@ -17,7 +17,7 @@ class LexingError(MessageException):
 filters = {
     "COMMENT": re.compile("(^\!.*\!)"),
     # "SEPARATORS": re.compile("(?!\s+)(\W+)"),
-    "IDENTIFIER": re.compile("(\w+)(?!,?\s+\w+)*"),
+    "IDENTIFIER": re.compile("(\w+)"),
     "KEYWORD": re.compile("(int|float|bool|true|false|(end)?if|else|then|while(end)?|do(end)?|for(end)?|(in|out)put|and|or|not)"),
     "OPERATORS": re.compile("(\+|-|\*|\/|=|>|<|>=|<=|&+|\|+|%|!|\^)")
 }
@@ -37,10 +37,41 @@ Span: ({self.begin}, {self.end})
 Identifier: {self.tag}
 """
 
-with open("../inputs/source.txt", "r") as fp:
+with open("../inputs/2_lines.txt", "r") as fp:
     contents = fp.readlines()
 
 collection = []
+
+string = "int match"
+string_copy = string
+mp = 0
+t = None
+while(string and mp < 4):
+    for key, value in filters.items():
+        match = value.match(string)
+        if(match and key == "IDENTIFIER"):
+            x, y = match.span()
+            print(x, y)
+            submatch = filters["KEYWORD"].match(string)
+            if(submatch):
+                t = "KEYWORD"
+                a, b = submatch.span()
+                collection.append(Lexeme(t if t else key, 0, submatch))
+                print(f'before: {string}')
+                string = re.sub(submatch.group(), ' ', string)
+                string.strip()
+                print(f'aftere: {string}')
+                break
+            string = re.sub(match.group(), ' ', string)
+            string.strip()
+            collection.append(Lexeme(t if t else key, 0, match))
+        mp+=1
+
+for element in collection:
+    print(element)
+    x, y = element.begin, element.end
+    print(string_copy[x:y])
+quit()
 
 max_passes = len(list(filters.keys()))
 
@@ -49,11 +80,23 @@ def parseLine(string: str, lineno: int):
     while(string and counter < max_passes):
         for expression in filters:
             match = filters[expression].match(string)
+            tag = None
 
             if(match):
                 x, y = match.span()
+                if(x >= 0 and y >= 0):
+                    submatch = filters["KEYWORD"].match(string)
+                    if(submatch):
+                        a, b = submatch.span()
+                        if(a >= 0 and b >= 0):
+                            x = a
+                            y = b
+                            tag = "KEYWORD"
+                            counter = 0
                 string = re.sub(match.group(), '', string)
-                collection.append(Lexeme(expression, lineno, match))
+                collection.append(Lexeme(expression if tag is None else tag, lineno, match))
+                break
+                print(string)
             else:
                 counter+=1
     print(string)

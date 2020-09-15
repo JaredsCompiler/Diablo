@@ -21,7 +21,7 @@ lexer::lexer(lexerRules lexRules, sourceFile inputFile){
 
 }
 
-std::tuple<int, int> lexer::span(std::string str, std::regex regexp, int offset){
+std::tuple<int, int> lexer::span(std::string str, std::regex regexp, int* offset){
   /* Given a string, find all matches with their specified spans, from begin to end
    * Example:
    * input: ! Find largest!
@@ -31,14 +31,18 @@ std::tuple<int, int> lexer::span(std::string str, std::regex regexp, int offset)
    * these correspond to slices in the string given
    * line numbers would be the ith position iterating over the collection of strings representing the source document
    */
+
   std::smatch match;
   std::regex_search(str, match, regexp);
   int i = 0;
-  int current_pos = int(match.position(i)) + offset;
+  int current_pos = int(match.position(i)) + *offset;
   int length = int(match.length(i));
+  int j = 0;
   if(current_pos > EOF && length > 0){
     std::cout << "Match of: " << match[i] << std::endl;
-    std::cout << "Prefix of: " << match.prefix() << std::endl;
+    while(isspace(str[j])){ ++j; }
+    current_pos+=j;
+    *offset+=j;
     return std::make_tuple(current_pos, current_pos + length);
   }
   return std::make_tuple(EOF, EOF);
@@ -63,13 +67,13 @@ void lexer::processLine(int lineno, std::vector<std::string>::iterator* begin, s
 
   while((std::all_of(line->begin(), line->end(), isspace) || !line->empty()) && counter <= max_passes){
     for(auto& identifier : this->rules.get_rules()){
-      auto match = this->span(*line, identifier.second, offset);
+      auto match = this->span(*line, identifier.second, &offset);
       std::string id = identifier.first;
       auto[start, end] = match;
 
       if(start >= 0 && end >= 0){
         if(identifier.first == "IDENTIFIER"){
-          auto submatch = this->span(*line, this->rules.get_rules()["KEYWORD"], offset);
+          auto submatch = this->span(*line, this->rules.get_rules()["KEYWORD"], &offset);
           const auto[x, y] = submatch;
           if(x >= 0 && y >= 0){
             start = x;

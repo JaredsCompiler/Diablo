@@ -16,14 +16,27 @@ const char* AUTHORS[] = {
 
 const char* INSTITUTION = "California State University Fullerton";
 
-void print_version(){
+int showhelp = 0, showversion = 0;
+
+void setoption(const char* arg, const char* s, const char* t, int* value);
+void init(int argc, const char* argv[]);
+void help(void);
+void version(void);
+
+void version(){
   printf(
     "lexi (%s) 1.0\n"
     "Copyright (C) 2020 Comrade Software Foundation, Inc.\n"
-    "MIT License"
+    "MIT License\n"
     "This is free software, and provided as is without warranty\n"
     "Written by %s and %s\n",
   INSTITUTION, AUTHORS[0], AUTHORS[1]); 
+}
+
+void help(){
+  printf(
+    "Usage: ./lexi [input]"
+  );
 }
 
 std::map<std::string, std::regex> tokenMap = {
@@ -36,21 +49,50 @@ std::map<std::string, std::regex> tokenMap = {
   {"OPERATORS", std::regex("(\\+|-|\\*|\\/|=|>|<|>=|<=|&+|\\|+|%|^!$|\\^)")}
 };
 
-int main(int argc, const char* argv[]){
-  sourceFile source = sourceFile("inputs/2_lines.txt");
-  lexerRules rules = lexerRules(tokenMap);
+int main(int argc, const char* argv[]) {
 
-  lexer lex = lexer(rules, source);
-  lex.processFile();
+    init(--argc, ++argv);
+
+    sourceFile source = sourceFile(argv[0]);
+    lexerRules rules = lexerRules(tokenMap);
+ 
+    lexer lex = lexer(rules, source);
+    lex.processFile();
   
-  printf("TOKENS\t\tLexemes\n\n");
+    printf("TOKENS\t\tLexemes\n\n");
 
-  std::cout << "amount of tokens: " << lex.get_tokens().size() << std::endl;
+    std::cout << "amount of tokens: " << lex.get_tokens().size() << std::endl;
 
+    for(auto element : lex.get_tokens()){
+      std::cout << element.get_tag() << "\t\t" << element.get_substring() << std::endl;
+    }
 
-  for(auto element : lex.get_tokens()){
-    std::cout << element.get_tag() << "\t\t" << element.get_substring() << std::endl;
-  }
+    return 0;
 
-  return 0;
 }
+
+// ================================================================ //
+
+void init(int argc, const char* argv[]) {
+
+  while (argc-- > 0) {
+    const char* arg = *argv;
+
+    setoption(arg, "-v",    "--version",   &showversion);
+    setoption(arg, "-h",    "--help",      &showhelp);
+
+}
+
+  // ================================= //
+
+  if (showversion)                                    { version();  exit(0); }
+  if (showhelp)                                       { help();     exit(0); }
+
+}
+
+void setoption(const char* arg, const char* s, const char* t, int* value) {
+    
+  if ((strcmp(arg, s) == 0) || ((t != NULL && strcmp(arg, t) == 0))) { *value = 1; }
+    
+}
+

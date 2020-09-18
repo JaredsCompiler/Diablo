@@ -63,16 +63,15 @@ void lexer::processLine(int lineno, std::vector<std::string>::iterator* begin, s
   std::smatch sm;
   std::string id = "FUCK MY LIFE";
   for(auto& identifier : this->rules.get_rules()){
-    if (std::regex_search(*line, sm, r)) {
+    if (std::regex_search(*line, sm, identifier.second)) {
         for (unsigned long int i=1; i<sm.size(); i++) {
             unsigned long int start = sm.position(i);
             unsigned long int end = start + sm.length(i);
-            this->tokens.emplace_back(lexeme(lineno, start, end, (*begin)->substr(start, end), id));
+            std::cout << sm.str(i) << std::endl;
+            //this->tokens.emplace_back(lexeme(lineno, start, end, sm.str(i), identifier.first));
         }
     }
   }
-  const std::regex r("((!([^!]|!!)*!))|(int)|(\\w+)");  
-
 }
 
 void lexer::processFile(){

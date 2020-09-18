@@ -40,12 +40,10 @@ void help(){
 }
 
 std::map<std::string, std::regex> tokenMap = {
-  {"COMMENT", std::regex("(\\!.*\\!)")},
-  //{"KEYWORD", std::regex("(int|float|bool|true|false|(end)?if|else|then|while(end)?|do(end)?|for(end)?|(in|out)put|and|or|not)")},
-  {"KEYWORD", std::regex("(int)")},
+  {"COMMENT", std::regex("(!([^!]|!!)*!)")},
+  {"KEYWORD", std::regex("(int|float|bool|true|false|(end)?if|else|then|while(end)?|do(end)?|for(end)?|(in|out)put|and|or|not)")},
   {"IDENTIFIER", std::regex("(\\w+)")},
-  //{"IDENTIFIER", std::regex("(?!\\s+)([a-zA-Z]+)")},
-  {"SEPARATORS", std::regex("^(\\(|\\)|\\{|\\}|\\[|\\]|\"|\'|\\,)$")},
+  {"SEPARATORS", std::regex("(\\(|\\)|\\{|\\}|\\[|\\]|\"|\'|\\,)")},
   {"OPERATORS", std::regex("(\\+|-|\\*|\\/|=|>|<|>=|<=|&+|\\|+|%|^!$|\\^)")}
 };
 

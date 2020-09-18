@@ -40,7 +40,7 @@ void help(){
 }
 
 std::map<std::string, std::regex> tokenMap = {
-  {"COMMENT", std::regex("(!([^!]|!!)*!)")},
+  {"COMMENT", std::regex("(\\!.*\\!)")},
   {"KEYWORD", std::regex("(int|float|bool|true|false|(end)?if|else|then|while(end)?|do(end)?|for(end)?|(in|out)put|and|or|not)")},
   {"IDENTIFIER", std::regex("(\\w+)")},
   {"SEPARATORS", std::regex("(\\(|\\)|\\{|\\}|\\[|\\]|\"|\'|\\,)")},
@@ -49,6 +49,10 @@ std::map<std::string, std::regex> tokenMap = {
 
 int main(int argc, const char* argv[]) {
 
+    if(argc < 2){
+      std::cerr << "Invalid syntax: ./lexi [input]" << std::endl;
+      return 1;
+    }
     init(--argc, ++argv);
 
     sourceFile source = sourceFile(argv[0]);

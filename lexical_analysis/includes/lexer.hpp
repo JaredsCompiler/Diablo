@@ -16,7 +16,7 @@ class lexer {
    
     std::tuple<int, int> span(std::string, std::regex, int*);
     void processFile();
-    void processLine(int, std::vector<std::string>::iterator*, std::string*);
+    void processLine(int, std::vector<std::string>::iterator*, std::string);
 
     std::vector<std::string>::iterator get_begin();
     std::vector<std::string>::iterator get_end();

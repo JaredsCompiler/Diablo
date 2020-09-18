@@ -11,10 +11,14 @@ class lexeme {
     const std::string get_substring();
     std::string get_tag();
 
+    friend bool operator== (const lexeme &l1, const lexeme &l2);
+     
+    friend bool operator!= (const lexeme &l1, const lexeme &l2);
+    friend bool operator <(const lexeme& l1, const lexeme& l2);
+
   private:
     std::tuple<size_t, size_t> slice;
     size_t line_no;
-    //std::vector<std::string>::iterator it;
     std::string identifier;
     std::string substring;
 };

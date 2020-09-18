@@ -3,6 +3,7 @@
 #include <vector>
 #include <string>
 #include <map>
+#include <fstream>
 
 #include "includes/reader.hpp"
 #include "includes/lexer_rules.hpp"
@@ -44,13 +45,14 @@ std::map<std::string, std::regex> tokenMap = {
   {"KEYWORD", std::regex("(int|float|bool|true|false|(end)?if|else|then|while(end)?|do(end)?|for(end)?|(in|out)put|and|or|not)")},
   {"IDENTIFIER", std::regex("(\\w+)")},
   {"SEPARATORS", std::regex("(\\(|\\)|\\{|\\}|\\[|\\]|\"|\'|\\,)")},
-  {"OPERATORS", std::regex("(\\+|-|\\*|\\/|=|>|<|>=|<=|&+|\\|+|%|^!$|\\^)")}
+  {"OPERATORS", std::regex("(\\+|-|\\*|\\/|=|>|<|>=|<=|&+|\\|+|%|^!$|\\^)")},
+  {"TERMINATORS", std::regex("(\\;|\\$)")}
 };
 
 int main(int argc, const char* argv[]) {
 
     if(argc < 2){
-      std::cerr << "Invalid syntax: ./lexi [input]" << std::endl;
+      help();
       return 1;
     }
     init(--argc, ++argv);
@@ -60,13 +62,18 @@ int main(int argc, const char* argv[]) {
  
     lexer lex = lexer(rules, source);
     lex.processFile();
+
+    std::ofstream tokenDump;
+    tokenDump.open("outputs/sources_tokens.txt");
   
     printf("TOKENS\t\tLexemes\n\n");
 
     std::cout << "amount of tokens: " << lex.get_tokens().size() << std::endl;
 
     for(auto element : lex.get_tokens()){
-      std::cout << element.get_tag() << "\t\t" << element.get_substring() << std::endl;
+      //std::cout << element.get_tag() << "\t\t" << element.get_substring() << std::endl;
+      std::cout << element << std::endl;
+      tokenDump << element << std::endl;
     }
 
     return 0;

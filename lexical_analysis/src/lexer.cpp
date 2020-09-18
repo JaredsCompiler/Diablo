@@ -10,6 +10,7 @@
 #include <cmath>
 #include <stdio.h>
 #include <ctype.h>
+#include <set>
 
 
 lexer::lexer(lexerRules lexRules, sourceFile inputFile){
@@ -21,36 +22,35 @@ lexer::lexer(lexerRules lexRules, sourceFile inputFile){
 
 }
 
-void lexer::processLine(int lineno, std::vector<std::string>::iterator* begin, std::string line){
+void lexer::processLine(int lineno, std::vector<std::string>::iterator* begin, std::string line, std::vector<std::tuple<int, int, int>> collection){
+  bool can_fuck_shit_up = false;
+
   for(auto& identifier : this->rules.get_rules()){
-      for (auto it = std::sregex_iterator(line.begin(), line.end(), identifier.second); 
-               it != std::sregex_iterator(); it++) { 
-              std::smatch sm; 
-              sm = *it; 
-              unsigned long int start = sm.position(0);
-              unsigned long int end = start + sm.length(1);
-              std::string match_string = sm.str(1);
+      for (auto it = std::sregex_iterator(line.begin(), line.end(), identifier.second); it != std::sregex_iterator(); it++) { 
+          std::smatch sm; 
+          sm = *it; 
+          unsigned long int start = sm.position(0);
+          unsigned long int end = start + sm.length(1);
+          std::string match_string = sm.str(1);
 
-              if (std::all_of(match_string.begin(), match_string.end(), isspace) || match_string.empty()){
-                std::cout << "Not adding" << std::endl;
-              } else{
-                this->tokens.emplace_back(lexeme(lineno, start, end, match_string, identifier.first));
-                if(identifier.first == "COMMENT"){ return; }
-              } 
+          if (std::all_of(match_string.begin(), match_string.end(), isspace) || match_string.empty()){
+            std::cout << "Not adding" << std::endl;
+          } else{
+              if(identifier.first == "IDENTIFIER"){
+                std::regex_search(match_string, sm, this->rules.get_rules()["KEYWORD"]);
+                if(!sm.empty()){ can_fuck_shit_up = true; }
+              }
+            }
+            // more clean version is to have lexeme just take this object -> change constructor
+            std::tuple<int, int, int> coordinates = std::make_tuple(lineno, start, end);
+            if (!(std::find(collection.begin(), collection.end(), coordinates) != collection.end())){
+              lexeme item = lexeme(lineno, start, end, match_string, (can_fuck_shit_up) ? "KEYWORD" : identifier.first);
+              this->tokens.push_back(item);
+              collection.push_back(coordinates);
           } 
-
-    //if (std::regex_search(*line, sm, identifier.second)) {
-        //for (unsigned long int i=1; i<sm.size(); i++) {
-            //unsigned long int start = sm.position(i);
-            //unsigned long int end = start + sm.length(i);
-            //std::string match_string = sm.str(i);
-            //if (std::all_of(match_string.begin(), match_string.end(), isspace) || match_string.empty()){
-              //std::cout << "Not adding" << std::endl;
-            //} else{
-              //this->tokens.emplace_back(lexeme(lineno, start, end, sm.str(i), identifier.first));
-            //}
-        //}
-    //}
+        can_fuck_shit_up = false;
+        if(identifier.first == "COMMENT"){ return; }
+    } 
   }
 }
 
@@ -58,12 +58,25 @@ void lexer::processFile(){
   auto begin = this->ingestedFile.get_begin();
   auto end = this->ingestedFile.get_end();
 
+  std::vector<std::tuple<int, int, int>> collect_all;
+
   for(auto i = begin; i != end; ++i){
     std::string line = *i;
-    //std::string* line = &*i;
     auto lineno = (i - begin);
-    this->processLine(lineno, &i, line);
+    this->processLine(lineno, &i, line, collect_all);
   }
+  this->tokens = this->sortLexemes();
+}
+
+void lexer::removeDuplicates(){
+  std::set<lexeme> s(this->tokens.begin(), this->tokens.end());
+  this->tokens.assign(s.begin(), s.end());
+}
+
+std::vector<lexeme> lexer::sortLexemes(){
+  std::vector<lexeme> sortedCopy = this->tokens;
+  std::sort(sortedCopy.begin(), sortedCopy.end());
+  return sortedCopy;
 }
 
 std::vector<std::string>::iterator lexer::get_begin(){
@@ -77,3 +90,4 @@ std::vector<std::string>::iterator lexer::get_end(){
 std::vector<lexeme> lexer::get_tokens(){
   return this->tokens;
 }
+

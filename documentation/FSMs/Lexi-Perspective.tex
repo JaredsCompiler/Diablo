@@ -1,6 +1,11 @@
 \documentclass{article}
 
 \usepackage{hyperref}
+\usepackage{indentfirst}
+
+\usepackage{listings}
+\usepackage{color}
+\usepackage{tikz}
 
 \title{FSM of the Lexical Analyzer (Higher Overview)}
 
@@ -15,6 +20,12 @@
     urlcolor=black
 }
 
+\lstset{
+language=C++,
+identifierstyle={\texttt},
+moredelim=**[is][\color{red}\ttfamily]{@}{@},
+}
+
 \begin{document}
 
 \maketitle
@@ -24,6 +35,70 @@
 
 \section{Overview}
 
+This document explains the inner workings of the Lexical Analyzer from the perspective of the driver code from `lexi.cpp`.
+Here, all components designed to make `lexi` a stand alone program work are collated into a single source document.
+The structure of this program is as follows:
+
+\begin{enumerate}
+\item Source file: where in memory is the file located and then extract the contents of it.
+\item Rules: what set of parameters must the lexer abide by to produce the desired tokens.
+\item Lexer: the actual mechanism that takes the content of the source document and applies rules to each line, producing tokens if matches are found.
+\end{enumerate}
+
+\section{Components of this FSM}
+
+The formal definition of an FSM includes the following:
+
+\begin{enumerate}
+\item Finite set of input symbols $\Sigma$: $\{A, B, C\}$ corresponding to the bullet points above.
+\item Finite set of states $Q$: $\{D, G\}$
+\begin{enumerate}
+\item $D$: Unaccepted state. There were no matches and/or lexing errors were thrown.
+\item $G$: Accepting state. There was at least one match to the rules presented and no lexing errors thrown.
+\end{enumerate}
+\item Finite set of accepting states: $F \subseteq Q$
+\begin{enumerate}
+\item $F \subseteq \{G\}$
+\end{enumerate}
+\item State-transition function(s) $N: (Q \times \Sigma) \rightarrow Q$
+\begin{enumerate}
+\item Each constructor and function call will advance the overall mechanism of Lexi
+\end{enumerate}
+\end{enumerate}
+
+\newpage
+
+\section{Graphical Representation}
+
+Each of the nodes correspond to the defined sets of states and input symbols.
+
+\begin{figure}[!hbtp]
+\begin{tikzpicture}[scale=0.2]
+\tikzstyle{every node}+=[inner sep=0pt]
+\draw [black] (16.9,-18.1) circle (3);
+\draw (16.9,-18.1) node {$A$};
+\draw [black] (16.9,-35.6) circle (3);
+\draw (16.9,-35.6) node {$B$};
+\draw [black] (33.9,-25.2) circle (3);
+\draw (33.9,-25.2) node {$C$};
+\draw [black] (58.4,-12.2) circle (3);
+\draw (58.4,-12.2) node {$D$};
+\draw [black] (58.4,-35.6) circle (3);
+\draw (58.4,-35.6) node {$G$};
+\draw [black] (58.4,-35.6) circle (2.4);
+\draw [black] (7.3,-22) -- (14.12,-19.23);
+\fill [black] (14.12,-19.23) -- (13.19,-19.07) -- (13.57,-19.99);
+\draw [black] (19.67,-19.26) -- (31.13,-24.04);
+\fill [black] (31.13,-24.04) -- (30.59,-23.27) -- (30.2,-24.2);
+\draw [black] (20.2,-35) -- (31.46,-26.95);
+\fill [black] (31.46,-26.95) -- (30.52,-27) -- (31.1,-27.82);
+\draw [black] (36.55,-23.79) -- (55.75,-13.61);
+\fill [black] (55.75,-13.61) -- (54.81,-13.54) -- (55.28,-14.42);
+\draw [black] (35.9,-27.6) -- (55.57,-34.59);
+\fill [black] (55.57,-34.59) -- (54.99,-33.86) -- (54.65,-34.8);
+\end{tikzpicture}
+\caption{Lexi FSM}
+\end{figure}
 
 
 \end{document}

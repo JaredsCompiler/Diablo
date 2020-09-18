@@ -59,18 +59,20 @@ void lexer::remove_substring(std::string* line, std::string substring){
 }
 
 void lexer::processLine(int lineno, std::vector<std::string>::iterator* begin, std::string* line){
-  //const std::regex r("(\\!.*\\!) (int|bool) (\\w+)");  
-  const std::regex r("(?:(^\\!.*\\!)|(\\w+))");  
+  //const std::regex r("(\\!.*\\!) (int|bool) (\\w+)");
   std::smatch sm;
   std::string id = "FUCK MY LIFE";
-
-  if (std::regex_search(*line, sm, r)) {
-      for (unsigned long int i=1; i<sm.size(); i++) {
-          unsigned long int start = sm.position(i);
-          unsigned long int end = start + sm.length(i);
-          this->tokens.emplace_back(lexeme(lineno, start, end, (*begin)->substr(start, end), id));
-      }
+  for(auto& identifier : this->rules.get_rules()){
+    if (std::regex_search(*line, sm, r)) {
+        for (unsigned long int i=1; i<sm.size(); i++) {
+            unsigned long int start = sm.position(i);
+            unsigned long int end = start + sm.length(i);
+            this->tokens.emplace_back(lexeme(lineno, start, end, (*begin)->substr(start, end), id));
+        }
+    }
   }
+  const std::regex r("((!([^!]|!!)*!))|(int)|(\\w+)");  
+
 }
 
 void lexer::processFile(){

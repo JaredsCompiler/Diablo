@@ -10,6 +10,25 @@
 #include "includes/lexer.hpp"
 #include "includes/lexeme.hpp"
 
+/*
+ * COMPLETED FEATURES
+ * - can read in files
+ * - defines set of rules for the Lexer to abide by
+ * - applies those rules to the content ingested
+ * - produces lexemes based on the rules and content given
+ * - can process arguments
+ *
+ * TODO
+ *
+ * - Make the code more efficient
+ * - use FSMs (not sure how they are entirely applied here)
+ * - documentation
+ * - more robust testing
+ *   * unit tests
+ *
+ *
+*/
+
 const char* AUTHORS[] = {
   "Jared Dyreson",
   "Chris Nutter"

@@ -4,6 +4,7 @@
 #include <tuple>
 #include <vector>
 #include <algorithm>
+#include <iomanip>
 
 lexeme::lexeme(size_t line, size_t begin, size_t end, std::string sub, std::string id){
   this->line_no = line;
@@ -22,7 +23,7 @@ std::string lexeme::get_tag(){
 
 std::ostream& operator<<(std::ostream& out, const lexeme& lex){
   const auto[start, end] = lex.slice;
-  out << lex.identifier << "\t\t" << lex.substring << "\t";
+  out << std::left << std::setw(0) << lex.identifier << std::right << "\t\t" << lex.substring << "\t";
   out << "(" << lex.line_no << ", " <<  start << ", " << end << ")";
   return out;
 }

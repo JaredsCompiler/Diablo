@@ -87,8 +87,6 @@ int main(int argc, const char* argv[]) {
   
     printf("TOKENS\t\tLexemes\n\n");
 
-    std::cout << "amount of tokens: " << lex.get_tokens().size() << std::endl;
-
     for(auto element : lex.get_tokens()){
       //std::cout << element.get_tag() << "\t\t" << element.get_substring() << std::endl;
       std::cout << element << std::endl;

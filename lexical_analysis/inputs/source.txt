@@ -1,0 +1,10 @@
+! Find largest value between two numbers!
+int num1, num2, large$
+if(num1 > num2)
+{
+	large = num1$;
+}
+else
+{
+	large = num2$;
+}

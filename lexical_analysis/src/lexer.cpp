@@ -23,7 +23,7 @@ lexer::lexer(lexerRules lexRules, sourceFile inputFile){
 }
 
 void lexer::processLine(int lineno, std::vector<std::string>::iterator* begin, std::string line, std::vector<std::tuple<int, int, int>> collection){
-  bool can_fuck_shit_up = false;
+  bool change_identifier = false;
 
   for(auto& identifier : this->rules.get_rules()){
       for (auto it = std::sregex_iterator(line.begin(), line.end(), identifier.second); it != std::sregex_iterator(); it++) { 
@@ -38,17 +38,17 @@ void lexer::processLine(int lineno, std::vector<std::string>::iterator* begin, s
           } else{
               if(identifier.first == "IDENTIFIER"){
                 std::regex_search(match_string, sm, this->rules.get_rules()["KEYWORD"]);
-                if(!sm.empty()){ can_fuck_shit_up = true; }
+                if(!sm.empty()){ change_identifier = true; }
               }
             }
             // more clean version is to have lexeme just take this object -> change constructor
             std::tuple<int, int, int> coordinates = std::make_tuple(lineno, start, end);
             if (!(std::find(collection.begin(), collection.end(), coordinates) != collection.end())){
-              lexeme item = lexeme(lineno, start, end, match_string, (can_fuck_shit_up) ? "KEYWORD" : identifier.first);
+              lexeme item = lexeme(lineno, start, end, match_string, (change_identifier) ? "KEYWORD" : identifier.first);
               this->tokens.push_back(item);
               collection.push_back(coordinates);
           } 
-        can_fuck_shit_up = false;
+        change_identifier = false;
         if(identifier.first == "COMMENT"){ return; }
     } 
   }

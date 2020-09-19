@@ -36,7 +36,7 @@ const char* AUTHORS[] = {
 
 const char* INSTITUTION = "California State University Fullerton";
 
-int showhelp = 0, showversion = 0;
+int showhelp = 0, showversion = 0, best_programmer_who_ever = 0;
 
 void setoption(const char* arg, const char* s, const char* t, int* value);
 void init(int argc, const char* argv[]);
@@ -57,6 +57,10 @@ void help(){
   printf(
     "Usage: ./lexi [input]"
   );
+}
+
+void best_programmer(){
+  printf("Jesus said \"I will rebuild this temple in three days.\" I could make a compiler in 3 days. - Terry A. Davis\n");
 }
 
 std::map<std::string, std::regex> tokenMap = {
@@ -106,6 +110,7 @@ void init(int argc, const char* argv[]) {
 
     setoption(arg, "-v",    "--version",   &showversion);
     setoption(arg, "-h",    "--help",      &showhelp);
+    setoption(arg, "-tad",    "--terry-a-davis",      &best_programmer_who_ever);
 
 }
 
@@ -113,6 +118,7 @@ void init(int argc, const char* argv[]) {
 
   if (showversion)                                    { version();  exit(0); }
   if (showhelp)                                       { help();     exit(0); }
+  if (best_programmer_who_ever)                       { best_programmer();     exit(0); }
 
 }
 

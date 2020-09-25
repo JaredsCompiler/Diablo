@@ -1,0 +1,49 @@
+\documentclass{article}
+
+\usepackage{graphicx}
+\usepackage{hyperref}
+
+\graphicspath{ {./assets/} }
+
+\title{FSM of Lexi's Rules}
+
+\author{Chris Nutter \\
+        Jared Dyreson}
+
+\hypersetup{
+    colorlinks,
+    citecolor=black,
+    filecolor=black,
+    linkcolor=black,
+    urlcolor=black
+}
+
+\begin{document}
+
+\begingroup\makeatletter\def\@currenvir{verbatim}
+\maketitle
+\tableofcontents
+
+\newpage
+
+\section{Rules}
+
+\vspace{20px}
+
+\subsection{Identifier}
+
+\textbf{Regular Expression}
+
+\verbatim
+(\w+)
+\end{verbatim}
+
+
+\begin{flushleft}
+\textbf{NFA Generated}
+\end{flushleft}
+
+\begin{center}\fbox{\includegraphics[width=13cm]{identifier-nfa.png}}\end{center}
+
+
+\end{document}

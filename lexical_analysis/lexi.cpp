@@ -65,10 +65,12 @@ void best_programmer(){
 
 std::map<std::string, std::regex> tokenMap = {
   {"COMMENT", std::regex("(\\!.*\\!)")},
+  {"IDENTIFIER", std::regex("([a-zA-Z]+(\\d*)?)")},
   {"KEYWORD", std::regex("(int|float|bool|true|false|(end)?if|else|then|while(end)?|do(end)?|for(end)?|(in|out)put|and|or|not)")},
-  {"IDENTIFIER", std::regex("(\\w[\\w|\\d]*)")},
-  {"SEPARATORS", std::regex("(\\(|\\)|\\{|\\}|\\[|\\]|\"|\'|\\,)")},
+  {"NUMBER", std::regex("(?:\\b)([-+]?\\d*\\.?\\d+)?(?=\\b)")},
+  // thanks to this link -> https://www.regular-expressions.info/floatingpoint.html
   {"OPERATORS", std::regex("(\\+|-|\\*|\\/|=|>|<|>=|<=|&+|\\|+|%|^!$|\\^)")},
+  {"SEPARATORS", std::regex("(\\(|\\)|\\{|\\}|\\[|\\]|\"|\'|\\,)")},
   {"TERMINATORS", std::regex("(\\;|\\$)")}
 };
 

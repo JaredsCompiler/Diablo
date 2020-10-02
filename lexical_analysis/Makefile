@@ -25,7 +25,7 @@ lexer_rules.o: src/lexer_rules.cpp includes/lexer_rules.hpp
 lexeme.o: src/lexeme.cpp includes/lexeme.hpp
 	$(COMPILER) $(CFLAGS) -c -g src/lexeme.cpp
 run:
-	./$(OUTPUT) source.txt
+	./$(OUTPUT) inputs/1_line.txt
 clean: object_clean
 	rm $(OUTPUT)
 object_clean:

@@ -19,39 +19,48 @@ lexer::lexer(lexerRules lexRules, sourceFile inputFile){
   this->begin = inputFile.get_begin();
   this->end = inputFile.get_end();
   this->tokens = std::vector<lexeme>();
-
 }
 
 void lexer::processLine(int lineno, std::vector<std::string>::iterator* begin, std::string line, std::vector<std::tuple<int, int, int>> collection){
-  bool change_identifier = false;
 
   for(auto& identifier : this->rules.get_rules()){
+      bool can_break_immediate = false;
       for (auto it = std::sregex_iterator(line.begin(), line.end(), identifier.second); it != std::sregex_iterator(); it++) { 
-          std::smatch sm; 
-          sm = *it; 
+          bool is_keyword = false;
+          bool comment_leftovers = false;
+
+          std::smatch sm = *it; 
+
           unsigned long int start = sm.position(0);
           unsigned long int end = start + sm.length(1);
+
           std::string match_string = sm.str(1);
 
-          if (std::all_of(match_string.begin(), match_string.end(), isspace) || match_string.empty()){
-            std::cout << "Not adding" << std::endl;
-          } else{
-              if(identifier.first == "IDENTIFIER"){
-                std::regex_search(match_string, sm, this->rules.get_rules()["KEYWORD"]);
-                if(!sm.empty()){ change_identifier = true; }
-              }
-            }
-            // more clean version is to have lexeme just take this object -> change constructor
-            std::tuple<int, int, int> coordinates = std::make_tuple(lineno, start, end);
-            if (!(std::find(collection.begin(), collection.end(), coordinates) != collection.end())){
-              lexeme item = lexeme(lineno, start, end, match_string, (change_identifier) ? "KEYWORD" : identifier.first);
-              this->tokens.push_back(item);
-              collection.push_back(coordinates);
-          } 
-        change_identifier = false;
-        if(identifier.first == "COMMENT"){ return; }
+          bool is_empty = (std::all_of(match_string.begin(), match_string.end(), isspace) || match_string.empty());
+          if(is_empty){ continue; }
+
+          std::tuple<int, int, int> coordinates = std::make_tuple(lineno, start, end);
+
+          bool is_found = (std::find(collection.begin(), collection.end(), coordinates) != collection.end());
+          if(is_found){ break; }
+
+          if(identifier.first == "IDENTIFIER"){
+            std::regex_search(match_string, sm, this->rules.get_rules()["KEYWORD"]);
+            std::string substring = sm.str(1);
+            if(substring == match_string){ is_keyword = true; } 
+            else { can_break_immediate = true; }
+          }
+
+          lexeme item = lexeme(coordinates, match_string, (is_keyword) ? "KEYWORD" : identifier.first);
+          this->tokens.push_back(item);
+          collection.push_back(coordinates);
+
+          comment_leftovers = ((start >= 0) && (end <= line.size()) && (identifier.first == "COMMENT")) ? true : false;
+
+          if(comment_leftovers){ line.erase(start, end); }
+          if(can_break_immediate){break;}
+      }
     } 
-  }
 }
 
 void lexer::processFile(){

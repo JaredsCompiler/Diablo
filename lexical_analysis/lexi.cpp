@@ -20,12 +20,8 @@
  *
  * TODO
  *
- * - Make the code more efficient
  * - use FSMs (not sure how they are entirely applied here)
  * - documentation
- * - more robust testing
- *   * unit tests
- *
  *
 */
 

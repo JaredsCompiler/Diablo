@@ -1,0 +1,14 @@
+#!/usr/bin/env python3.8
+
+import re
+
+expression = re.compile("\\\\(?P<command>\w[\w]*)\s*\{(?P<expr>\w[\w]*)\}")
+
+with open("/tmp/document", "r") as fp:
+    contents = fp.readlines()
+
+for line in contents:
+    match = expression.findall(line)
+    if(match):
+        for m in match:
+            print(m)

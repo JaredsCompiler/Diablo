@@ -87,13 +87,15 @@ int main(int argc, const char* argv[]) {
     std::ofstream tokenDump;
     tokenDump.open("outputs/sources_tokens.txt");
   
-    printf("TOKENS\t\tLexemes\n\n");
+    //printf("TOKENS\t\tLexemes\n\n");
 
     for(auto element : lex.get_tokens()){
       //std::cout << element.get_tag() << "\t\t" << element.get_substring() << std::endl;
       std::cout << element << std::endl;
       tokenDump << element << std::endl;
     }
+    
+    std::cout << "\n";
 
     return 0;
 

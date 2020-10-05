@@ -1,6 +1,6 @@
 objects = reader.o lexer_rules.o lexeme.o lexer.o
 COMPILER = clang++
-CFLAGS = -Wc++17-extensions -Wall
+CFLAGS = -Wc++17-extensions -Wall -std=c++17
 OUTPUT = lexi
 LIBNAME = lexiLib
 LIBPATH = -L bin/static$(LIBNAME)
@@ -25,7 +25,7 @@ lexer_rules.o: src/lexer_rules.cpp includes/lexer_rules.hpp
 lexeme.o: src/lexeme.cpp includes/lexeme.hpp
 	$(COMPILER) $(CFLAGS) -c -g src/lexeme.cpp
 run:
-	./$(OUTPUT) inputs/1_line.txt
+	./$(OUTPUT) inputs/source.txt
 clean: object_clean
 	rm $(OUTPUT)
 object_clean:

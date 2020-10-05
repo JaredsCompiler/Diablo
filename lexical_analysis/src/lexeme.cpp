@@ -5,6 +5,9 @@
 #include <vector>
 #include <algorithm>
 #include <iomanip>
+#include <string>
+
+int first = 0;
 
 lexeme::lexeme(std::tuple<size_t, size_t, size_t> coordinates, std::string sub, std::string id){
   const auto[z, x, y] = coordinates;
@@ -23,8 +26,19 @@ std::string lexeme::get_tag(){
 
 std::ostream& operator<<(std::ostream& out, const lexeme& lex){
   const auto[line, start, end] = lex.slice;
-  out << std::left << std::setw(0) << lex.identifier << std::right << "\t\t" << lex.substring << "\t";
+  out << std::left << std::setw(0);
+
+  if (first == 0) { out << "\nTOKENS" << "\t\t\t" << "LEXEMES" << "\t\t" << "LINE_NUM\n"; 
+                    out << std::string(6, '#') << "\t\t\t" << std::string(7, '#') << "\t\t" << std::string(8, '#') << "\n\n";
+                    first++; } 
+                  
+
+  if (lex.identifier == "COMMENT" || lex.identifier == "KEYWORD" || lex.identifier == "NUMBER") { out << lex.identifier << "\t"; }
+  else { out << lex.identifier; }
+  
+  out << std::right << "\t\t" << lex.substring << "\t\t";
   out << "(" << line << ", " <<  start << ", " << end << ")";
+
   return out;
 }
 

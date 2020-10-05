@@ -1,0 +1,14 @@
+! Find largest value between two numbers!
+! however !
+! who !
+! is dumb enough to do like 10 lines for one word comments like you're a fool. just admit it !
+
+int num1, num2, large$
+if(num1 > num2)
+{
+	large = num1$;
+}
+else
+{
+	large = num2$;
+}

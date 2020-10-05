@@ -1,0 +1,13 @@
+! Here is a comment !
+! Here is another comment about my life...I am tired !
+int num1, num2, large$;
+if(num1 > num2)
+{
+	large = num1$;
+}
+else
+{
+	large = num2$;
+}
+
+int value = 10;

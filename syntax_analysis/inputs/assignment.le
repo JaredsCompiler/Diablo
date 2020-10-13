@@ -1,0 +1,5 @@
+! This is a test for assignment !
+
+int value = 10;
+int a  =  15;
+int b = 20;

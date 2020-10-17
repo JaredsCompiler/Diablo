@@ -1,4 +1,4 @@
-OBJS =  add.o
+OBJS =  balancer.o variable.o
 COMPILER = clang++
 CFLAGS = -Wc++17-extensions -Wall
 OUTPUT = synthetic
@@ -25,14 +25,17 @@ get_lexi:
 synthetic: $(OBJS) create_static get_lexi
 	$(COMPILER) $(CFLAGS) synthetic.cpp $(INC_PATH) $(OUTERINC) $(shell ls -d build/*) $(OBJS) $(LIBPATH) $(OUTERLIBS) -o $(OUTPUT)
 
-add.o: src/add.cpp includes/add.hpp
-	$(COMPILER) $(CFLAGS) -c src/add.cpp
+balancer.o: src/balancer.cpp includes/balancer.hpp
+	$(COMPILER) $(CFLAGS) -c src/balancer.cpp
+
+variable.o: src/variable.cpp includes/variable.hpp
+	$(COMPILER) $(CFLAGS) -c src/variable.cpp
 
 synthetic.o: synthetic.cpp
 	$(COMPILER) $(CFLAGS) -c synthetic.cpp
 
-ASTNode.o: src/ASTNode.cpp includes/ASTNode.hpp
-	$(COMPILER) $(CFLAGS) -c -g src/ASTNode.cpp
+#ASTNode.o: src/ASTNode.cpp includes/ASTNode.hpp
+	#$(COMPILER) $(CFLAGS) -c -g src/ASTNode.cpp
 
 run:
 	./$(OUTPUT)

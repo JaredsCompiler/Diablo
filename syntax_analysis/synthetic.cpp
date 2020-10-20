@@ -54,6 +54,7 @@ int main(){
   std::stack<lexeme> operands;
   std::stack<lexeme> operators;
   sourceFile src("inputs/assignment.le");
+
   // check if the is even balanced before getting lexemes
   balancer B;
   const auto[state, line, lineno] = B.is_file_balanced(src);
@@ -62,7 +63,7 @@ int main(){
     std::cerr << lineno << ": " << line << std::endl;
     return 1;
   }
-  //if(!B.is_file_balanced(src))
+
   lexerRules rules = lexerRules(tokenMap);
 
   lexer lex = lexer(rules, src);

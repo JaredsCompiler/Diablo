@@ -1,6 +1,7 @@
 #include <iostream>
 #include <limits>
 #include <stack>
+#include <type_traits>
 
 enum compare_code {
   eLess,
@@ -133,9 +134,22 @@ K calculate(std::stack<K>* st_, std::stack<std::string>* operands){
   return st_->top();
 }
 
+template <typename T, typename U>
+
+bool Foo(){
+  /*
+   * Check if two types are the same
+   */
+  return std::is_same<T, U>::value;
+}
+
 int main(){
   std::stack<size_t> st_;
   std::stack<std::string> opr_;
+
+  std::cout << compare(true, false, "&&") << std::endl;
+
+  return 0;
   
   for(size_t i = 0; i < 10; ++i){
     st_.push(i);

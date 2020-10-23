@@ -22,10 +22,23 @@ class DiabloBaseException : public std::exception {
 
 };
 
+class FileErrorException : public DiabloBaseException {
+  public:
+    /*
+     * Use the base class' constructor
+    */
+    using DiabloBaseException::DiabloBaseException;
+};
+
 int main(){
   try{
     throw DiabloBaseException("Example error", __FILE__, __LINE__, __FUNCTION__, "Nothing");
   } catch(DiabloBaseException& e) {
+    std::cout << e.what() << std::endl;
+  }
+  try{
+    throw FileErrorException("example.txt does not exist", __FILE__, __LINE__, __FUNCTION__, "Nothing");
+  } catch(FileErrorException& e){
     std::cout << e.what() << std::endl;
   }
   return 0;

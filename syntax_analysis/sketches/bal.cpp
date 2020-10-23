@@ -63,14 +63,6 @@ bool balancer::is_balanced(std::string line){
   return false;
 }
 
-//bool balancer::is_file_balanced(std::vector<std::string> contents){
-  //// (true, line, lineno)
-  //for(auto line : contents){
-    //if(!is_balanced(line)){ return false; } 
-  //}
-  //return true;
-//}
-
 std::tuple<bool, std::string, int> balancer::is_file_balanced(std::vector<std::string> contents){
   for(int i = 0; i < contents.size(); ++i){
     if(!is_balanced(contents[i])){

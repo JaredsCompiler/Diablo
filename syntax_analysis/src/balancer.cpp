@@ -2,6 +2,11 @@
 #include <stack>
 #include <string>
 
+/*
+ * Checks if the source code has the proper amount of a separators
+ * Will throw errors if not okay
+*/
+
 bool balancer::is_matching(char a, char b){
   return ((a == '{' && b == '}') ||
          (a == '(' && b == ')') ||
@@ -43,13 +48,6 @@ bool balancer::is_balanced(std::string line){
   else if(st_.empty()){ return true; }
   return false;
 }
-
-//bool balancer::is_file_balanced(sourceFile src){
-  //for(auto line : src.get_content()){
-    //if(!is_balanced(line)){ return false; } 
-  //}
-  //return true;
-//}
 
 std::tuple<bool, std::string, int> balancer::is_file_balanced(sourceFile src){
   std::vector<std::string> contents = src.get_content();

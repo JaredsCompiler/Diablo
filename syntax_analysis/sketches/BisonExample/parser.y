@@ -98,6 +98,7 @@
 
 %type< EzAquarii::Command > command;
 %type< std::vector<uint64_t> > arguments;
+%type< EzAquarii::Command > computation;
 
 %start program
 
@@ -128,6 +129,10 @@ program :   {
                 cout << "*** STOP RUN ***" << endl;
                 cout << driver.str() << endl;
             }
+        | program computation
+            {
+                cout << "doing that math shit" << endl;
+            }
         ;
 
 
@@ -144,14 +149,20 @@ command : STRING LEFTPAR RIGHTPAR
             cout << "function: " << id << ", " << args.size() << endl;
             $$ = Command(id, args);
         }
-    | NUMBER PLUS NUMBER
+    /*| NUMBER PLUS NUMBER command*/
+        /*{*/
+            /*cout << $1 << "+" << $3 << endl;*/
+            /*print_mess();*/
+            /*$$ = Command("Hello");*/
+        /*}*/
+    ;
+
+computation : computation PLUS NUMBER | NUMBER
         {
-            cout << $1 << "+" << $3 << endl;
-            print_mess();
+            cout << "gottem" << endl;
             $$ = Command("Hello");
         }
     ;
-
 arguments : NUMBER
         {
             uint64_t number = $1;

@@ -90,9 +90,14 @@
                 cout << "Scanner: ','" << endl;
                 return EzAquarii::Parser::make_COMMA(EzAquarii::location());
             }
-\+           {
-                cout << "Scanner: '+'" << endl;
-                return EzAquarii::Parser::make_PLUS(EzAquarii::location());
+[\+|\-|\*|\/]   {
+                    cout << "Operator recieved: " <<  yytext << endl;
+                    return EzAquarii::Parser::make_OPERATOR(yytext, EzAquarii::location());
+                }
+
+\=          {
+                cout << "assignment" << endl;
+                return EzAquarii::Parser::make_ASSIGN(EzAquarii::location());
             }
             
 [\n\t ]     {

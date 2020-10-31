@@ -40,6 +40,7 @@
 
     #include <iostream>
     #include <limits>
+    #include <map>
     #include <stack>
     #include <stdint.h>
     #include <string>
@@ -49,6 +50,7 @@
     #include "command.h"
     #include "hello_world.h"
     #include "includes/maths.hpp"
+    #include "includes/stack_operations.hpp"
 
     using namespace std;
 
@@ -56,6 +58,7 @@
         class Scanner;
         class Interpreter;
     }
+
 
 
 }
@@ -83,6 +86,15 @@
     
     using namespace EzAquarii;
     vector<uint64_t> container;
+
+    std::map<std::string, uint64_t> symbolTable = {
+        {
+          "a", 10
+        },
+        {
+          "streemeSpotes", 1000
+        }
+    };
 }
 
 %lex-param { EzAquarii::Scanner &scanner }
@@ -106,6 +118,9 @@
 %token <std::string> OPERATOR "operator";
 
 %type< EzAquarii::Command > command;
+%type< EzAquarii::Command > assignmentRule;
+%type< EzAquarii::Command > retrievalRule;
+
 %type< EzAquarii::Command > subcommand;
 %type< std::vector<uint64_t> > arguments;
 %type< std::vector<uint64_t> > values;
@@ -147,16 +162,24 @@ program :   {
                 driver.addCommand(cmd);
             }
 
+        | program assignmentRule
+            {
+                cout << "doing that assignment shit" << endl;
+                const Command &cmd = $2;
+                cout << "command parsed, updating AST" << endl;
+                driver.addCommand(cmd);
+            }
+
         ;
 
 
-command : STRING LEFTPAR RIGHTPAR
+command : STRING LEFTPAR RIGHTPAR // function()
         {
             string &id = $1;
             cout << "ID: " << id << endl;
             $$ = Command(id);
         }
-    | STRING LEFTPAR arguments RIGHTPAR
+    | STRING LEFTPAR arguments RIGHTPAR // function(1, 2, 3, 4)
         {
             string &id = $1;
             const std::vector<uint64_t> &args = $3;
@@ -175,6 +198,10 @@ command : STRING LEFTPAR RIGHTPAR
         {
            $$ = Command("filler", $3);
         }
+    | command LEFTPAR arguments RIGHTPAR
+        {
+           $$ = Command("filler", $3);
+        }
 
     /*| arguments OPERATOR NUMBER*/
     | arguments
@@ -182,8 +209,26 @@ command : STRING LEFTPAR RIGHTPAR
           $$ = Command("filler", $1);
         }
     ;
+assignmentRule : STRING ASSIGN command
+        {
+            std::cout << "valid assignment rule" << std::endl;
+        }
+        | STRING
+        {
+            // place the value of said variable onto the stack
+            std::string variable = $1;
+            uint64_t gottem = get_variable(symbolTable, variable);
+            if(gottem == std::numeric_limits<uint64_t>::infinity()){
+                std::cerr << "we could not find " << $1 << std::endl;
+            } else {
+                std::cout << $1 << " has a value of " << gottem << std::endl;
+            }
+        }
 
-
+retrievalRule : STRING
+        {
+            std::cout << "requesting the value of: " << $1 << std::endl;
+        }
 /*subcommand : values*/
         /*{*/
             /*$$ = Command("subcommand", $1);*/

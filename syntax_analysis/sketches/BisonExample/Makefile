@@ -4,7 +4,7 @@ CFLAGS = -Wc++17-extensions -Wall
 OUTPUT = bisonGang
 
 all: scanner parser $(OBJS)
-	$(COMPILER) $(CFLAGS) main.cpp $(OBJS) src/maths.cpp scanner.cpp parser.cpp interpreter.cpp -o $(OUTPUT)
+	$(COMPILER) $(CFLAGS) main.cpp $(OBJS) src/maths.cpp src/stack_operations.cpp scanner.cpp parser.cpp interpreter.cpp -o $(OUTPUT)
 
 clean:
 	rm -rf scanner.cpp

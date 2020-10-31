@@ -64,7 +64,7 @@
 %%
 
 
-[a-z]+      { 
+[a-zA-Z]+      { 
                 cout << "Scanner: identifier [" << yytext << "]" << endl;
                 return EzAquarii::Parser::make_STRING(yytext, EzAquarii::location( /* put location data here if you want */ )); 
             }

@@ -31,6 +31,7 @@
 
 #include <string>
 #include <vector>
+#include <stack>
 #include <stdint.h>
 
 namespace EzAquarii {

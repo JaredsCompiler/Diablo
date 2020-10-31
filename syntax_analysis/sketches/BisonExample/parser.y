@@ -163,49 +163,13 @@ command : STRING LEFTPAR RIGHTPAR
             cout << "function: " << id << ", " << args.size() << endl;
             $$ = Command(id, args);
         }
-    /*| NUMBER PLUS NUMBER command*/
-        /*{*/
-            /*cout << $1 << "+" << $3 << endl;*/
-            /*print_mess();*/
-            /*$$ = Command("Hello");*/
-        /*}*/
     ;
 
 
 subcommand : values
         {
-
-            /*std::vector<uint64_t> &args = $1;*/
             $$ = Command("subcommand", $1);
-            /*$$ = std::vector<uint64_t>();*/
-            /*$$.push_back(number);*/
-
         }
-        /*| values NUMBER OPERATOR NUMBER values {*/
-            /*std::cout << "helo" << std::endl;*/
-        /*}*/
-        /*| values OPERATOR values*/
-        /*{*/
-            /*std::vector<uint64_t> AB;*/
-            /*std::vector<uint64_t> &A = $1;*/
-            /*std::vector<uint64_t> &B = $3;*/
-
-            /*AB.reserve( A.size() + B.size() ); // preallocate memory*/
-            /*AB.insert( AB.end(), A.begin(), A.end() );*/
-            /*AB.insert( AB.end(), B.begin(), B.end() );*/
-            /*A = AB;*/
-        /*}*/
-        /*| values NUMBER OPERATOR NUMBER*/
-        /*{*/
-
-            /*uint64_t n1 = $2;*/
-            /*uint64_t n2 = $4;*/
-
-            /*std::vector<uint64_t> &args = $1;*/
-            /*$$.push_back(n1);*/
-            /*$$.push_back(n2);*/
-            /*$$ = args;*/
-        /*} */
     ;
 
 values : NUMBER
@@ -219,36 +183,22 @@ values : NUMBER
         {
             uint64_t n1 = $3;
             uint64_t n2 = $5;
-            uint64_t resultant;
 
             std::string oper1 = $2;
             std::string oper2 = $4;
+
+            uint64_t resultant = compute(n1, n2, oper2);
 
             std::vector<uint64_t> &args = $1;
 
             if(!args.empty()){
                 uint64_t top = args.back();
                 args.pop_back();
-                /*args.push_back(compute(top, n1, oper1));*/
-                args.push_back(top + n1);
-                /*args.push_back(top + resultant);*/
+                resultant = compute(top, n1, oper1);
             } else {
                 args.push_back(resultant);
             }
-            /*resultant = compute(resultant, n2, oper2);*/
-            resultant = resultant + n2;
-            /*if(oper2 == "+"){*/
-                /*resultant = resultant + n2;*/
-            /*}*/
-            args.push_back(resultant);
-            /*char oper = $4;*/
-            /*switch(oper){*/
-               /*case '+':*/
-                    /*resultant = n1 + n2;*/
-                    /*break;*/
-            /*}*/
-            /*args.push_back(n1);*/
-            /*args.push_back(n2);*/
+            args.push_back(compute(resultant, n2, oper2));
             $$ = args;
         }
     | values OPERATOR NUMBER
@@ -260,16 +210,18 @@ values : NUMBER
             if(!args.empty()){
                 uint64_t top = args.back();
                 args.pop_back();
-                /*if(oper == "+"){*/
-                    /*args.push_back(top + n1);*/
-                /*}*/
-                args.push_back(top + n1);
-                /*args.push_back(compute(top, n1, oper));*/
-                /*helloWorld();*/
-                std::cout << compute(1, 1, "+");
+                args.push_back(compute(top, n1, oper));
             }
             else { args.push_back(n1); }
             $$ = args;
+        }
+    | LEFTPAR values OPERATOR NUMBER OPERATOR NUMBER RIGHTPAR
+        {
+            $$ = $2;
+        }
+    | LEFTPAR values OPERATOR NUMBER RIGHTPAR
+        {
+            $$ = $2;
         }
     ;
 

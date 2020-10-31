@@ -41,6 +41,7 @@ Command::Command(const std::string &name, const std::vector<uint64_t> arguments)
 {
 }
 
+
 Command::Command(const std::string &name) :
     m_name(name),
     m_args()

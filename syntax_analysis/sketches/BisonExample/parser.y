@@ -139,7 +139,7 @@ program :   {
                 cout << "*** STOP RUN ***" << endl;
                 cout << driver.str() << endl;
             }
-        | program subcommand
+        | program command
             {
                 cout << "doing that math shit" << endl;
                 const Command &cmd = $2;
@@ -163,83 +163,107 @@ command : STRING LEFTPAR RIGHTPAR
             cout << "function: " << id << ", " << args.size() << endl;
             $$ = Command(id, args);
         }
-    ;
-
-
-subcommand : values
+    | LEFTPAR arguments RIGHTPAR
         {
-            $$ = Command("subcommand", $1);
+           $$ = Command("filler", $2);
+        }
+    | LEFTPAR arguments RIGHTPAR OPERATOR
+        {
+           $$ = Command("filler", $2);
+        }
+    | command LEFTPAR arguments RIGHTPAR
+        {
+           $$ = Command("filler", $3);
+        }
+
+    /*| arguments OPERATOR NUMBER*/
+    | arguments
+        {
+          $$ = Command("filler", $1);
         }
     ;
 
-values : NUMBER
-        {
-            uint64_t number = $1;
-            std::vector<uint64_t> &args = $$;
-            args.push_back(number);
-            $$ = args;
-        }
-    | values OPERATOR NUMBER OPERATOR NUMBER
-        {
-            uint64_t n1 = $3;
-            uint64_t n2 = $5;
 
-            std::string oper1 = $2;
-            std::string oper2 = $4;
+/*subcommand : values*/
+        /*{*/
+            /*$$ = Command("subcommand", $1);*/
+        /*}*/
+    /*;*/
 
-            uint64_t resultant = compute(n1, n2, oper2);
+/*values : NUMBER*/
+        /*{*/
+            /*uint64_t number = $1;*/
+            /*std::vector<uint64_t> &args = $$;*/
+            /*args.push_back(number);*/
+            /*$$ = args;*/
+        /*}*/
+    /*| values OPERATOR NUMBER OPERATOR NUMBER*/
+        /*{*/
+            /*uint64_t n1 = $3;*/
+            /*uint64_t n2 = $5;*/
 
-            std::vector<uint64_t> &args = $1;
+            /*std::string oper1 = $2;*/
+            /*std::string oper2 = $4;*/
 
-            if(!args.empty()){
-                uint64_t top = args.back();
-                args.pop_back();
-                resultant = compute(top, n1, oper1);
-            } else {
-                args.push_back(resultant);
-            }
-            args.push_back(compute(resultant, n2, oper2));
-            $$ = args;
-        }
-    | values OPERATOR NUMBER
-        {
-            uint64_t n1 = $3;
-            uint64_t resultant;
-            std::vector<uint64_t> &args = $1;
-            std::string oper = $2;
-            if(!args.empty()){
-                uint64_t top = args.back();
-                args.pop_back();
-                args.push_back(compute(top, n1, oper));
-            }
-            else { args.push_back(n1); }
-            $$ = args;
-        }
-    | LEFTPAR values OPERATOR NUMBER OPERATOR NUMBER RIGHTPAR
-        {
-            $$ = $2;
-        }
-    | LEFTPAR values OPERATOR NUMBER RIGHTPAR
-        {
-            $$ = $2;
-        }
-    ;
+            /*uint64_t resultant = compute(n1, n2, oper2);*/
+
+            /*std::vector<uint64_t> &args = $1;*/
+
+            /*if(!args.empty()){*/
+                /*uint64_t top = args.back();*/
+                /*args.pop_back();*/
+                /*resultant = compute(top, n1, oper1);*/
+            /*} else {*/
+                /*args.push_back(resultant);*/
+            /*}*/
+            /*args.push_back(compute(resultant, n2, oper2));*/
+            /*$$ = args;*/
+        /*}*/
+    /*| values OPERATOR NUMBER*/
+        /*{*/
+            /*uint64_t n1 = $3;*/
+            /*uint64_t resultant;*/
+            /*std::vector<uint64_t> &args = $1;*/
+            /*std::string oper = $2;*/
+            /*if(!args.empty()){*/
+                /*uint64_t top = args.back();*/
+                /*args.pop_back();*/
+                /*args.push_back(compute(top, n1, oper));*/
+            /*}*/
+            /*else { args.push_back(n1); }*/
+            /*$$ = args;*/
+        /*}*/
+    /*| LEFTPAR values OPERATOR NUMBER OPERATOR NUMBER RIGHTPAR*/
+        /*{*/
+            /*$$ = $2;*/
+        /*}*/
+    /*| LEFTPAR values OPERATOR NUMBER RIGHTPAR*/
+        /*{*/
+            /*$$ = $2;*/
+        /*}*/
+    /*;*/
 
 arguments : NUMBER
         {
             uint64_t number = $1;
             $$ = std::vector<uint64_t>();
             $$.push_back(number);
-            cout << "first argument: " << number << endl;
         }
-    | arguments COMMA NUMBER
+    | arguments OPERATOR NUMBER
         {
             uint64_t number = $3;
             std::vector<uint64_t> &args = $1;
-            args.push_back(number);
+            std::string oper = $2;
+
+            if(!args.empty()){
+                uint64_t top = args.back();
+                args.pop_back();
+                args.push_back(compute(top, number, oper));
+            }
+            else { args.push_back(number); }
             $$ = args;
-            cout << "next argument: " << number << ", arg list size = " << args.size() << endl;
         }
+
     ;
     
 %%

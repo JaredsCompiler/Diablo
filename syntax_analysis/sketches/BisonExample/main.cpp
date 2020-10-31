@@ -27,6 +27,7 @@
  */
 
 #include <iostream>
+#include <fstream>
 #include "scanner.h"
 #include "parser.hpp"
 #include "interpreter.h"
@@ -36,6 +37,9 @@ using namespace std;
 
 int main(int argc, char **argv) {
     Interpreter i;
+    std::ifstream file;
+    file.open("example.txt");
+    i.switchInputStream(&file);
     int res = i.parse();
     cout << "Parse complete. Result = " << res << endl;
     cout << i.str() << endl;

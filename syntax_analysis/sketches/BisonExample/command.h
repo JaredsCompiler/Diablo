@@ -50,6 +50,7 @@ public:
     
     std::string str() const;
     std::string name() const;
+    std::vector<uint64_t> args() const;
     
 private:
     std::string m_name;

@@ -1,2 +1,1 @@
-a
-streemeSpotes
+a = 10 + 10

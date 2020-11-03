@@ -190,28 +190,32 @@ command : STRING LEFTPAR RIGHTPAR // function()
         {
            $$ = Command("filler", $2);
         }
-    | LEFTPAR arguments RIGHTPAR OPERATOR
+    | LEFTPAR arguments RIGHTPAR
         {
            $$ = Command("filler", $2);
         }
-    | command LEFTPAR arguments RIGHTPAR
-        {
-           $$ = Command("filler", $3);
-        }
-    | command LEFTPAR arguments RIGHTPAR
-        {
-           $$ = Command("filler", $3);
-        }
-
-    /*| arguments OPERATOR NUMBER*/
+    /*| command LEFTPAR arguments RIGHTPAR*/
+        /*{*/
+           /*$$ = Command("filler", $3);*/
+        /*}*/
+    /*| command LEFTPAR arguments RIGHTPAR*/
+        /*{*/
+           /*$$ = Command("filler", $3);*/
+        /*}*/
     | arguments
         {
           $$ = Command("filler", $1);
         }
     ;
+/*
+* a = (a + b)
+* a = b
+* a = 10
+*/
 assignmentRule : STRING ASSIGN command
         {
-            std::cout << "valid assignment rule" << std::endl;
+            const std::vector<uint64_t> cont = $3.args();
+            std::cout << cont.back() << std::endl;
         }
         | STRING
         {
@@ -223,70 +227,26 @@ assignmentRule : STRING ASSIGN command
             } else {
                 std::cout << $1 << " has a value of " << gottem << std::endl;
             }
+
         }
+        | assignmentRule arguments
+        {
+            // a = 10 + 10 => a = 20
+            std::cout << "filler text here" << std::endl;
+
+        }
+    ;
+/*
+* a + b => 10 + 10
+* a => 10
+*/
 
 retrievalRule : STRING
         {
             std::cout << "requesting the value of: " << $1 << std::endl;
         }
-/*subcommand : values*/
-        /*{*/
-            /*$$ = Command("subcommand", $1);*/
-        /*}*/
-    /*;*/
+;
 
-/*values : NUMBER*/
-        /*{*/
-            /*uint64_t number = $1;*/
-            /*std::vector<uint64_t> &args = $$;*/
-            /*args.push_back(number);*/
-            /*$$ = args;*/
-        /*}*/
-    /*| values OPERATOR NUMBER OPERATOR NUMBER*/
-        /*{*/
-            /*uint64_t n1 = $3;*/
-            /*uint64_t n2 = $5;*/
-
-            /*std::string oper1 = $2;*/
-            /*std::string oper2 = $4;*/
-
-            /*uint64_t resultant = compute(n1, n2, oper2);*/
-
-            /*std::vector<uint64_t> &args = $1;*/
-
-            /*if(!args.empty()){*/
-                /*uint64_t top = args.back();*/
-                /*args.pop_back();*/
-                /*resultant = compute(top, n1, oper1);*/
-            /*} else {*/
-                /*args.push_back(resultant);*/
-            /*}*/
-            /*args.push_back(compute(resultant, n2, oper2));*/
-            /*$$ = args;*/
-        /*}*/
-    /*| values OPERATOR NUMBER*/
-        /*{*/
-            /*uint64_t n1 = $3;*/
-            /*uint64_t resultant;*/
-            /*std::vector<uint64_t> &args = $1;*/
-            /*std::string oper = $2;*/
-            /*if(!args.empty()){*/
-                /*uint64_t top = args.back();*/
-                /*args.pop_back();*/
-                /*args.push_back(compute(top, n1, oper));*/
-            /*}*/
-            /*else { args.push_back(n1); }*/
-            /*$$ = args;*/
-        /*}*/
-    /*| LEFTPAR values OPERATOR NUMBER OPERATOR NUMBER RIGHTPAR*/
-        /*{*/
-            /*$$ = $2;*/
-        /*}*/
-    /*| LEFTPAR values OPERATOR NUMBER RIGHTPAR*/
-        /*{*/
-            /*$$ = $2;*/
-        /*}*/
-    /*;*/
 
 arguments : NUMBER
         {

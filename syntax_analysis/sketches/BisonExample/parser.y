@@ -156,7 +156,6 @@ program :   {
             }
         | program command
             {
-                cout << "doing that math shit" << endl;
                 const Command &cmd = $2;
                 cout << "command parsed, updating AST" << endl;
                 driver.addCommand(cmd);
@@ -215,7 +214,14 @@ command : STRING LEFTPAR RIGHTPAR // function()
 assignmentRule : STRING ASSIGN command
         {
             const std::vector<uint64_t> cont = $3.args();
-            std::cout << cont.back() << std::endl;
+            uint64_t val = cont.back();
+            std::map<std::string, uint64_t>::iterator it = symbolTable.find($1);
+            if(it != symbolTable.end()){
+                std::cout << "updating value " << $1 << " with value of " << symbolTable[$1] << " to value of " << val;
+            } else {
+                std::cout << "inserting " << $1 << " with value of " << val << std::endl; 
+            }
+            symbolTable[$1] = val;
         }
         | STRING
         {

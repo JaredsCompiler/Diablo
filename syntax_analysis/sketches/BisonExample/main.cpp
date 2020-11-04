@@ -31,7 +31,7 @@
 #include "scanner.h"
 #include "parser.hpp"
 #include "interpreter.h"
-#include <map>
+#include "includes/sym.hpp"
 
 using namespace EzAquarii;
 using namespace std;
@@ -40,6 +40,7 @@ int main(int argc, char **argv) {
     Interpreter i;
     std::ifstream file;
     file.open("example.txt");
+    std::cout << symbols.size() << std::endl;
     i.switchInputStream(&file);
     int res = i.parse();
     cout << "Parse complete. Result = " << res << endl;

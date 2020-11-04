@@ -74,7 +74,8 @@
     #include "parser.hpp"
     #include "interpreter.h"
     #include "location.hh"
-    
+    #include "includes/sym.hpp"
+
     // yylex() arguments are defined in parser.y
     static EzAquarii::Parser::symbol_type yylex(EzAquarii::Scanner &scanner, EzAquarii::Interpreter &driver) {
         return scanner.get_next_token();
@@ -87,7 +88,7 @@
     using namespace EzAquarii;
     vector<uint64_t> container;
 
-    std::map<std::string, uint64_t> symbolTable = {
+    static std::map<std::string, uint64_t> symbolTable = {
         {
           "a", 10
         },
@@ -192,19 +193,23 @@ assignmentRule : STRING ASSIGN command
         {
             const std::vector<uint64_t> cont = $3.args();
             uint64_t val = cont.back();
-            std::map<std::string, uint64_t>::iterator it = symbolTable.find($1);
-            if(it != symbolTable.end()){
+            std::map<std::string, uint64_t>::iterator it = symbols.find($1);
+            /*std::map<std::string, uint64_t>::iterator it = symbolTable.find($1);*/
+            if(it != symbols.end()){
+            /*if(it != symbolTable.end()){*/
                 std::cout << "updating value " << $1 << " with value of " << symbolTable[$1] << " to value of " << val << std::endl;
             } else {
                 std::cout << "inserting " << $1 << " with value of " << val << std::endl; 
             }
-            symbolTable[$1] = val;
+            /*symbolTable[$1] = val;*/
+            symbols[$1] = val;
         }
         | STRING
         {
             // place the value of said variable onto the stack
             std::string variable = $1;
-            uint64_t gottem = get_variable(symbolTable, variable);
+            uint64_t gottem = get_variable(symbols, variable);
+            /*uint64_t gottem = get_variable(symbolTable, variable);*/
             if(gottem == std::numeric_limits<uint64_t>::infinity()){
                 std::cerr << "we could not find " << $1 << std::endl;
             } else {
@@ -227,6 +232,7 @@ assignmentRule : STRING ASSIGN command
 
 arguments : NUMBER
         {
+            std::cout << "arguments: " << "number " << "(" << $1 << ")" << std::endl;
             uint64_t number = $1;
             $$ = std::vector<uint64_t>();
             $$.push_back(number);

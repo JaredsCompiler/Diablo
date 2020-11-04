@@ -47,8 +47,15 @@ uint64_t compute(uint64_t a, uint64_t b, std::string s){
     case eMod:
       val = (a % b);
       break;
-    //case eInc:
-      //val = a
+    case eMathNotFound:
+      break;
+    case eInc:
+    // might be broken
+      val = a + 1;
+      break;
+    case eDec:  
+      val = a - 1;
+      break;
   }
   return val;
 
@@ -77,6 +84,8 @@ bool compare(uint64_t a, uint64_t b, std::string c){
       break;
     case eExplicitCompare:
       val = (a == b);
+      break;
+    case eCompNotFound:
       break;
   }
   return val;

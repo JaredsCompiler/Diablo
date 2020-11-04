@@ -71,7 +71,7 @@
             
 \(          {
                 cout << "Scanner: '('" << endl;
-                cout << "Location is: " << EzAquarii::location() << endl;
+                /*cout << "Location is: " << EzAquarii::location() << endl;*/
                 return EzAquarii::Parser::make_LEFTPAR(EzAquarii::location());
             }
             

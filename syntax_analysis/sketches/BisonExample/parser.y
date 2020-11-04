@@ -119,11 +119,8 @@
 
 %type< EzAquarii::Command > command;
 %type< EzAquarii::Command > assignmentRule;
-%type< EzAquarii::Command > retrievalRule;
 
-%type< EzAquarii::Command > subcommand;
 %type< std::vector<uint64_t> > arguments;
-%type< std::vector<uint64_t> > values;
 
 %start program
 
@@ -154,16 +151,8 @@ program :   {
                 cout << "*** STOP RUN ***" << endl;
                 cout << driver.str() << endl;
             }
-        | program command
-            {
-                const Command &cmd = $2;
-                cout << "command parsed, updating AST" << endl;
-                driver.addCommand(cmd);
-            }
-
         | program assignmentRule
             {
-                cout << "doing that assignment shit" << endl;
                 const Command &cmd = $2;
                 cout << "command parsed, updating AST" << endl;
                 driver.addCommand(cmd);
@@ -189,18 +178,6 @@ command : STRING LEFTPAR RIGHTPAR // function()
         {
            $$ = Command("filler", $2);
         }
-    | LEFTPAR arguments RIGHTPAR
-        {
-           $$ = Command("filler", $2);
-        }
-    /*| command LEFTPAR arguments RIGHTPAR*/
-        /*{*/
-           /*$$ = Command("filler", $3);*/
-        /*}*/
-    /*| command LEFTPAR arguments RIGHTPAR*/
-        /*{*/
-           /*$$ = Command("filler", $3);*/
-        /*}*/
     | arguments
         {
           $$ = Command("filler", $1);
@@ -217,7 +194,7 @@ assignmentRule : STRING ASSIGN command
             uint64_t val = cont.back();
             std::map<std::string, uint64_t>::iterator it = symbolTable.find($1);
             if(it != symbolTable.end()){
-                std::cout << "updating value " << $1 << " with value of " << symbolTable[$1] << " to value of " << val;
+                std::cout << "updating value " << $1 << " with value of " << symbolTable[$1] << " to value of " << val << std::endl;
             } else {
                 std::cout << "inserting " << $1 << " with value of " << val << std::endl; 
             }
@@ -246,12 +223,6 @@ assignmentRule : STRING ASSIGN command
 * a + b => 10 + 10
 * a => 10
 */
-
-retrievalRule : STRING
-        {
-            std::cout << "requesting the value of: " << $1 << std::endl;
-        }
-;
 
 
 arguments : NUMBER

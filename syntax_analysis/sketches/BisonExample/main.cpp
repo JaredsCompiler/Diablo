@@ -31,6 +31,7 @@
 #include "scanner.h"
 #include "parser.hpp"
 #include "interpreter.h"
+#include <map>
 
 using namespace EzAquarii;
 using namespace std;

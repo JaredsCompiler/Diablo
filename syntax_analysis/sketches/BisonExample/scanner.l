@@ -66,7 +66,7 @@
 
 [a-zA-Z]+      { 
                 cout << "Scanner: identifier [" << yytext << "]" << endl;
-                return EzAquarii::Parser::make_STRING(yytext, EzAquarii::location( /* put location data here if you want */ )); 
+                return EzAquarii::Parser::make_ID(yytext, EzAquarii::location( /* put location data here if you want */ )); 
             }
             
 \(          {
@@ -90,12 +90,17 @@
                 cout << "Scanner: ','" << endl;
                 return EzAquarii::Parser::make_COMMA(EzAquarii::location());
             }
-[\+|\-|\*|\/]   {
-                    cout << "Operator recieved: " <<  yytext << endl;
-                    return EzAquarii::Parser::make_OPERATOR(yytext, EzAquarii::location());
+[\+|\-]   {
+                    cout << "Arithmetic operator recieved: " <<  yytext << endl;
+                    return EzAquarii::Parser::make_ARITHMETIC_OP(yytext, EzAquarii::location());
                 }
 
-\=          {
+[\*|\/]   {
+                    cout << "Geometric operator recieved: " <<  yytext << endl;
+                    return EzAquarii::Parser::make_GEOMETRIC_OP(yytext, EzAquarii::location());
+            }
+
+\=        {
                 cout << "assignment" << endl;
                 return EzAquarii::Parser::make_ASSIGN(EzAquarii::location());
             }

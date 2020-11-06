@@ -1,0 +1,31 @@
+\documentclass{article}
+\usepackage{tikz-qtree}
+\usepackage{mathtools}
+\usetikzlibrary{positioning}
+\begin{document}
+
+\begin{tikzpicture}
+\Tree [.\node(a) {E}; 
+          [.\node (b) {F}; ] 
+          [.\node (c) {+}; ] 
+          [.\node (d) {T};
+            [.\node (e) {T}; 
+              [.\node (f) {F}; [.\node (g) {8}; ]]]
+            [.\node (h) {*}; ]
+            [.\node (i) {F};
+              [.\node (j) {2}; ]
+            ]
+          ]
+      ]
+\begin{scope}[every node/.style={font=\footnotesize}]
+\node[right=of a] (na) {\{E.v${}\coloneqq{}$+T.v\}};
+\node[right=of d] (nd) {\{T.v${}\coloneqq{}$F.v$^{*}$T.v\}};
+\node[right=of i] (ni) {\{F.v${}\coloneqq{}$2\}};
+\node[left=of b] (nb) {\{F.v${}\coloneqq{}$5\}};
+\node[left=of e] (ne) {\{T.v${}\coloneqq{}$F.v\}};
+\node[left=of f] (nf) {\{F.v${}\coloneqq{}$8\}};
+\foreach \i in {a,b,d,e,f,i}
+  \draw[dotted] (\i) -- (n\i);
+\end{scope}
+\end{tikzpicture}
+\end{document}

@@ -38,12 +38,24 @@ using namespace std;
 
 int main(int argc, char **argv) {
     Interpreter i;
-    std::ifstream file;
-    file.open("example.txt");
-    std::cout << symbols.size() << std::endl;
-    i.switchInputStream(&file);
-    int res = i.parse();
-    cout << "Parse complete. Result = " << res << endl;
-    cout << i.str() << endl;
-    return res;
+    std::vector<std::string> unitTests = {
+      "inputs/addition.txt",
+      "inputs/multiplication.txt",
+      "inputs/get_var.txt"
+    };
+    for(auto test : unitTests){
+      std::cout << "[+] Conducting test at location: " << test << std::endl;
+      std::ifstream file;
+      file.open(test);
+      i.switchInputStream(&file);
+      int res = i.parse();
+      if(res > 0){
+        std::cerr << "[-] Test at location: " << test << " has failed!" << std::endl;
+        file.close();
+        return 1;
+      }
+      file.close();
+      std::cout << std::endl;
+    }
+    return 0;
 }

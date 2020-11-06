@@ -74,7 +74,8 @@
     #include "parser.hpp"
     #include "interpreter.h"
     #include "location.hh"
-    #include "includes/sym.hpp"
+
+    /*#include "includes/sym.hpp"*/
 
     // yylex() arguments are defined in parser.y
     static EzAquarii::Parser::symbol_type yylex(EzAquarii::Scanner &scanner, EzAquarii::Interpreter &driver) {
@@ -86,14 +87,10 @@
     // #define yylex(x, y) scanner.get_next_token()
     
     using namespace EzAquarii;
-    vector<uint64_t> container;
 
-    static std::map<std::string, uint64_t> symbolTable = {
+    std::map<std::string, double> symbolTable = {
         {
           "a", 10
-        },
-        {
-          "streemeSpotes", 1000
         }
     };
 }
@@ -109,44 +106,53 @@
 %define api.token.prefix {TOKEN_}
 
 %token END 0 "end of file"
-%token <std::string> STRING  "string";
-%token <uint64_t> NUMBER "number";
+%token <std::string> ID "identifier"; // a --> contains the value of 10
+%token <long long int> NUMBER "number";
 %token LEFTPAR "leftpar";
 %token RIGHTPAR "rightpar";
 %token SEMICOLON "semicolon";
 %token COMMA "comma";
 %token ASSIGN "assignment";
+%token <std::string> GEOMETRIC_OP "geometric_op"; // multiplication and division
+%token <std::string> ARITHMETIC_OP "arithmetic_op"; // addition and subtraction
 %token <std::string> OPERATOR "operator";
 
-%type< EzAquarii::Command > command;
-%type< EzAquarii::Command > assignmentRule;
+/*%type< EzAquarii::Command > command;*/
+/*%type< EzAquarii::Command > assignmentRule;*/
 
-%type< std::vector<uint64_t> > arguments;
+%type< std::vector<long long int> > expression; // 1 + 1 + 1
+%type< std::vector<double> > term; // (1 / 2 + 1)
+%type< double > id; // value pointed by ^ 
 
 %start program
 
 %%
 
-program :   {
-                cout << "*** RUN ***" << endl;
-                cout << "Type function with list of parmeters. Parameter list can be empty" << endl
-                     << "or contain positive integers only. Examples: " << endl
-                     << " * function()" << endl
-                     << " * function(1,2,3)" << endl
-                     << "Terminate listing with ; to see parsed AST" << endl
-                     << "Terminate parser with Ctrl-D" << endl;
-                
-                cout << endl << "prompt> ";
-                
-                driver.clear();
+program :   { driver.clear(); }
+        /*| program command*/
+            /*{*/
+                /*[>const Command &cmd = $2;<]*/
+                /*cout << "command parsed, updating AST" << endl;*/
+                /*[>driver.addCommand(cmd);<]*/
+                /*cout << endl << "prompt> ";*/
+            /*}*/
+        | program expression
+        {
+            std::cout << "program expression" << std::endl;
+            for(auto element : $2){
+                std::cout << element << std::endl;
             }
-        | program command
-            {
-                const Command &cmd = $2;
-                cout << "command parsed, updating AST" << endl;
-                driver.addCommand(cmd);
-                cout << endl << "prompt> ";
+        }
+        | program term
+        {
+            std::cout << "do your thang"  << std::endl;
+            for(auto element : $2){
+                std::cout << element << std::endl;
             }
+        }
+        | program id {
+            std::cout << $2 << std::endl;
+        }
         | program SEMICOLON
             {
                 cout << "*** STOP RUN ***" << endl;
@@ -154,106 +160,179 @@ program :   {
             }
         | program assignmentRule
             {
-                const Command &cmd = $2;
-                cout << "command parsed, updating AST" << endl;
-                driver.addCommand(cmd);
+                std::cout << "assigning" << std::endl;
             }
+            /*{*/
+                /*[>const Command &cmd = $2;<]*/
+                /*cout << "command parsed, updating AST" << endl;*/
+                /*[>driver.addCommand(cmd);<]*/
+            /*}*/
 
         ;
 
+/*
+* EXAMPLES
+* 
+* if(expression) <- branch operations
+* 
+* function(1, 2, 3) <- function with parameters of 1, 2, 3
+* 
+* These are not apart of the requirements and should be finished at a later date
+*/
 
-command : STRING LEFTPAR RIGHTPAR // function()
-        {
-            string &id = $1;
-            cout << "ID: " << id << endl;
-            $$ = Command(id);
-        }
-    | STRING LEFTPAR arguments RIGHTPAR // function(1, 2, 3, 4)
-        {
-            string &id = $1;
-            const std::vector<uint64_t> &args = $3;
-            cout << "function: " << id << ", " << args.size() << endl;
-            $$ = Command(id, args);
-        }
-    | LEFTPAR arguments RIGHTPAR
-        {
-           $$ = Command("filler", $2);
-        }
-    | arguments
-        {
-          $$ = Command("filler", $1);
-        }
-    ;
+/*command : STRING LEFTPAR RIGHTPAR // function()*/
+        /*{*/
+            /*string &id = $1;*/
+            /*cout << "ID: " << id << endl;*/
+            /*$$ = Command(id);*/
+        /*}*/
+    /*| STRING LEFTPAR expression RIGHTPAR // function(1, 2, 3, 4)*/
+        /*{*/
+            /*string &id = $1;*/
+            /*const std::vector<long long int> &args = $3;*/
+            /*cout << "function: " << id << ", " << args.size() << endl;*/
+            /*[>$$ = Command(id, args);<]*/
+        /*}*/
+    /*| LEFTPAR expression RIGHTPAR*/
+        /*{*/
+           /*[>$$ = Command("filler", $2);<]*/
+        /*}*/
+    /*| expression*/
+        /*{*/
+          /*$$ = Command("filler", $1);*/
+        /*}*/
+    /*;*/
 /*
 * a = (a + b)
 * a = b
 * a = 10
 */
-assignmentRule : STRING ASSIGN command
+
+assignmentRule : ID ASSIGN term
         {
-            const std::vector<uint64_t> cont = $3.args();
-            uint64_t val = cont.back();
-            std::map<std::string, uint64_t>::iterator it = symbols.find($1);
-            /*std::map<std::string, uint64_t>::iterator it = symbolTable.find($1);*/
-            if(it != symbols.end()){
-            /*if(it != symbolTable.end()){*/
+            const std::vector<double> cont = $3;
+            long long int val = cont.back();
+            std::map<std::string, double>::iterator it = symbolTable.find($1);
+            if(it != symbolTable.end()){
                 std::cout << "updating value " << $1 << " with value of " << symbolTable[$1] << " to value of " << val << std::endl;
             } else {
                 std::cout << "inserting " << $1 << " with value of " << val << std::endl; 
             }
-            /*symbolTable[$1] = val;*/
-            symbols[$1] = val;
+            symbolTable[$1] = val;
         }
-        | STRING
+        | assignmentRule ID ASSIGN LEFTPAR expression RIGHTPAR
         {
-            // place the value of said variable onto the stack
-            std::string variable = $1;
-            uint64_t gottem = get_variable(symbols, variable);
-            /*uint64_t gottem = get_variable(symbolTable, variable);*/
-            if(gottem == std::numeric_limits<uint64_t>::infinity()){
-                std::cerr << "we could not find " << $1 << std::endl;
-            } else {
-                std::cout << $1 << " has a value of " << gottem << std::endl;
-            }
-
+            symbolTable[$2] = $5.back();
         }
-        | assignmentRule arguments
+        | assignmentRule ID ASSIGN expression 
         {
-            // a = 10 + 10 => a = 20
-            std::cout << "filler text here" << std::endl;
-
+            symbolTable[$2] = $4.back();
         }
+        | id
+        {
+            std::cout << "got value of " << $1 << std::endl;
+        }
+        /*{*/
+            /*// place the value of said variable onto the stack*/
+            /*std::string variable = $1;*/
+            /*long long int gottem = get_variable(symbolTable, variable);*/
+            /*if(gottem == std::numeric_limits<long long int>::infinity()){*/
+                /*std::cerr << "we could not find " << $1 << std::endl;*/
+            /*} else {*/
+                /*std::cout << $1 << " has a value of " << gottem << std::endl;*/
+            /*}*/
+
+        /*}*/
     ;
+
 /*
 * a + b => 10 + 10
 * a => 10
 */
 
 
-arguments : NUMBER
+
+/*
+* ANY AMOUNT OF OF OPERANDS AND OPERATORS
+* 
+* <Expression> -> <Expression> + <Term> | <Expression> - <Term> | <Term>
+* 1 + 2
+* 1 + 2 + 3
+* 1 + 2 * 3
+* 1 + 3 / 5
+*/
+
+expression : NUMBER
         {
             std::cout << "arguments: " << "number " << "(" << $1 << ")" << std::endl;
-            uint64_t number = $1;
-            $$ = std::vector<uint64_t>();
+            long long int number = $1;
+            $$ = std::vector<long long int>();
             $$.push_back(number);
         }
-    | arguments OPERATOR NUMBER
+    | expression ARITHMETIC_OP NUMBER
         {
-            uint64_t number = $3;
-            std::vector<uint64_t> &args = $1;
+            long long int number = $3;
+            std::vector<long long int> &args = $1;
             std::string oper = $2;
 
             if(!args.empty()){
-                uint64_t top = args.back();
+                long long int top = args.back();
                 args.pop_back();
                 args.push_back(compute(top, number, oper));
             }
             else { args.push_back(number); }
             $$ = args;
         }
+    | LEFTPAR expression RIGHTPAR
+    {
+        std::cout << "got to " << "(" << "expression" << ")" << std::endl;
+        $$ = $2;
+    }
 
     ;
-    
+
+id : ID 
+     {
+        std::string variable = $1;
+        long long int gottem = get_variable(symbolTable, variable);
+        if(gottem == std::numeric_limits<double>::infinity()){
+            std::cerr << "we could not find " << $1 << std::endl;
+        } else {
+            std::cout << $1 << " has a value of " << gottem << std::endl;
+        }
+        $$ = gottem;
+     }
+;
+
+/*
+* ANY AMOUNT OF OF OPERANDS AND OPERATORS
+
+* <Term> -> <Term> * <Factor> | <Term> / <Factor> | <Factor>
+* 1 * 12.1231
+* 1.5 / 2.12
+*/
+
+term : NUMBER {
+
+        std::cout << "arguments: " << "number " << "(" << $1 << ")" << std::endl;
+        double number = $1;
+        $$ = std::vector<double>();
+        $$.push_back(number);
+       }
+    | term GEOMETRIC_OP NUMBER
+        {
+            double number = $3;
+            std::vector<double> &args = $1;
+            std::string oper = $2;
+
+            if(!args.empty()){
+                double top = args.back();
+                args.pop_back();
+                args.push_back(compute(top, number, oper));
+            }
+            else { args.push_back(number); }
+            $$ = args;
+        }
 %%
 
 // Bison expects us to provide implementation - otherwise linker complains

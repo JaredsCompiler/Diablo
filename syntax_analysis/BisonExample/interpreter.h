@@ -98,8 +98,8 @@ private:
     unsigned int location() const;
     
 private:
-    Scanner m_scanner;
-    Parser m_parser;
+    Scanner m_scanner; // reads in from file stream
+    Parser m_parser; // 
     std::vector<Command> m_commands;  // Example AST
     unsigned int m_location;          // Used by scanner
 };

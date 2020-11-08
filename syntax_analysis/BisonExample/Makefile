@@ -1,4 +1,4 @@
-OBJS =  hello_world.o command.o
+OBJS = command.o DiabloExceptions.o
 COMPILER = clang++
 CFLAGS = -Wc++17-extensions -Wall
 OUTPUT = bisonGang
@@ -19,9 +19,8 @@ parser: parser.y
 	bison -o parser.cpp parser.y
 
 
-hello_world.o: hello_world.h hello_world.cpp
-	$(COMPILER) $(CFLAGS) -c hello_world.cpp
-
 command.o: command.h command.cpp
 	$(COMPILER) $(CFLAGS) -c command.cpp
 
+DiabloExceptions.o: src/DiabloExceptions.cpp includes/DiabloExceptions.hpp
+	$(COMPILER) $(CFLAGS) -c src/DiabloExceptions.cpp

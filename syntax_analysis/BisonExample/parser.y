@@ -48,9 +48,9 @@
     #include <vector>
 
     #include "command.h"
-    #include "hello_world.h"
     #include "includes/maths.hpp"
     #include "includes/stack_operations.hpp"
+    #include "includes/DiabloExceptions.hpp"
 
     using namespace std;
 
@@ -69,6 +69,7 @@
 // to avoid potential linking conflicts.
 %code top
 {
+    #include <cstdio>
     #include <iostream>
     #include "scanner.h"
     #include "parser.hpp"
@@ -161,6 +162,9 @@ program :   { driver.clear(); }
         | program assignmentRule
             {
                 std::cout << "assigning" << std::endl;
+                for(auto it = symbolTable.begin(); it != symbolTable.end(); ++it){
+                    std::cout << it->first << " -> " << it->second << std::endl;
+                }
             }
             /*{*/
                 /*[>const Command &cmd = $2;<]*/
@@ -222,10 +226,12 @@ assignmentRule : ID ASSIGN term
         }
         | assignmentRule ID ASSIGN LEFTPAR expression RIGHTPAR
         {
+            std::cout << $2 << " = (" << $5.back() << ")" << std::endl;
             symbolTable[$2] = $5.back();
         }
         | assignmentRule ID ASSIGN expression 
         {
+            std::cout << $2 << " = (" << $4.back() << ")" << std::endl;
             symbolTable[$2] = $4.back();
         }
         | id
@@ -288,19 +294,29 @@ expression : NUMBER
         std::cout << "got to " << "(" << "expression" << ")" << std::endl;
         $$ = $2;
     }
+    /*| expression id ARITHMETIC_OP NUMBER*/
+    /*{*/
+        /*
+        * a + 10 , where a => 10. Therefore 20 should lie on the top of the stack
+        */
+        /*long long int value = $1.back();*/
+        /*std::vector<long long int> &args = $1;*/
+        /*args.push_back(compute(value, $4, $3));*/
+        /*$$ = args;*/
+    /*}*/
 
     ;
 
 id : ID 
      {
         std::string variable = $1;
-        long long int gottem = get_variable(symbolTable, variable);
-        if(gottem == std::numeric_limits<double>::infinity()){
-            std::cerr << "we could not find " << $1 << std::endl;
-        } else {
-            std::cout << $1 << " has a value of " << gottem << std::endl;
+        double value = get_variable(symbolTable, variable);
+        if(value == std::numeric_limits<double>::infinity()){
+            char buff[BUFSIZ];
+            snprintf(buff, sizeof(buff), "[ERROR] Variable %s is undefined", variable.c_str());
+            throw VariableNotDeclaredException(buff, __FILE__, __LINE__, __FUNCTION__, "Nothing");
         }
-        $$ = gottem;
+        $$ = value;
      }
 ;
 

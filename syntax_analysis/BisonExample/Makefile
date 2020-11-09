@@ -19,8 +19,8 @@ parser: parser.y
 	bison -o parser.cpp parser.y
 
 
-command.o: command.h command.cpp
-	$(COMPILER) $(CFLAGS) -c command.cpp
+command.o: includes/command.h src/command.cpp
+	$(COMPILER) $(CFLAGS) -c src/command.cpp
 
 DiabloExceptions.o: src/DiabloExceptions.cpp includes/DiabloExceptions.hpp
 	$(COMPILER) $(CFLAGS) -c src/DiabloExceptions.cpp

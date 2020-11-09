@@ -26,58 +26,55 @@
  * 
  */
 
-#include "command.h"
+#include "interpreter.h"
+#include "includes/command.h"
 
-#include <iostream>
 #include <sstream>
 
 using namespace EzAquarii;
-using std::cout;
-using std::endl;
 
-Command::Command(const std::string &name, const std::vector<uint64_t> arguments) :
-    m_name(name),
-    m_args(arguments)
+Interpreter::Interpreter() :
+    m_commands(),
+    m_scanner(*this),
+    m_parser(m_scanner, *this),
+    m_location(0)
 {
+
 }
 
-
-Command::Command(const std::string &name) :
-    m_name(name),
-    m_args()
-{
+int Interpreter::parse() {
+    m_location = 0;
+    return m_parser.parse();
 }
 
-Command::Command() :
-    m_name(),
-    m_args()
-{
+void Interpreter::clear() {
+    m_location = 0;
+    m_commands.clear();
 }
 
-Command::~Command()
-{
-}
-    
-std::string Command::str() const {
-    std::stringstream ts;
-    ts << "name = [" << m_name << "], ";
-    ts << "arguments = [";
-    
-    for(int i = 0; i < m_args.size(); i++) {
-        ts << m_args[i];
-        if(i < m_args.size() - 1) {
-            ts << ", ";
-        }
+std::string Interpreter::str() const {
+    std::stringstream s;
+    s << "Interpreter: " << m_commands.size() << " commands received from command line." << endl;
+    for(int i = 0; i < m_commands.size(); i++) {
+        s << " * " << m_commands[i].str() << endl;
     }
-    
-    ts << "]";
-    return ts.str();
+    return s.str();
 }
 
-std::string Command::name() const {
-    return m_name;
+void Interpreter::switchInputStream(std::istream *is) {
+    m_scanner.switch_streams(is, NULL);
+    m_commands.clear();    
 }
 
-std::vector<uint64_t> Command::args() const {
-  return m_args;
+void Interpreter::addCommand(const Command &cmd)
+{
+    m_commands.push_back(cmd);
+}
+
+void Interpreter::increaseLocation(unsigned int loc) {
+    m_location += loc;
+}
+
+unsigned int Interpreter::location() const {
+    return m_location;
 }

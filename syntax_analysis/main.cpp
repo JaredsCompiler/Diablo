@@ -28,10 +28,11 @@
 
 #include <iostream>
 #include <fstream>
+#include <vector>
+
 #include "scanner.h"
 #include "parser.hpp"
 #include "interpreter.h"
-#include "includes/sym.hpp"
 
 using namespace EzAquarii;
 using namespace std;
@@ -40,6 +41,8 @@ int main(int argc, char **argv) {
 
     auto example_element = EzAquarii::Parser::make_ID("HelloWorld", EzAquarii::location( /* put location data here if you want */ )); 
     std::cout << typeid(example_element).name() << std::endl;
+    std::vector<EzAquarii::Parser::symbol_type> container;
+    container.push_back(example_element);
     return 0;
 
     Interpreter i;

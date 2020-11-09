@@ -47,7 +47,7 @@
     #include <type_traits>
     #include <vector>
 
-    #include "command.h"
+    #include "includes/command.h"
     #include "includes/maths.hpp"
     #include "includes/stack_operations.hpp"
     #include "includes/DiabloExceptions.hpp"

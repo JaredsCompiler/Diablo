@@ -11,14 +11,17 @@
 #include <limits>
 
 // Lexi
+
 #include "../lexical_analysis/includes/reader.hpp"
 #include "../lexical_analysis/includes/lexer_rules.hpp"
 #include "../lexical_analysis/includes/lexer.hpp"
 
 // Synthetic
 
-#include "includes/variable.hpp"
 #include "includes/balancer.hpp"
+
+// EzAquarii
+
 
 std::map<std::string, std::regex> tokenMap = {
   {"COMMENT", std::regex("(\\!.*\\!)")},
@@ -41,14 +44,6 @@ bool isFloat(std::string input){
   return iss.eof() && !iss.fail();
 }
 
-double get_variable(std::map<lexeme, double> aMap, lexeme l1){
-  for (auto it = aMap.begin(); it != aMap.end(); ++it){
-    if (it->first == l1){
-      return it->second;
-    }
-  }
-  return std::numeric_limits<double>::infinity();
-}
 
 int main(){
   std::stack<lexeme> operands;
@@ -59,7 +54,7 @@ int main(){
   balancer B;
   const auto[state, line, lineno] = B.is_file_balanced(src);
   if(!state){
-    std::cerr << "File is not balanced" << std::endl;
+    std::cerr << "[-] File " << src.get_path() << " is not balanced" << std::endl;
     std::cerr << lineno << ": " << line << std::endl;
     return 1;
   }
@@ -69,37 +64,21 @@ int main(){
   lexer lex = lexer(rules, src);
   lex.processFile();
 
+  /*
+   * Since we have to do processing here again, it's O(n), where n is the amount of lexemes
+   * Un-needed processing can be achieved if Lexi was changed but that is beyond the scope of the requirements
+  */
+
   for(auto token : lex.get_tokens()){
     std::string tag = token.get_tag();
+    std::string content = token.get_substring();
+
+
     if(tag == "IDENTIFIER" || tag == "NUMBER"){
       operands.push(token);
     } else if(tag == "OPERATOR" || tag == "ASSIGNMENT"){
       operators.push(token);
     }
   }
-
-  // TODO
-  //while(!operands.empty() && !operands.empty()){
-    //lexeme op1 = operands.top();
-    //operands.pop();
-    //lexeme op2 = operands.top();
-    //operands.pop();
-
-    //lexeme operator_ = operators.top();
-    //operators.pop();
-
-    //if(operator_.get_tag() == "ASSIGNMENT"){
-      //std::string substring = op1.get_substring();
-      //if(isFloat(substring)){
-        //symbolTable[op2] = std::stod(substring);
-      //}
-    //}
-  //}
-
-  //for(auto element : symbolTable){
-    //lexeme token = element.first;
-    //double value = element.second;
-    //std::cout << token.get_substring() << " -> " << value << std::endl;
-  //}
   return 0;
 }

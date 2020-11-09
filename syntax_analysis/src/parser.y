@@ -47,10 +47,10 @@
     #include <type_traits>
     #include <vector>
 
-    #include "includes/command.h"
-    #include "includes/maths.hpp"
-    #include "includes/stack_operations.hpp"
-    #include "includes/DiabloExceptions.hpp"
+    #include "../includes/command.h"
+    #include "../includes/maths.hpp"
+    #include "../includes/stack_operations.hpp"
+    #include "../includes/DiabloExceptions.hpp"
 
     using namespace std;
 
@@ -71,12 +71,11 @@
 {
     #include <cstdio>
     #include <iostream>
-    #include "scanner.h"
-    #include "parser.hpp"
-    #include "interpreter.h"
-    #include "location.hh"
 
-    /*#include "includes/sym.hpp"*/
+    #include "../includes/scanner.h"
+    #include "../src/parser.hpp"
+    #include "../includes/interpreter.h"
+    #include "../src/location.hh"
 
     // yylex() arguments are defined in parser.y
     static EzAquarii::Parser::symbol_type yylex(EzAquarii::Scanner &scanner, EzAquarii::Interpreter &driver) {
@@ -98,6 +97,7 @@
 
 %lex-param { EzAquarii::Scanner &scanner }
 %lex-param { EzAquarii::Interpreter &driver }
+
 %parse-param { EzAquarii::Scanner &scanner }
 %parse-param { EzAquarii::Interpreter &driver }
 %locations
@@ -117,9 +117,6 @@
 %token <std::string> GEOMETRIC_OP "geometric_op"; // multiplication and division
 %token <std::string> ARITHMETIC_OP "arithmetic_op"; // addition and subtraction
 %token <std::string> OPERATOR "operator";
-
-/*%type< EzAquarii::Command > command;*/
-/*%type< EzAquarii::Command > assignmentRule;*/
 
 %type< std::vector<long long int> > expression; // 1 + 1 + 1
 %type< std::vector<double> > term; // (1 / 2 + 1)
@@ -146,7 +143,6 @@ program :   { driver.clear(); }
         }
         | program term
         {
-            std::cout << "do your thang"  << std::endl;
             for(auto element : $2){
                 std::cout << element << std::endl;
             }
@@ -166,12 +162,6 @@ program :   { driver.clear(); }
                     std::cout << it->first << " -> " << it->second << std::endl;
                 }
             }
-            /*{*/
-                /*[>const Command &cmd = $2;<]*/
-                /*cout << "command parsed, updating AST" << endl;*/
-                /*[>driver.addCommand(cmd);<]*/
-            /*}*/
-
         ;
 
 /*

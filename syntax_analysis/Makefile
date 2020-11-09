@@ -13,7 +13,8 @@ OUTERINC = -I../lexical_analysis/includes
 
 all: scanner parser synthetic run
 bGane: scanner parser $(OBJS) create_static get_lexi
-	$(COMPILER) $(CFLAGS) main.cpp $(INC_PATH) $(OUTERINC) $(shell ls -d build/*) $(OBJS) $(LIBPATH) $(OUTERLIBS) -o bisonGang
+	$(COMPILER) $(CFLAGS) main.cpp $(INC_PATH) $(OUTERINC) $(shell ls -d build/*) $(OBJS) $(LIBPATH) $(OUTERLIBS) src/maths.cpp src/stack_operations.cpp src/scanner.cpp src/parser.cpp src/interpreter.cpp -o bisonGang
+
 build: $(OBJS)
 test_static: create_static synthetic
 
@@ -24,17 +25,17 @@ get_lexi:
 	cd ../lexical_analysis/ && $(MAKE) create_static && cp ../lexical_analysis/*.o ../lexical_analysis/build
 	mv ../lexical_analysis/build .
 
-scanner: scanner.l
-	flex -o scanner.cpp scanner.l
+scanner: src/scanner.l
+	flex -o src/scanner.cpp src/scanner.l
 
-parser: parser.y
-	bison -o parser.cpp parser.y
+parser: src/parser.y
+	bison -o src/parser.cpp src/parser.y
 
 command.o: includes/command.h src/command.cpp
 	$(COMPILER) $(CFLAGS) -c src/command.cpp
 
-synthetic: $(OBJS) create_static get_lexi
-	$(COMPILER) $(CFLAGS) synthetic.cpp $(INC_PATH) $(OUTERINC) $(shell ls -d build/*) $(OBJS) $(LIBPATH) $(OUTERLIBS) -o $(OUTPUT)
+synthetic: scanner parser $(OBJS) create_static get_lexi
+	$(COMPILER) $(CFLAGS) synthetic.cpp $(INC_PATH) $(OUTERINC) $(shell ls -d build/*) $(OBJS) $(LIBPATH) $(OUTERLIBS) src/maths.cpp src/stack_operations.cpp src/scanner.cpp src/parser.cpp src/interpreter.cpp -o synthetic
 
 balancer.o: src/balancer.cpp includes/balancer.hpp
 	$(COMPILER) $(CFLAGS) -c src/balancer.cpp
@@ -49,7 +50,7 @@ run:
 	./$(OUTPUT)
 
 clean: 
-	rm -r build $(OUTPUT) $(OBJS) *.hh
+	rm -r build $(OUTPUT) $(OBJS) src/scanner.cpp src/parser.cpp src/parser.hpp src/*.hh
 
 debug: synthetic
 	gdb $(OUTPUT)

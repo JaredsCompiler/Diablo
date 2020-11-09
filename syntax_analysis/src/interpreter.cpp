@@ -27,7 +27,7 @@
  */
 
 #include "interpreter.h"
-#include "includes/command.h"
+#include "../includes/command.h"
 
 #include <sstream>
 

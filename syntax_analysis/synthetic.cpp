@@ -20,8 +20,11 @@
 
 #include "includes/balancer.hpp"
 
-// EzAquarii
+// EzAquarii (attempting to phase out as much as possible)
 
+#include "includes/scanner.h"
+#include "src/parser.hpp"
+#include "includes/interpreter.h"
 
 std::map<std::string, std::regex> tokenMap = {
   {"COMMENT", std::regex("(\\!.*\\!)")},
@@ -46,9 +49,11 @@ bool isFloat(std::string input){
 
 
 int main(){
-  std::stack<lexeme> operands;
-  std::stack<lexeme> operators;
   sourceFile src("inputs/assignment.le");
+  EzAquarii::Interpreter interpreter;
+
+  EzAquarii::Parser::symbol_type example_element = EzAquarii::Parser::make_ID("HelloWorld", EzAquarii::location()); 
+  return 0;
 
   // check if the is even balanced before getting lexemes
   balancer B;
@@ -57,6 +62,8 @@ int main(){
     std::cerr << "[-] File " << src.get_path() << " is not balanced" << std::endl;
     std::cerr << lineno << ": " << line << std::endl;
     return 1;
+  } else {
+    return 0;
   }
 
   lexerRules rules = lexerRules(tokenMap);
@@ -73,12 +80,10 @@ int main(){
     std::string tag = token.get_tag();
     std::string content = token.get_substring();
 
-
-    if(tag == "IDENTIFIER" || tag == "NUMBER"){
-      operands.push(token);
-    } else if(tag == "OPERATOR" || tag == "ASSIGNMENT"){
-      operators.push(token);
+    if(tag == "IDENTIFIER"){
+      
     }
   }
+
   return 0;
 }

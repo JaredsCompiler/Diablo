@@ -49,7 +49,7 @@
 #undef YY_DECL
 #define YY_DECL EzAquarii::Parser::symbol_type EzAquarii::Scanner::get_next_token()
 
-#include "parser.hpp" // this is needed for symbol_type
+#include "../src/parser.hpp" // this is needed for symbol_type
 
 namespace EzAquarii {
 

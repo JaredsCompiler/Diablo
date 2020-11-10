@@ -71,14 +71,51 @@
 {
     #include <cstdio>
     #include <iostream>
+    #include <regex>
+    #include <tuple>
 
     #include "../includes/scanner.h"
     #include "../src/parser.hpp"
     #include "../includes/interpreter.h"
     #include "../src/location.hh"
 
+    #include "../../lexical_analysis/includes/reader.hpp"
+    #include "../../lexical_analysis/includes/lexer_rules.hpp"
+    #include "../../lexical_analysis/includes/lexer.hpp"
+
+
+    std::map<std::string, std::regex> tokenMap = {
+        {"COMMENT", std::regex("(\\!.*\\!)")},
+        {"KEYWORD", std::regex("(int|float|bool|true|false|(end)?if|else|then|while(end)?|do(end)?|for(end)?|(in|out)put|and|or|not)")},
+        {"IDENTIFIER", std::regex("(\\w+)")},
+        {"SEPARATORS", std::regex("(\\(|\\)|\\{|\\}|\\[|\\]|\"|\'|\\,)")},
+        {"ASSIGNMENT", std::regex("(\\={1})")},
+        {"OPERATORS", std::regex("(\\+|-|\\*|\\/|>|<|>=|<=|&+|\\|+|%|^!$|\\^)")},
+        {"TERMINATORS", std::regex("(\\;|\\$)")}
+    };
+
+    sourceFile src("/tmp/small.txt");
+    lexerRules rules = lexerRules(tokenMap);
+
+    lexer lex = lexer(rules, src);
+    /*lex->processFile();*/
+
+    /*static EzAquarii::Parser::symbol_type yylex(EzAquarii::Scanner &scanner, EzAquarii::Interpreter &drive) {*/
+        /*auto token = lex.get_next_token();*/
+        /*std::string tag = token.get_tag();*/
+        /*std::string content = token.get_substring();*/
+        /*std::string* ptr = &tag;*/
+        /*const auto[s, e] = token.get_slice();*/
+
+        /*if(tag == "SEPARATORS" && content == "("){*/
+            /*return EzAquarii::Parser::make_LEFTPAR(EzAquarii::location(ptr));*/
+        /*} else{*/
+            /*return scanner.get_next_token();*/
+        /*}*/
+    /*}*/
     // yylex() arguments are defined in parser.y
     static EzAquarii::Parser::symbol_type yylex(EzAquarii::Scanner &scanner, EzAquarii::Interpreter &driver) {
+        std::cout << "giving next token!" << std::endl;
         return scanner.get_next_token();
     }
     

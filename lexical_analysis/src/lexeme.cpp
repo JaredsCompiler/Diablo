@@ -52,3 +52,11 @@ bool operator <(const lexeme& l1, const lexeme& l2){
   //if this is the case, then we need to refactor lexeme to have a tuple of three elements
   return std::make_tuple(l1.line_no, l1_s, l1_e) < std::make_tuple(l2.line_no, l2_s, l2_e);
 }
+
+std::tuple<size_t, size_t> lexeme::get_slice(){
+  return this->slice;
+}
+
+size_t lexeme::get_lineno(){
+  return this->line_no;
+}

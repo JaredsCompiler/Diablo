@@ -91,3 +91,9 @@ std::vector<lexeme> lexer::get_tokens(){
   return this->tokens;
 }
 
+lexeme lexer::get_next_token(){
+  if(this->location > this->tokens.size()){
+    return lexeme(0, 0, 0, "NULL", "NULL");
+  }
+  return this->tokens[this->location++];
+}

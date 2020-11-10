@@ -25,6 +25,7 @@ class lexer {
     void remove_substring(std::string*, std::string);
     std::vector<lexeme> sortLexemes();
     void removeDuplicates(); // needs to be depreciated before final iteration
+    lexeme get_next_token();
 
   private:
     lexerRules rules;
@@ -32,4 +33,5 @@ class lexer {
     std::vector<std::string>::iterator begin;
     std::vector<std::string>::iterator end;
     std::vector<lexeme> tokens;
+    size_t location = 0;
 };

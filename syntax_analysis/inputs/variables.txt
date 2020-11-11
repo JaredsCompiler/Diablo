@@ -1,0 +1,4 @@
+int var;
+int var = 100;
+var;
+another;

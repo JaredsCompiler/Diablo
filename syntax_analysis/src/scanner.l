@@ -75,8 +75,8 @@ int|float|bool|true|false|end|endif|else|then|while|whileend|do|doend|for|forend
                 cout << "Scanner: keyword [" << yytext << "]" << endl;
                 return EzAquarii::Parser::make_KEYWORD(yytext, EzAquarii::location());
             }
-^[a-z|A-Z][a-zA-Z0-9]*  {
-                cout << "Scanner: identifier[ " << yytext << "]" << endl;
+[a-z|A-Z][a-zA-Z0-9]*  {
+                cout << "Scanner: identifier [" << yytext << "]" << endl;
                 return EzAquarii::Parser::make_ID(yytext, EzAquarii::location());
             }
 

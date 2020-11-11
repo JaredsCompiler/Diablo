@@ -152,6 +152,7 @@
 %type< std::vector<double> > term; // (1 / 2 + 1)
 %type< double > id; // value pointed by ^ 
 %type < EzAquarii::Command > command;
+%type < EzAquarii::Command > assignment;
 
 %start program
 
@@ -181,9 +182,8 @@ program :   { driver.clear(); }
             const Command c = Command("term", container);
             driver.addCommand(c);
         }
-        | program id {
-            std::cout << $2 << std::endl;
-        }
+        | program id {} // empty rule
+        | program assignment {} // empty rule
         | program SEMICOLON
             {
                 cout << "*** STOP RUN ***" << endl;
@@ -408,7 +408,7 @@ standIn : NUMBER
     /*}*/
 
     ;
-id : ID 
+id : ID SEMICOLON
      {
         std::string variable = $1;
         double value = get_variable(symbolTable, variable);
@@ -416,9 +416,24 @@ id : ID
             char buff[BUFSIZ];
             snprintf(buff, sizeof(buff), "[ERROR] Variable %s is undefined", variable.c_str());
             throw VariableNotDeclaredException(buff, __FILE__, __LINE__, __FUNCTION__, "Nothing");
+        } else {
+            std::cout << "variable [" << variable << "] with value of --> " << "[" << value << "]" << std::endl;
         }
         $$ = value;
      }
+;
+
+assignment : KEYWORD ID SEMICOLON 
+    {
+        symbolTable[$2] = 0;
+    }
+
+    | KEYWORD ID ASSIGN expression SEMICOLON
+    {
+        long long int value = $4.back();
+        symbolTable[$2] = (float)value;
+    }
+
 ;
 
 /*

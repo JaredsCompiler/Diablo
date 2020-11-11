@@ -1,4 +1,4 @@
-OBJS =  balancer.o command.o DiabloExceptions.o
+OBJS = command.o  DiabloExceptions.o # include balancer.o after, needed for synthetic.cpp
 COMPILER = clang++
 CFLAGS = -Wc++17-extensions -Wall
 OUTPUT = synthetic
@@ -12,8 +12,8 @@ OUTERINC = -I../lexical_analysis/includes
 
 
 all: scanner parser synthetic run
-bGane: scanner parser $(OBJS) create_static get_lexi
-	$(COMPILER) $(CFLAGS) main.cpp $(INC_PATH) $(OUTERINC) $(shell ls -d build/*) $(OBJS) $(LIBPATH) $(OUTERLIBS) src/maths.cpp src/stack_operations.cpp src/scanner.cpp src/parser.cpp src/interpreter.cpp -o bisonGang
+bGang: scanner parser $(OBJS)
+	$(COMPILER) $(CFLAGS) main.cpp $(INC_PATH) $(OUTERINC) $(OBJS) $(LIBPATH) $(OUTERLIBS) src/maths.cpp src/stack_operations.cpp src/scanner.cpp src/parser.cpp src/interpreter.cpp -o bisonGang
 
 build: $(OBJS)
 test_static: create_static synthetic
@@ -33,6 +33,9 @@ parser: src/parser.y
 
 command.o: includes/command.h src/command.cpp
 	$(COMPILER) $(CFLAGS) -c src/command.cpp
+
+templateCommand.o: src/templateCommand.cpp
+	$(COMPILER) $(CFLAGS) -c src/templateCommand.cpp
 
 synthetic: scanner parser $(OBJS) create_static get_lexi
 	$(COMPILER) $(CFLAGS) synthetic.cpp $(INC_PATH) $(OUTERINC) $(shell ls -d build/*) $(OBJS) $(LIBPATH) $(OUTERLIBS) src/maths.cpp src/stack_operations.cpp src/scanner.cpp src/parser.cpp src/interpreter.cpp -o synthetic

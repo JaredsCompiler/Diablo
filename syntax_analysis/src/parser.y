@@ -51,6 +51,7 @@
     #include "../includes/maths.hpp"
     #include "../includes/stack_operations.hpp"
     #include "../includes/DiabloExceptions.hpp"
+    #include "templateCommand.cpp"
 
     using namespace std;
 
@@ -60,13 +61,13 @@
     }
 
 
-
 }
 // Bison calls yylex() function that must be provided by us to suck tokens
 // from the scanner. This block will be placed at the beginning of IMPLEMENTATION file (cpp).
 // We define this function here (function! not method).
 // This function is called only inside Bison, so we make it static to limit symbol visibility for the linker
 // to avoid potential linking conflicts.
+
 %code top
 {
     #include <cstdio>
@@ -79,43 +80,12 @@
     #include "../includes/interpreter.h"
     #include "../src/location.hh"
 
-    #include "../../lexical_analysis/includes/reader.hpp"
-    #include "../../lexical_analysis/includes/lexer_rules.hpp"
-    #include "../../lexical_analysis/includes/lexer.hpp"
+    /*#include "../../lexical_analysis/includes/reader.hpp"*/
+    /*#include "../../lexical_analysis/includes/lexer_rules.hpp"*/
+    /*#include "../../lexical_analysis/includes/lexer.hpp"*/
 
-
-    std::map<std::string, std::regex> tokenMap = {
-        {"COMMENT", std::regex("(\\!.*\\!)")},
-        {"KEYWORD", std::regex("(int|float|bool|true|false|(end)?if|else|then|while(end)?|do(end)?|for(end)?|(in|out)put|and|or|not)")},
-        {"IDENTIFIER", std::regex("(\\w+)")},
-        {"SEPARATORS", std::regex("(\\(|\\)|\\{|\\}|\\[|\\]|\"|\'|\\,)")},
-        {"ASSIGNMENT", std::regex("(\\={1})")},
-        {"OPERATORS", std::regex("(\\+|-|\\*|\\/|>|<|>=|<=|&+|\\|+|%|^!$|\\^)")},
-        {"TERMINATORS", std::regex("(\\;|\\$)")}
-    };
-
-    sourceFile src("/tmp/small.txt");
-    lexerRules rules = lexerRules(tokenMap);
-
-    lexer lex = lexer(rules, src);
-    /*lex->processFile();*/
-
-    /*static EzAquarii::Parser::symbol_type yylex(EzAquarii::Scanner &scanner, EzAquarii::Interpreter &drive) {*/
-        /*auto token = lex.get_next_token();*/
-        /*std::string tag = token.get_tag();*/
-        /*std::string content = token.get_substring();*/
-        /*std::string* ptr = &tag;*/
-        /*const auto[s, e] = token.get_slice();*/
-
-        /*if(tag == "SEPARATORS" && content == "("){*/
-            /*return EzAquarii::Parser::make_LEFTPAR(EzAquarii::location(ptr));*/
-        /*} else{*/
-            /*return scanner.get_next_token();*/
-        /*}*/
-    /*}*/
     // yylex() arguments are defined in parser.y
     static EzAquarii::Parser::symbol_type yylex(EzAquarii::Scanner &scanner, EzAquarii::Interpreter &driver) {
-        std::cout << "giving next token!" << std::endl;
         return scanner.get_next_token();
     }
     
@@ -126,9 +96,7 @@
     using namespace EzAquarii;
 
     std::map<std::string, double> symbolTable = {
-        {
-          "a", 10
-        }
+        {"a", 10}
     };
 }
 
@@ -143,46 +111,75 @@
 
 %define api.token.prefix {TOKEN_}
 
-%token END 0 "end of file"
+/*
+* Values of or retrievers
+*/
 %token <std::string> ID "identifier"; // a --> contains the value of 10
+%token <float> FLOAT "floatingPoint"; // floating point number
 %token <long long int> NUMBER "number";
+
+/*
+* Separators
+*/
+
 %token LEFTPAR "leftpar";
 %token RIGHTPAR "rightpar";
 %token SEMICOLON "semicolon";
 %token COMMA "comma";
 %token ASSIGN "assignment";
+%token END 0 "end of file";
+
+/*
+* Operators
+*/
+
 %token <std::string> GEOMETRIC_OP "geometric_op"; // multiplication and division
 %token <std::string> ARITHMETIC_OP "arithmetic_op"; // addition and subtraction
+%token <std::string> RELATIONAL_OP "relational_op"; // greater than, etc.
 %token <std::string> OPERATOR "operator";
 
+%token <std::string> KEYWORD "keyword";
+%token <std::string> COMMENT "comment";
+
+/*
+* Types for this language
+*/
+
 %type< std::vector<long long int> > expression; // 1 + 1 + 1
+%type< bool > condition; // true, false
+%type< double > factor; //
+%type< std::vector<long long int> > standIn; // 1 + 1 + 1
 %type< std::vector<double> > term; // (1 / 2 + 1)
 %type< double > id; // value pointed by ^ 
+%type < EzAquarii::Command > command;
 
 %start program
 
 %%
 
 program :   { driver.clear(); }
-        /*| program command*/
-            /*{*/
-                /*[>const Command &cmd = $2;<]*/
-                /*cout << "command parsed, updating AST" << endl;*/
-                /*[>driver.addCommand(cmd);<]*/
-                /*cout << endl << "prompt> ";*/
-            /*}*/
+        | program command
+            {
+                /*const Command &cmd = $2;*/
+                cout << "command parsed, updating AST" << endl;
+                /*driver.addCommand(cmd);*/
+                cout << endl << "prompt> ";
+            }
         | program expression
         {
-            std::cout << "program expression" << std::endl;
-            for(auto element : $2){
-                std::cout << element << std::endl;
-            }
+            std::cout << "command parsed: [expression], updating AST..." << std::endl;
+            const Command c = Command("expression", $2);
+            driver.addCommand(c);
+
         }
         | program term
         {
-            for(auto element : $2){
-                std::cout << element << std::endl;
-            }
+            std::vector<long long int> container;
+
+            for(auto element : $2){ container.push_back((long long int)element); }
+            
+            const Command c = Command("term", container);
+            driver.addCommand(c);
         }
         | program id {
             std::cout << $2 << std::endl;
@@ -199,6 +196,24 @@ program :   { driver.clear(); }
                     std::cout << it->first << " -> " << it->second << std::endl;
                 }
             }
+        | program condition
+            {
+                std::vector<long long int> v = {(long long int)$2};
+                /*std::vector<bool> container = {$2};*/
+                /*Synthetic::templateCommand<bool> c("condition", container);*/
+                /*std::cout << c.name() << std::endl;*/
+
+                const Command cmd = Command("condition", v);
+                cout << "command parsed, updating AST" << endl;
+                driver.addCommand(cmd);
+            }
+        | program FLOAT
+            {
+                std::vector<float> c = {$2};
+                const Command cmd = Command("float", c);
+                cout << "command parsed, updating AST" << endl;
+                driver.addCommand(cmd);
+            }
         ;
 
 /*
@@ -211,28 +226,36 @@ program :   { driver.clear(); }
 * These are not apart of the requirements and should be finished at a later date
 */
 
-/*command : STRING LEFTPAR RIGHTPAR // function()*/
-        /*{*/
-            /*string &id = $1;*/
-            /*cout << "ID: " << id << endl;*/
-            /*$$ = Command(id);*/
-        /*}*/
-    /*| STRING LEFTPAR expression RIGHTPAR // function(1, 2, 3, 4)*/
-        /*{*/
-            /*string &id = $1;*/
-            /*const std::vector<long long int> &args = $3;*/
-            /*cout << "function: " << id << ", " << args.size() << endl;*/
-            /*[>$$ = Command(id, args);<]*/
-        /*}*/
-    /*| LEFTPAR expression RIGHTPAR*/
-        /*{*/
-           /*[>$$ = Command("filler", $2);<]*/
-        /*}*/
-    /*| expression*/
-        /*{*/
-          /*$$ = Command("filler", $1);*/
-        /*}*/
-    /*;*/
+command : ID LEFTPAR RIGHTPAR // function()
+        {
+            string &id = $1;
+            cout << "ID: " << id << endl;
+            $$ = Command(id);
+        }
+    | ID LEFTPAR standIn RIGHTPAR // function(1, 2, 3, 4)
+        {
+            string &id = $1;
+            const std::vector<long long int> &args = $3;
+            cout << "function: " << id << ", " << args.size() << endl;
+            $$ = Command(id, args);
+        }
+    | LEFTPAR standIn RIGHTPAR
+        {
+           $$ = Command("filler", $2);
+        }
+    | standIn
+        {
+          $$ = Command("filler", $1);
+        }
+    | KEYWORD
+        {
+          $$ = Command("keyword");
+        }
+    | COMMENT
+        {
+            $$ = Command("comment");
+        }
+    ;
 /*
 * a = (a + b)
 * a = b
@@ -278,6 +301,16 @@ assignmentRule : ID ASSIGN term
         /*}*/
     ;
 
+condition : standIn RELATIONAL_OP standIn 
+    {
+        long long int a = $1.back();
+        long long int b = $3.back();
+        std::cout << "evaluating" << std::endl;
+        $$ = compare(a, b, $2);
+
+    }
+;
+
 /*
 * a + b => 10 + 10
 * a => 10
@@ -297,7 +330,6 @@ assignmentRule : ID ASSIGN term
 
 expression : NUMBER
         {
-            std::cout << "arguments: " << "number " << "(" << $1 << ")" << std::endl;
             long long int number = $1;
             $$ = std::vector<long long int>();
             $$.push_back(number);
@@ -333,7 +365,49 @@ expression : NUMBER
     /*}*/
 
     ;
+/*
+* I know this is duplicate code and can be remedied using template functions
+* You know, I'm something of a degenerate myself
+*/
 
+standIn : NUMBER
+        {
+            std::cout << "arguments: " << "number " << "(" << $1 << ")" << std::endl;
+            long long int number = $1;
+            $$ = std::vector<long long int>();
+            $$.push_back(number);
+        }
+    | standIn ARITHMETIC_OP NUMBER
+        {
+            long long int number = $3;
+            std::vector<long long int> &args = $1;
+            std::string oper = $2;
+
+            if(!args.empty()){
+                long long int top = args.back();
+                args.pop_back();
+                args.push_back(compute(top, number, oper));
+            }
+            else { args.push_back(number); }
+            $$ = args;
+        }
+    | LEFTPAR standIn RIGHTPAR
+    {
+        std::cout << "got to " << "(" << "expression" << ")" << std::endl;
+        $$ = $2;
+    }
+    /*| expression id ARITHMETIC_OP NUMBER*/
+    /*{*/
+        /*
+        * a + 10 , where a => 10. Therefore 20 should lie on the top of the stack
+        */
+        /*long long int value = $1.back();*/
+        /*std::vector<long long int> &args = $1;*/
+        /*args.push_back(compute(value, $4, $3));*/
+        /*$$ = args;*/
+    /*}*/
+
+    ;
 id : ID 
      {
         std::string variable = $1;
@@ -355,14 +429,12 @@ id : ID
 * 1.5 / 2.12
 */
 
-term : NUMBER {
-
-        std::cout << "arguments: " << "number " << "(" << $1 << ")" << std::endl;
+term : factor {
         double number = $1;
         $$ = std::vector<double>();
         $$.push_back(number);
        }
-    | term GEOMETRIC_OP NUMBER
+    | term GEOMETRIC_OP factor
         {
             double number = $3;
             std::vector<double> &args = $1;
@@ -376,6 +448,21 @@ term : NUMBER {
             else { args.push_back(number); }
             $$ = args;
         }
+;
+
+factor : id 
+        {
+          $$ = $1;
+        }
+        | NUMBER
+        {
+            $$ = $1;
+        }
+        | LEFTPAR expression RIGHTPAR
+        {
+            $$ = $2.back();
+        }
+;
 %%
 
 // Bison expects us to provide implementation - otherwise linker complains

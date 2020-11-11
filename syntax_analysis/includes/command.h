@@ -43,18 +43,21 @@ namespace EzAquarii {
 class Command
 {
 public:
-    Command(const std::string &name, const std::vector<uint64_t> arguments);
+    Command(const std::string &name, const std::vector<long long int> arguments);
+    Command(const std::string &name, const std::vector<float> arguments);
     Command(const std::string &name);
     Command();
     ~Command();
     
-    std::string str() const;
+    std::string llstr() const;
+    std::string fstr() const;
     std::string name() const;
-    std::vector<uint64_t> args() const;
+    std::vector<long long int> args() const;
     
 private:
     std::string m_name;
-    std::vector<uint64_t> m_args;
+    std::vector<long long int> m_args;
+    std::vector<float> fl_args;
 };
 
 }

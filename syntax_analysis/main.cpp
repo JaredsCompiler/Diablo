@@ -47,9 +47,8 @@ int main(int argc, char **argv) {
 
     Interpreter i;
     std::vector<std::string> unitTests = {
-      "inputs/addition.txt",
-      "inputs/multiplication.txt",
-      "inputs/get_var.txt"
+      "inputs/integers.txt",
+      "inputs/floating-point.txt"
     };
     for(auto test : unitTests){
       std::cout << "[+] Conducting test at location: " << test << std::endl;
@@ -62,6 +61,8 @@ int main(int argc, char **argv) {
           std::cerr << "[-] Test at location: " << test << " has failed!" << std::endl;
           file.close();
           return 1;
+        } else {
+          std::cout << i.str() << std::endl;
         }
       }
       catch(DiabloBaseException& e){

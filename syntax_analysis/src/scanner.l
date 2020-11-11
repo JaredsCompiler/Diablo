@@ -53,6 +53,12 @@
 	//
 	// Location class can be found in location.hh and posistion.hh files. It's just a bit too much
 	// boilerplate for this small example. Bummer.
+
+/*[a-zA-Z]+      { */
+                /*cout << "Scanner: identifier [" << yytext << "]" << endl;*/
+                /*return EzAquarii::Parser::make_ID(yytext, EzAquarii::location( [> put location data here if you want <] )); */
+            /*}*/
+
 %}
 
 %option nodefault
@@ -64,10 +70,21 @@
 %%
 
 
-[a-zA-Z]+      { 
-                cout << "Scanner: identifier [" << yytext << "]" << endl;
-                return EzAquarii::Parser::make_ID(yytext, EzAquarii::location( /* put location data here if you want */ )); 
+
+int|float|bool|true|false|end|endif|else|then|while|whileend|do|doend|for|forend|input|output|and|or|not {
+                cout << "Scanner: keyword [" << yytext << "]" << endl;
+                return EzAquarii::Parser::make_KEYWORD(yytext, EzAquarii::location());
             }
+^[a-z|A-Z][a-zA-Z0-9]*  {
+                cout << "Scanner: identifier[ " << yytext << "]" << endl;
+                return EzAquarii::Parser::make_ID(yytext, EzAquarii::location());
+            }
+
+\!.*\!      {
+                cout << "Scanner: comment [" << yytext << "]" << endl;
+                return EzAquarii::Parser::make_COMMENT(yytext, EzAquarii::location());
+            }
+
             
 \(          {
                 cout << "Scanner: '('" << endl;
@@ -99,6 +116,10 @@
                     cout << "Geometric operator recieved: " <<  yytext << endl;
                     return EzAquarii::Parser::make_GEOMETRIC_OP(yytext, EzAquarii::location());
             }
+\<|\>|\>\=|\<\= {
+                        cout << "Relation operator received: " << yytext << endl;
+                        return EzAquarii::Parser::make_RELATIONAL_OP(yytext, EzAquarii::location());
+                   }
 
 \=        {
                 cout << "assignment" << endl;
@@ -109,10 +130,19 @@
                 //cout << "Scanner: whitechar (ignored)" << endl;
             }
 
-[1-9][0-9]* {
-                cout << "Scanner: decimal number: " << yytext << endl;
-                uint64_t number = strtoull(yytext, 0, 10);
+
+[-+]?[0-9]+ {
+                cout << "Scanner: decimal number [" << yytext << "]" << endl;
+                long long int number = strtoll(yytext, 0, 10);
                 return EzAquarii::Parser::make_NUMBER(number, EzAquarii::location());
+            }
+
+[-+]?[0-9]+[\.]?[0-9]+ {
+                cout << "Scanner: double [" << yytext << "]" << endl;
+                std::string::size_type sz;
+                float number = std::stof(yytext, &sz); 
+                
+                return EzAquarii::Parser::make_FLOAT(number, EzAquarii::location());
             }
 
 .           { 

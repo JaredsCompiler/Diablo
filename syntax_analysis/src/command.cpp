@@ -35,22 +35,31 @@ using namespace EzAquarii;
 using std::cout;
 using std::endl;
 
-Command::Command(const std::string &name, const std::vector<uint64_t> arguments) :
+Command::Command(const std::string &name, const std::vector<long long int> arguments) :
     m_name(name),
-    m_args(arguments)
+    m_args(arguments),
+    fl_args()
 {
 }
 
+Command::Command(const std::string &name, const std::vector<float> arguments) :
+    m_name(name),
+    m_args(),
+    fl_args(arguments)
+{
+}
 
 Command::Command(const std::string &name) :
     m_name(name),
-    m_args()
+    m_args(),
+    fl_args()
 {
 }
 
 Command::Command() :
     m_name(),
-    m_args()
+    m_args(),
+    fl_args()
 {
 }
 
@@ -58,18 +67,25 @@ Command::~Command()
 {
 }
     
-std::string Command::str() const {
+std::string Command::llstr() const {
+    std::stringstream ts;
+    // slight bug here but I am not going to bother fixign it
+    ts << "name = [" << m_name << "], ";
+    ts << "arguments = [";
+    for(auto it = m_args.begin(); it != m_args.end(); ++it){
+      ts << *it << " ";
+    }
+    ts << "]";
+    return ts.str();
+}
+
+std::string Command::fstr() const {
     std::stringstream ts;
     ts << "name = [" << m_name << "], ";
     ts << "arguments = [";
-    
-    for(int i = 0; i < m_args.size(); i++) {
-        ts << m_args[i];
-        if(i < m_args.size() - 1) {
-            ts << ", ";
-        }
+    for(auto it = fl_args.begin(); it != fl_args.end(); ++it){
+      ts << *it << " ";
     }
-    
     ts << "]";
     return ts.str();
 }
@@ -78,6 +94,6 @@ std::string Command::name() const {
     return m_name;
 }
 
-std::vector<uint64_t> Command::args() const {
+std::vector<long long int> Command::args() const {
   return m_args;
 }

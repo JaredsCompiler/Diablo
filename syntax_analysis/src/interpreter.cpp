@@ -28,6 +28,7 @@
 
 #include "interpreter.h"
 #include "../includes/command.h"
+#include "templateCommand.cpp"
 
 #include <sstream>
 
@@ -56,7 +57,9 @@ std::string Interpreter::str() const {
     std::stringstream s;
     s << "Interpreter: " << m_commands.size() << " commands received from command line." << endl;
     for(int i = 0; i < m_commands.size(); i++) {
-        s << " * " << m_commands[i].str() << endl;
+        s << " * [FLOATS] " << m_commands[i].fstr() << endl;
+        s << " * [LONG LONG INTS] " << m_commands[i].llstr() << endl;
+        s << endl;
     }
     return s.str();
 }

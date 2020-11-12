@@ -71,10 +71,17 @@
 
 
 
-true|false|end|while|whileend|do|doend|for|forend|input|output {
+input|output {
                 cout << "Scanner: keyword [" << yytext << "]" << endl;
                 return EzAquarii::Parser::make_KEYWORD(yytext, EzAquarii::location());
             }
+
+true|false {
+    cout << "Scanner: boolean [" << yytext << "]" << endl;
+    long long int value = (strcmp(yytext, "true") == 0) ? 1 : 0;
+    return EzAquarii::Parser::make_BOOLEAN(value, EzAquarii::location());
+}
+
 int|float|bool {
             cout << "Scanner: type [" << yytext << "]" << endl;
             return EzAquarii::Parser::make_PRIMITIVE_TYPE(yytext, EzAquarii::location());
@@ -98,6 +105,36 @@ then {
 endif {
     cout << "Scanner: endif statement" << endl;
     return EzAquarii::Parser::make_ENDIF(yytext, EzAquarii::location());
+}
+
+for {
+    cout << "Scanner: for" << endl;
+    return EzAquarii::Parser::make_FOR(yytext, EzAquarii::location());
+}
+
+forend {
+    cout << "Scanner: forend" << endl;
+    return EzAquarii::Parser::make_FOREND(yytext, EzAquarii::location());
+}
+
+while {
+
+    cout << "Scanner: while" << endl;
+    return EzAquarii::Parser::make_WHILE(yytext, EzAquarii::location());
+}
+
+whileend {
+
+    cout << "Scanner: whileend" << endl;
+    return EzAquarii::Parser::make_WHILEEND(yytext, EzAquarii::location());
+}
+
+do {
+    return EzAquarii::Parser::make_DO(yytext, EzAquarii::location());
+}
+
+doend {
+    return EzAquarii::Parser::make_DOEND(yytext, EzAquarii::location());
 }
 
 [a-z|A-Z][a-zA-Z0-9]*  {

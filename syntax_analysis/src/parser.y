@@ -80,10 +80,6 @@
     #include "../includes/interpreter.h"
     #include "../src/location.hh"
 
-    /*#include "../../lexical_analysis/includes/reader.hpp"*/
-    /*#include "../../lexical_analysis/includes/lexer_rules.hpp"*/
-    /*#include "../../lexical_analysis/includes/lexer.hpp"*/
-
     // yylex() arguments are defined in parser.y
     static EzAquarii::Parser::symbol_type yylex(EzAquarii::Scanner &scanner, EzAquarii::Interpreter &driver) {
         return scanner.get_next_token();
@@ -118,6 +114,7 @@
 %token ASSIGN "assignment";
 %token <std::string> ID "identifier"; // a --> contains the value of 10
 %token <float> FLOAT "floatingPoint"; // floating point number
+%token <long long int> BOOLEAN "boolean"; // true, false
 %token <long long int> NUMBER "number";
 
 /*
@@ -156,10 +153,21 @@
 
 %token <std::string> KEYWORD "keyword";
 %token <std::string> PRIMITIVE_TYPE "primitive_type";
+
+/*
+* Control flow
+*/
+
 %token <std::string> IF "if";
 %token <std::string> ELSE "else";
 %token <std::string> THEN "then";
 %token <std::string> ENDIF "endif";
+%token <std::string> FOR "for";
+%token <std::string> FOREND "forend";
+%token <std::string> WHILE "while";
+%token <std::string> WHILEEND "whileend";
+%token <std::string> DO "do";
+%token <std::string> DOEND "doend";
 
 /*
 * Whitespace and other ignoring things
@@ -179,7 +187,7 @@
 %type< double > id; // value pointed by ^ 
 
 /*
-* Commands to be preserved for the AST
+* Commands to be preserved for the AST (essentially the rules)
 */
 
 %type < EzAquarii::Command > command;
@@ -187,6 +195,8 @@
 %type < EzAquarii::Command > statement;
 %type < std::vector<EzAquarii::Command> > statements;
 %type < EzAquarii::Command > if_statement;
+%type < EzAquarii::Command > for_statement;
+%type < EzAquarii::Command > while_statement;
 
 %start program
 
@@ -311,6 +321,14 @@ condition : expression RELATIONAL_OP expression
         // throw error if operator not found or condition does not evaluate
         $$ = compare(a, b, $3);
     }
+    | BOOLEAN
+    {
+        $$ = ($1) ? true : false;
+    }
+    | LEFTPAR BOOLEAN RIGHTPAR
+    {
+        $$ = ($2) ? true : false;
+    }
 ;
 
 /*
@@ -433,6 +451,21 @@ assignment : PRIMITIVE_TYPE ID SEMICOLON
         long long int value = $4.back();
         symbolTable[$2] = (float)value;
     }
+    | ID ASSIGN expression SEMICOLON
+    {
+        long long int value = $3.back();
+        symbolTable[$1] = (float)value;
+    }
+    | PRIMITIVE_TYPE ID ASSIGN term SEMICOLON
+    {
+        double value = $4.back();
+        symbolTable[$2] = (float)value;
+    }
+    | ID ASSIGN term SEMICOLON
+    {
+        double value = $3.back();
+        symbolTable[$1] = (float)value;
+    }
 
 ;
 
@@ -504,20 +537,35 @@ statement : assignment
     {
         $$ = Command("if_statement");
     }
+    | for_statement
+    {
+        $$ = Command("for_statement");
+    }
+    | while_statement
+    {
+        $$ = Command("while_statement");
+    }
 ;
 
-if_statement : IF condition THEN statement ENDIF
-    {
-        if($2){ $$ = $4; } // do i need to bubble these up yet?
-    }
-    | IF condition THEN statements ENDIF
+if_statement : IF condition THEN statements ENDIF {} // do i need to bubble this up ? 
+               | IF condition THEN statements ELSE statements ENDIF {}
+;
+
+/*
+* not finished, I could NOT BE FUCKD!
+*/
+
+for_statement : FOR condition FOREND
     {
 
     }
-    | IF condition THEN statements ELSE statements ENDIF
-    {
+;
 
-    }
+while_statement : WHILE condition statements WHILEEND {}
+                  | DO statement WHILE condition DOEND {}
+                  | DO statements WHILE condition DOEND {}
+;
+
 %%
 
 // Bison expects us to provide implementation - otherwise linker complains

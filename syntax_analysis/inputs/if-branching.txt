@@ -1,7 +1,3 @@
-if 1 < 2 then 
-    int val = 10; 
-endif
-
 if (1 < 2) then 
     int v = 100; 
 endif
@@ -19,4 +15,23 @@ if (1 > 100) then
         int val = 10;
         int c = 100;
     endif
+endif
+
+
+if(1 > 100) then
+    int value = 100;
+    int another = 1000;
+else
+    if (100 < 0) then
+        int something = 10;
+    endif
+    int another = 1000;
+endif
+
+if (true) then
+    int value = 100;
+endif
+
+if (false) then
+    int value = 100;
 endif

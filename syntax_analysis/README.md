@@ -30,8 +30,6 @@
     * `for_statement`
     * `while_statement`
 
-FOR LEFTPAR PRIMITIVE_TYPE ID ASSIGN expression SEMICOLON ID RELATIONAL_OPERATOR expression SEMICOLON ID_INC RIGHTPAR
-// for(int i = 0; i < 10; i++)
 
 ## Process
 
@@ -137,13 +135,36 @@ doend
 Notation:
 
 ```
-INCOMPLETE !
+for_statement : FOR LEFTPAR PRIMITIVE_TYPE ID ASSIGN expression SEMICOLON ID RELATIONAL_OP expression SEMICOLON ID_INC RIGHTPAR statements FOREND
+                | FOR LEFTPAR PRIMITIVE_TYPE ID ASSIGN expression SEMICOLON ID RELATIONAL_OP expression SEMICOLON ID_DEC RIGHTPAR statements FOREND
 ```
 
 Example code: 
 
 ```
-INCOMPLETE !
+for (int i = 0; i < 10; i++)
+    int first = 0;
+    for (int i = 0; i < 10; i++)
+        int second = 0;
+    forend
+forend
+
+
+for (int i = 0; i < 10; ++i)
+    int first = 0;
+    for (int i = 0; i < 10; ++i)
+        int second = 0;
+    forend
+forend
+
+
+for (int i = 0; i < 10; --i)
+    int first = 0;
+    for (int i = 0; i < 10; --i)
+        int second = 0;
+    forend
+forend
+
 ```
 
 ## Statements

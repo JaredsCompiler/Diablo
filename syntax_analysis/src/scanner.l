@@ -142,12 +142,12 @@ doend {
                 return EzAquarii::Parser::make_ID(yytext, EzAquarii::location());
             }
 
-[a-z|A-Z][a-zA-Z0-9]*\+\+  {
+\+\+[a-z|A-Z][a-zA-Z0-9]*|[a-z|A-Z][a-zA-Z0-9]*\+\+  {
                 cout << "Scanner: incrementing [" << yytext << "]" << endl;
                 return EzAquarii::Parser::make_ID_INC(yytext, EzAquarii::location());
             }
 
-[a-z|A-Z][a-zA-Z0-9]*[\-\-]  {
+\-\-[a-z|A-Z][a-zA-Z0-9]*|[a-z|A-Z][a-zA-Z0-9]*\-\-  {
                 cout << "Scanner: decrementing [" << yytext << "]" << endl;
                 return EzAquarii::Parser::make_ID_DEC(yytext, EzAquarii::location());
             }

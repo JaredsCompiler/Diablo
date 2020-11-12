@@ -553,10 +553,6 @@ if_statement : IF condition THEN statements ENDIF {} // do i need to bubble this
                | IF condition THEN statements ELSE statements ENDIF {}
 ;
 
-/*
-* not finished, I could NOT BE FUCKD!
-*/
-
 for_statement : FOR LEFTPAR PRIMITIVE_TYPE ID ASSIGN expression SEMICOLON ID RELATIONAL_OP expression SEMICOLON ID_INC RIGHTPAR statements FOREND
 
     {
@@ -566,6 +562,15 @@ for_statement : FOR LEFTPAR PRIMITIVE_TYPE ID ASSIGN expression SEMICOLON ID REL
         * forend
         */
 
+    }
+    | FOR LEFTPAR PRIMITIVE_TYPE ID ASSIGN expression SEMICOLON ID RELATIONAL_OP expression SEMICOLON ID_DEC RIGHTPAR statements FOREND
+    {
+
+        /*
+        * for (int i = 0; i < 10; --i)
+        *    int value = 0;
+        * forend
+        */
     }
 ;
 

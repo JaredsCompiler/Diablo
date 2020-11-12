@@ -142,6 +142,16 @@ doend {
                 return EzAquarii::Parser::make_ID(yytext, EzAquarii::location());
             }
 
+[a-z|A-Z][a-zA-Z0-9]*\+\+  {
+                cout << "Scanner: incrementing [" << yytext << "]" << endl;
+                return EzAquarii::Parser::make_ID_INC(yytext, EzAquarii::location());
+            }
+
+[a-z|A-Z][a-zA-Z0-9]*[\-\-]  {
+                cout << "Scanner: decrementing [" << yytext << "]" << endl;
+                return EzAquarii::Parser::make_ID_DEC(yytext, EzAquarii::location());
+            }
+
 \!.*\!      {
                 cout << "Scanner: comment [" << yytext << "]" << endl;
                 return EzAquarii::Parser::make_COMMENT(yytext, EzAquarii::location());
@@ -178,7 +188,7 @@ doend {
                 cout << "Scanner: ','" << endl;
                 return EzAquarii::Parser::make_COMMA(EzAquarii::location());
             }
-[\+|\-]   {
+[\+|\-]{1}   {
                     cout << "Arithmetic operator recieved: " <<  yytext << endl;
                     return EzAquarii::Parser::make_ARITHMETIC_OP(yytext, EzAquarii::location());
                 }

@@ -1,2 +1,6 @@
-for (1 < 1)
-endfor
+for (int i = 0; i < 10; i++)
+    int first = 0;
+    for (int i = 0; i < 10; i++)
+        int second = 0;
+    forend
+forend

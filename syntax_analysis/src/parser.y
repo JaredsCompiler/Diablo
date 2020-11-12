@@ -146,6 +146,8 @@
 %token <std::string> ARITHMETIC_OP "arithmetic_op"; // addition and subtraction
 %token <std::string> RELATIONAL_OP "relational_op"; // greater than, etc.
 %token <std::string> OPERATOR "operator";
+%token <std::string> ID_INC "incrementing";
+%token <std::string> ID_DEC "decrementing";
 
 /*
 * Reserved words
@@ -555,8 +557,14 @@ if_statement : IF condition THEN statements ENDIF {} // do i need to bubble this
 * not finished, I could NOT BE FUCKD!
 */
 
-for_statement : FOR condition FOREND
+for_statement : FOR LEFTPAR PRIMITIVE_TYPE ID ASSIGN expression SEMICOLON ID RELATIONAL_OP expression SEMICOLON ID_INC RIGHTPAR statements FOREND
+
     {
+        /*
+        * for (int i = 0; i < 10; ++i)
+        *    int value = 0;
+        * forend
+        */
 
     }
 ;

@@ -26,9 +26,12 @@
 
 - `assignment`
 - `statements` -> `statement`
-- `if_statement`
-- `for_statement`
-- `while_statement`
+    * `if_statement`
+    * `for_statement`
+    * `while_statement`
+
+FOR LEFTPAR PRIMITIVE_TYPE ID ASSIGN expression SEMICOLON ID RELATIONAL_OPERATOR expression SEMICOLON ID_INC RIGHTPAR
+// for(int i = 0; i < 10; i++)
 
 ## Process
 

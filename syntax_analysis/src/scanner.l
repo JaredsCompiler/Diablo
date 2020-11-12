@@ -71,10 +71,35 @@
 
 
 
-int|float|bool|true|false|end|endif|else|then|while|whileend|do|doend|for|forend|input|output|and|or|not {
+true|false|end|while|whileend|do|doend|for|forend|input|output {
                 cout << "Scanner: keyword [" << yytext << "]" << endl;
                 return EzAquarii::Parser::make_KEYWORD(yytext, EzAquarii::location());
             }
+int|float|bool {
+            cout << "Scanner: type [" << yytext << "]" << endl;
+            return EzAquarii::Parser::make_PRIMITIVE_TYPE(yytext, EzAquarii::location());
+}
+
+if {
+        cout << "Scanner: if statement" << endl;
+        return EzAquarii::Parser::make_IF(yytext, EzAquarii::location());
+}
+
+else {
+        cout << "Scanner: else statement" << endl;
+        return EzAquarii::Parser::make_ELSE(yytext, EzAquarii::location());
+}
+
+then {
+    cout << "Scanner: then statement" << endl;
+    return EzAquarii::Parser::make_THEN(yytext, EzAquarii::location());
+}
+
+endif {
+    cout << "Scanner: endif statement" << endl;
+    return EzAquarii::Parser::make_ENDIF(yytext, EzAquarii::location());
+}
+
 [a-z|A-Z][a-zA-Z0-9]*  {
                 cout << "Scanner: identifier [" << yytext << "]" << endl;
                 return EzAquarii::Parser::make_ID(yytext, EzAquarii::location());
@@ -94,10 +119,19 @@ int|float|bool|true|false|end|endif|else|then|while|whileend|do|doend|for|forend
             
 \)          { 
                 cout << "Scanner: ')'" << endl;
-                cout << "Location is: " << EzAquarii::location() << endl;
                 return EzAquarii::Parser::make_RIGHTPAR(EzAquarii::location());
             }
+\{  {
+
+                cout << "Scanner: '{'" << endl;
+                return EzAquarii::Parser::make_LEFT_CURLY(EzAquarii::location());
+}
             
+\}  {
+
+                cout << "Scanner: '}'" << endl;
+                return EzAquarii::Parser::make_RIGHT_CURLY(EzAquarii::location());
+}
 ;           {
                 cout << "Scanner: ';'" << endl;
                 return EzAquarii::Parser::make_SEMICOLON(EzAquarii::location());
@@ -116,7 +150,7 @@ int|float|bool|true|false|end|endif|else|then|while|whileend|do|doend|for|forend
                     cout << "Geometric operator recieved: " <<  yytext << endl;
                     return EzAquarii::Parser::make_GEOMETRIC_OP(yytext, EzAquarii::location());
             }
-\<|\>|\>\=|\<\= {
+\<|\>|\>\=|\<\=|and|or|not {
                         cout << "Relation operator received: " << yytext << endl;
                         return EzAquarii::Parser::make_RELATIONAL_OP(yytext, EzAquarii::location());
                    }

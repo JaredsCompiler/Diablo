@@ -114,6 +114,8 @@
 /*
 * Values of or retrievers
 */
+
+%token ASSIGN "assignment";
 %token <std::string> ID "identifier"; // a --> contains the value of 10
 %token <float> FLOAT "floatingPoint"; // floating point number
 %token <long long int> NUMBER "number";
@@ -124,9 +126,19 @@
 
 %token LEFTPAR "leftpar";
 %token RIGHTPAR "rightpar";
+%token LEFT_CURLY "leftcurly";
+%token RIGHT_CURLY "rightcurly";
+
+/*
+* Delimiters
+*/
+
 %token SEMICOLON "semicolon";
 %token COMMA "comma";
-%token ASSIGN "assignment";
+
+/*
+* Signaling
+*/
 %token END 0 "end of file";
 
 /*
@@ -138,7 +150,21 @@
 %token <std::string> RELATIONAL_OP "relational_op"; // greater than, etc.
 %token <std::string> OPERATOR "operator";
 
+/*
+* Reserved words
+*/
+
 %token <std::string> KEYWORD "keyword";
+%token <std::string> PRIMITIVE_TYPE "primitive_type";
+%token <std::string> IF "if";
+%token <std::string> ELSE "else";
+%token <std::string> THEN "then";
+%token <std::string> ENDIF "endif";
+
+/*
+* Whitespace and other ignoring things
+*/
+
 %token <std::string> COMMENT "comment";
 
 /*
@@ -151,8 +177,16 @@
 %type< std::vector<long long int> > standIn; // 1 + 1 + 1
 %type< std::vector<double> > term; // (1 / 2 + 1)
 %type< double > id; // value pointed by ^ 
+
+/*
+* Commands to be preserved for the AST
+*/
+
 %type < EzAquarii::Command > command;
 %type < EzAquarii::Command > assignment;
+%type < EzAquarii::Command > statement;
+%type < std::vector<EzAquarii::Command> > statements;
+%type < EzAquarii::Command > if_statement;
 
 %start program
 
@@ -182,27 +216,24 @@ program :   { driver.clear(); }
             const Command c = Command("term", container);
             driver.addCommand(c);
         }
+
         | program id {} // empty rule
         | program assignment {} // empty rule
+        | program statements 
+        {
+            for(auto element : $2){
+                driver.addCommand(element);
+            }
+        }
+
         | program SEMICOLON
             {
                 cout << "*** STOP RUN ***" << endl;
                 cout << driver.str() << endl;
             }
-        | program assignmentRule
-            {
-                std::cout << "assigning" << std::endl;
-                for(auto it = symbolTable.begin(); it != symbolTable.end(); ++it){
-                    std::cout << it->first << " -> " << it->second << std::endl;
-                }
-            }
         | program condition
             {
                 std::vector<long long int> v = {(long long int)$2};
-                /*std::vector<bool> container = {$2};*/
-                /*Synthetic::templateCommand<bool> c("condition", container);*/
-                /*std::cout << c.name() << std::endl;*/
-
                 const Command cmd = Command("condition", v);
                 cout << "command parsed, updating AST" << endl;
                 driver.addCommand(cmd);
@@ -262,52 +293,23 @@ command : ID LEFTPAR RIGHTPAR // function()
 * a = 10
 */
 
-assignmentRule : ID ASSIGN term
-        {
-            const std::vector<double> cont = $3;
-            long long int val = cont.back();
-            std::map<std::string, double>::iterator it = symbolTable.find($1);
-            if(it != symbolTable.end()){
-                std::cout << "updating value " << $1 << " with value of " << symbolTable[$1] << " to value of " << val << std::endl;
-            } else {
-                std::cout << "inserting " << $1 << " with value of " << val << std::endl; 
-            }
-            symbolTable[$1] = val;
-        }
-        | assignmentRule ID ASSIGN LEFTPAR expression RIGHTPAR
-        {
-            std::cout << $2 << " = (" << $5.back() << ")" << std::endl;
-            symbolTable[$2] = $5.back();
-        }
-        | assignmentRule ID ASSIGN expression 
-        {
-            std::cout << $2 << " = (" << $4.back() << ")" << std::endl;
-            symbolTable[$2] = $4.back();
-        }
-        | id
-        {
-            std::cout << "got value of " << $1 << std::endl;
-        }
-        /*{*/
-            /*// place the value of said variable onto the stack*/
-            /*std::string variable = $1;*/
-            /*long long int gottem = get_variable(symbolTable, variable);*/
-            /*if(gottem == std::numeric_limits<long long int>::infinity()){*/
-                /*std::cerr << "we could not find " << $1 << std::endl;*/
-            /*} else {*/
-                /*std::cout << $1 << " has a value of " << gottem << std::endl;*/
-            /*}*/
-
-        /*}*/
-    ;
-
-condition : standIn RELATIONAL_OP standIn 
+condition : expression RELATIONAL_OP expression 
     {
         long long int a = $1.back();
         long long int b = $3.back();
-        std::cout << "evaluating" << std::endl;
+        // TODO
+        // throw error if operator not found or condition does not evaluate
         $$ = compare(a, b, $2);
 
+    }
+    | LEFTPAR expression RELATIONAL_OP expression RIGHTPAR
+    {
+
+        long long int a = $2.back();
+        long long int b = $4.back();
+        // TODO
+        // throw error if operator not found or condition does not evaluate
+        $$ = compare(a, b, $3);
     }
 ;
 
@@ -324,8 +326,6 @@ condition : standIn RELATIONAL_OP standIn
 * <Expression> -> <Expression> + <Term> | <Expression> - <Term> | <Term>
 * 1 + 2
 * 1 + 2 + 3
-* 1 + 2 * 3
-* 1 + 3 / 5
 */
 
 expression : NUMBER
@@ -408,7 +408,7 @@ standIn : NUMBER
     /*}*/
 
     ;
-id : ID SEMICOLON
+id : ID 
      {
         std::string variable = $1;
         double value = get_variable(symbolTable, variable);
@@ -423,12 +423,12 @@ id : ID SEMICOLON
      }
 ;
 
-assignment : KEYWORD ID SEMICOLON 
+assignment : PRIMITIVE_TYPE ID SEMICOLON 
     {
         symbolTable[$2] = 0;
     }
 
-    | KEYWORD ID ASSIGN expression SEMICOLON
+    | PRIMITIVE_TYPE ID ASSIGN expression SEMICOLON
     {
         long long int value = $4.back();
         symbolTable[$2] = (float)value;
@@ -463,9 +463,17 @@ term : factor {
             else { args.push_back(number); }
             $$ = args;
         }
+    | LEFTPAR term RIGHTPAR
+    {
+        $$ = $2;
+    }
+    | id
+    {
+        $$ = std::vector<double>($1);
+    }
 ;
 
-factor : id 
+factor : id ID
         {
           $$ = $1;
         }
@@ -478,6 +486,38 @@ factor : id
             $$ = $2.back();
         }
 ;
+
+statements : statement statements
+        | statement
+        {
+            EzAquarii::Command c("statement");
+            std::vector<EzAquarii::Command> container = {c};
+            $$ = container;
+        }
+;
+
+statement : assignment 
+    {
+        $$ = Command("statement");
+    }
+    | if_statement
+    {
+        $$ = Command("if_statement");
+    }
+;
+
+if_statement : IF condition THEN statement ENDIF
+    {
+        if($2){ $$ = $4; } // do i need to bubble these up yet?
+    }
+    | IF condition THEN statements ENDIF
+    {
+
+    }
+    | IF condition THEN statements ELSE statements ENDIF
+    {
+
+    }
 %%
 
 // Bison expects us to provide implementation - otherwise linker complains

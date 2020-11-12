@@ -47,7 +47,8 @@ int main(int argc, char **argv) {
 
     Interpreter i;
     std::vector<std::string> unitTests = {
-      "inputs/multiplication.txt"
+      "inputs/if-branching.txt",
+      //"inputs/multiplication.txt"
     };
     for(auto test : unitTests){
       std::cout << "[+] Conducting test at location: " << test << std::endl;

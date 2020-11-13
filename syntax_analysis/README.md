@@ -3,6 +3,7 @@
 ## TODO
 
 - [ ] Parse tree for simple example
+- [ ] Diagrams  of the program flow
 - [ ] LaTeX rendition
 - [ ] Note that each statement is a rule provided by the *statements* rule, it is recursively defined to encompass one or more repetitions!
     - [ ] [Optional Tokens](https://stackoverflow.com/a/2669581)
@@ -13,6 +14,8 @@
 - [ ] We used GNU Bison for parse tree generation because FUCK THAT
 - [ ] [Mad props to this fool](https://github.com/ezaquarii/bison-flex-cpp-example)
     - [ ] I LOVE YOU EZAQUARII, i will get your name tattooed on my body
+- [ ] Redirect all `std::cout` produced in `yylex` in `src/parser.y` to another filestream
+- [ ] More intermediate code generation
 
 ![Diagram](assets/parse-tree.png)
 

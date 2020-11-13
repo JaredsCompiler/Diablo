@@ -37,7 +37,7 @@
 // if your IDE can't resolve it - call make first
 #include "../src/parser.hpp"
 
-namespace EzAquarii {
+namespace Synthetic {
 
 // forward declare our simplistic AST node class so we
 // can declare container for it without the header

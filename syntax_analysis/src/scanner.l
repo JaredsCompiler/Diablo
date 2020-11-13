@@ -38,7 +38,7 @@
 
 	// Original yyterminate() macro returns int. Since we're using Bison 3 variants
 	// as tokens, we must redefine it to change type from `int` to `Parser::semantic_type`
-	#define yyterminate() EzAquarii::Parser::make_END(EzAquarii::location());
+	#define yyterminate() Synthetic::Parser::make_END(Synthetic::location());
 
 	// This will track current scanner location.
 	// Action is called when length of the token is known.
@@ -56,7 +56,7 @@
 
 /*[a-zA-Z]+      { */
                 /*cout << "Scanner: identifier [" << yytext << "]" << endl;*/
-                /*return EzAquarii::Parser::make_ID(yytext, EzAquarii::location( [> put location data here if you want <] )); */
+                /*return Synthetic::Parser::make_ID(yytext, Synthetic::location( [> put location data here if you want <] )); */
             /*}*/
 
 %}
@@ -65,7 +65,7 @@
 %option noyywrap
 %option c++
 %option yyclass="Scanner"
-%option prefix="EzAquarii_"
+%option prefix="Synthetic_"
 
 %%
 
@@ -73,138 +73,138 @@
 
 input|output {
                 cout << "Scanner: keyword [" << yytext << "]" << endl;
-                return EzAquarii::Parser::make_KEYWORD(yytext, EzAquarii::location());
+                return Synthetic::Parser::make_KEYWORD(yytext, Synthetic::location());
             }
 
 true|false {
     cout << "Scanner: boolean [" << yytext << "]" << endl;
     long long int value = (strcmp(yytext, "true") == 0) ? 1 : 0;
-    return EzAquarii::Parser::make_BOOLEAN(value, EzAquarii::location());
+    return Synthetic::Parser::make_BOOLEAN(value, Synthetic::location());
 }
 
 int|float|bool {
             cout << "Scanner: type [" << yytext << "]" << endl;
-            return EzAquarii::Parser::make_PRIMITIVE_TYPE(yytext, EzAquarii::location());
+            return Synthetic::Parser::make_PRIMITIVE_TYPE(yytext, Synthetic::location());
 }
 
 if {
         cout << "Scanner: if statement" << endl;
-        return EzAquarii::Parser::make_IF(yytext, EzAquarii::location());
+        return Synthetic::Parser::make_IF(yytext, Synthetic::location());
 }
 
 else {
         cout << "Scanner: else statement" << endl;
-        return EzAquarii::Parser::make_ELSE(yytext, EzAquarii::location());
+        return Synthetic::Parser::make_ELSE(yytext, Synthetic::location());
 }
 
 then {
     cout << "Scanner: then statement" << endl;
-    return EzAquarii::Parser::make_THEN(yytext, EzAquarii::location());
+    return Synthetic::Parser::make_THEN(yytext, Synthetic::location());
 }
 
 endif {
     cout << "Scanner: endif statement" << endl;
-    return EzAquarii::Parser::make_ENDIF(yytext, EzAquarii::location());
+    return Synthetic::Parser::make_ENDIF(yytext, Synthetic::location());
 }
 
 for {
     cout << "Scanner: for" << endl;
-    return EzAquarii::Parser::make_FOR(yytext, EzAquarii::location());
+    return Synthetic::Parser::make_FOR(yytext, Synthetic::location());
 }
 
 forend {
     cout << "Scanner: forend" << endl;
-    return EzAquarii::Parser::make_FOREND(yytext, EzAquarii::location());
+    return Synthetic::Parser::make_FOREND(yytext, Synthetic::location());
 }
 
 while {
 
     cout << "Scanner: while" << endl;
-    return EzAquarii::Parser::make_WHILE(yytext, EzAquarii::location());
+    return Synthetic::Parser::make_WHILE(yytext, Synthetic::location());
 }
 
 whileend {
 
     cout << "Scanner: whileend" << endl;
-    return EzAquarii::Parser::make_WHILEEND(yytext, EzAquarii::location());
+    return Synthetic::Parser::make_WHILEEND(yytext, Synthetic::location());
 }
 
 do {
-    return EzAquarii::Parser::make_DO(yytext, EzAquarii::location());
+    return Synthetic::Parser::make_DO(yytext, Synthetic::location());
 }
 
 doend {
-    return EzAquarii::Parser::make_DOEND(yytext, EzAquarii::location());
+    return Synthetic::Parser::make_DOEND(yytext, Synthetic::location());
 }
 
 [a-z|A-Z][a-zA-Z0-9]*  {
                 cout << "Scanner: identifier [" << yytext << "]" << endl;
-                return EzAquarii::Parser::make_ID(yytext, EzAquarii::location());
+                return Synthetic::Parser::make_ID(yytext, Synthetic::location());
             }
 
 \+\+[a-z|A-Z][a-zA-Z0-9]*|[a-z|A-Z][a-zA-Z0-9]*\+\+  {
                 cout << "Scanner: incrementing [" << yytext << "]" << endl;
-                return EzAquarii::Parser::make_ID_INC(yytext, EzAquarii::location());
+                return Synthetic::Parser::make_ID_INC(yytext, Synthetic::location());
             }
 
 \-\-[a-z|A-Z][a-zA-Z0-9]*|[a-z|A-Z][a-zA-Z0-9]*\-\-  {
                 cout << "Scanner: decrementing [" << yytext << "]" << endl;
-                return EzAquarii::Parser::make_ID_DEC(yytext, EzAquarii::location());
+                return Synthetic::Parser::make_ID_DEC(yytext, Synthetic::location());
             }
 
 \!.*\!      {
                 cout << "Scanner: comment [" << yytext << "]" << endl;
-                return EzAquarii::Parser::make_COMMENT(yytext, EzAquarii::location());
+                return Synthetic::Parser::make_COMMENT(yytext, Synthetic::location());
             }
 
             
 \(          {
                 cout << "Scanner: '('" << endl;
-                /*cout << "Location is: " << EzAquarii::location() << endl;*/
-                return EzAquarii::Parser::make_LEFTPAR(EzAquarii::location());
+                /*cout << "Location is: " << Synthetic::location() << endl;*/
+                return Synthetic::Parser::make_LEFTPAR(Synthetic::location());
             }
             
 \)          { 
                 cout << "Scanner: ')'" << endl;
-                return EzAquarii::Parser::make_RIGHTPAR(EzAquarii::location());
+                return Synthetic::Parser::make_RIGHTPAR(Synthetic::location());
             }
 \{  {
 
                 cout << "Scanner: '{'" << endl;
-                return EzAquarii::Parser::make_LEFT_CURLY(EzAquarii::location());
+                return Synthetic::Parser::make_LEFT_CURLY(Synthetic::location());
 }
             
 \}  {
 
                 cout << "Scanner: '}'" << endl;
-                return EzAquarii::Parser::make_RIGHT_CURLY(EzAquarii::location());
+                return Synthetic::Parser::make_RIGHT_CURLY(Synthetic::location());
 }
 ;           {
                 cout << "Scanner: ';'" << endl;
-                return EzAquarii::Parser::make_SEMICOLON(EzAquarii::location());
+                return Synthetic::Parser::make_SEMICOLON(Synthetic::location());
             }
             
 ,           {
                 cout << "Scanner: ','" << endl;
-                return EzAquarii::Parser::make_COMMA(EzAquarii::location());
+                return Synthetic::Parser::make_COMMA(Synthetic::location());
             }
 [\+|\-]{1}   {
                     cout << "Arithmetic operator recieved: " <<  yytext << endl;
-                    return EzAquarii::Parser::make_ARITHMETIC_OP(yytext, EzAquarii::location());
+                    return Synthetic::Parser::make_ARITHMETIC_OP(yytext, Synthetic::location());
                 }
 
 [\*|\/]   {
                     cout << "Geometric operator recieved: " <<  yytext << endl;
-                    return EzAquarii::Parser::make_GEOMETRIC_OP(yytext, EzAquarii::location());
+                    return Synthetic::Parser::make_GEOMETRIC_OP(yytext, Synthetic::location());
             }
 \<|\>|\>\=|\<\=|and|or|not {
                         cout << "Relation operator received: " << yytext << endl;
-                        return EzAquarii::Parser::make_RELATIONAL_OP(yytext, EzAquarii::location());
+                        return Synthetic::Parser::make_RELATIONAL_OP(yytext, Synthetic::location());
                    }
 
 \=        {
                 cout << "assignment" << endl;
-                return EzAquarii::Parser::make_ASSIGN(EzAquarii::location());
+                return Synthetic::Parser::make_ASSIGN(Synthetic::location());
             }
             
 [\n\t ]     {
@@ -215,7 +215,7 @@ doend {
 [-+]?[0-9]+ {
                 cout << "Scanner: decimal number [" << yytext << "]" << endl;
                 long long int number = strtoll(yytext, 0, 10);
-                return EzAquarii::Parser::make_NUMBER(number, EzAquarii::location());
+                return Synthetic::Parser::make_NUMBER(number, Synthetic::location());
             }
 
 [-+]?[0-9]+[\.]?[0-9]+ {
@@ -223,7 +223,7 @@ doend {
                 std::string::size_type sz;
                 float number = std::stof(yytext, &sz); 
                 
-                return EzAquarii::Parser::make_FLOAT(number, EzAquarii::location());
+                return Synthetic::Parser::make_FLOAT(number, Synthetic::location());
             }
 
 .           { 

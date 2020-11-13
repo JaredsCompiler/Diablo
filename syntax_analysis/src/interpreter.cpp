@@ -32,7 +32,7 @@
 
 #include <sstream>
 
-using namespace EzAquarii;
+using namespace Synthetic;
 
 Interpreter::Interpreter() :
     m_scanner(*this),

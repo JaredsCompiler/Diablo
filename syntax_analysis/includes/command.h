@@ -34,7 +34,7 @@
 #include <stack>
 #include <stdint.h>
 
-namespace EzAquarii {
+namespace Synthetic {
 
 /**
  * AST node. If you can call it AST at all...

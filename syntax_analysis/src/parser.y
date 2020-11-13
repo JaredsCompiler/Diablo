@@ -34,7 +34,7 @@
 %define api.token.constructor
 %define api.value.type variant
 %define parse.assert
-%define api.namespace { EzAquarii }
+%define api.namespace { Synthetic }
 %code requires
 {
 
@@ -55,7 +55,7 @@
 
     using namespace std;
 
-    namespace EzAquarii {
+    namespace Synthetic {
         class Scanner;
         class Interpreter;
     }
@@ -81,7 +81,7 @@
     #include "../src/location.hh"
 
     // yylex() arguments are defined in parser.y
-    static EzAquarii::Parser::symbol_type yylex(EzAquarii::Scanner &scanner, EzAquarii::Interpreter &driver) {
+    static Synthetic::Parser::symbol_type yylex(Synthetic::Scanner &scanner, Synthetic::Interpreter &driver) {
         return scanner.get_next_token();
     }
     
@@ -89,18 +89,18 @@
     // x and y are same as in above static function
     // #define yylex(x, y) scanner.get_next_token()
     
-    using namespace EzAquarii;
+    using namespace Synthetic;
 
     std::map<std::string, double> symbolTable = {
         {"a", 10}
     };
 }
 
-%lex-param { EzAquarii::Scanner &scanner }
-%lex-param { EzAquarii::Interpreter &driver }
+%lex-param { Synthetic::Scanner &scanner }
+%lex-param { Synthetic::Interpreter &driver }
 
-%parse-param { EzAquarii::Scanner &scanner }
-%parse-param { EzAquarii::Interpreter &driver }
+%parse-param { Synthetic::Scanner &scanner }
+%parse-param { Synthetic::Interpreter &driver }
 %locations
 %define parse.trace
 %define parse.error verbose
@@ -192,13 +192,13 @@
 * Commands to be preserved for the AST (essentially the rules)
 */
 
-%type < EzAquarii::Command > command;
-%type < EzAquarii::Command > assignment;
-%type < EzAquarii::Command > statement;
-%type < std::vector<EzAquarii::Command> > statements;
-%type < EzAquarii::Command > if_statement;
-%type < EzAquarii::Command > for_statement;
-%type < EzAquarii::Command > while_statement;
+%type < Synthetic::Command > command;
+%type < Synthetic::Command > assignment;
+%type < Synthetic::Command > statement;
+%type < std::vector<Synthetic::Command> > statements;
+%type < Synthetic::Command > if_statement;
+%type < Synthetic::Command > for_statement;
+%type < Synthetic::Command > while_statement;
 
 %start program
 
@@ -525,8 +525,8 @@ factor : id ID
 statements : statement statements
         | statement
         {
-            EzAquarii::Command c("statement");
-            std::vector<EzAquarii::Command> container = {c};
+            Synthetic::Command c("statement");
+            std::vector<Synthetic::Command> container = {c};
             $$ = container;
         }
 ;
@@ -582,7 +582,7 @@ while_statement : WHILE condition statements WHILEEND {}
 %%
 
 // Bison expects us to provide implementation - otherwise linker complains
-void EzAquarii::Parser::error(const location &loc , const std::string &message) {
+void Synthetic::Parser::error(const location &loc , const std::string &message) {
         
         // Location should be initialized inside scanner action, but is not in this example.
         // Let's grab location directly from driver class.

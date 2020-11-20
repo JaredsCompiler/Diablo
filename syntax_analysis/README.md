@@ -1,5 +1,18 @@
 # Synthetic : Grammar Checking
 
+## Credit
+
+Synthetic is built upon the works of `ezaquraii`, with his beautiful work for Flex, GNU Bison integration and the ability to change file streams to make testing go by MUCH faster.
+If this project did not exist, we would not be here at this point.
+[Here](https://github.com/ezaquarii/bison-flex-cpp-example) is the link to the original work, all other work is original.
+
+## NOTES AND CAVEATS
+
+- Given that there are so many different parse trees for each individual grammar rule, [GNU Bison](https://www.gnu.org/software/bison/) was used to generate these trees.
+- Since this project is so interlaced with [Flex (Fast Lexer)](https://github.com/westes/flex/blob/master/README.md), the use of `lexi`, our previous lexer build could not be used. 
+- Even though we did not write the parse trees by hand, the learning curve for this component was....dense to say the least
+
+
 ## TODO
 
 - [ ] Parse tree for simple example
@@ -9,11 +22,9 @@
     - [ ] [Optional Tokens](https://stackoverflow.com/a/2669581)
     - [ ] [More than one](https://stackoverflow.com/questions/29235967/bison-one-or-more-occurrences-in-grammar-file)
     - [ ] TL;DR : Bison is a LALR parser, therefore cannot support extended BNF
-    - [ ] Also I am sleep deprived so please ask me what the absolute fuck I was thinking during this time of writing...English sucks
+    - [ ] Also I am sleep deprived so please ask me what the absolute $@$@ I was thinking during this time of writing...English sucks
 - [ ] Variable retrieval for addition, subtraction, multiplication, division
-- [ ] We used GNU Bison for parse tree generation because FUCK THAT
-- [ ] [Mad props to this fool](https://github.com/ezaquarii/bison-flex-cpp-example)
-    - [ ] I LOVE YOU EZAQUARII, i will get your name tattooed on my body
+- [ ] We used GNU Bison for parse tree generation
 - [ ] Redirect all `std::cout` produced in `yylex` in `src/parser.y` to another filestream
 - [ ] More intermediate code generation
 

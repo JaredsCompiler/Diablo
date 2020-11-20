@@ -37,38 +37,54 @@
 using namespace Synthetic;
 using namespace std;
 
-int main(int argc, char **argv) {
-
-    //auto example_element = Synthetic::Parser::make_ID("HelloWorld", Synthetic::location( [> put location data here if you want <] )); 
-    //std::cout << typeid(example_element).name() << std::endl;
-    //std::vector<Synthetic::Parser::symbol_type> container;
-    //container.push_back(example_element);
-    //return 0;
-
+int conduct_one(std::string test){
     Interpreter i;
+    std::cout << "[+] Conducting test at location: " << test << std::endl;
+    std::ifstream file;
+    file.open(test);
+    i.switchInputStream(&file);
+    try{
+      int res = i.parse();
+      if(res > 0){
+        std::cerr << "[-] Test at location: " << test << " has failed!" << std::endl;
+        file.close();
+        return 1;
+      } else {
+        std::cout << i.str() << std::endl;
+      }
+    }
+    catch(DiabloBaseException& e){
+      std::cout << e.what() << std::endl;
+      return EOF;
+    }
+    file.close();
+    std::cout << std::endl;
+    return 0;
+}
+
+void conduct_all(){
     std::vector<std::string> unitTests = {
-      "inputs/for.txt"
+      "inputs/addition.txt",
+      "inputs/assignment.txt",
+      "inputs/boolean.txt",
+      "inputs/comments.txt",
+      "inputs/floating-point.txt",
+      "inputs/for.txt",
+      "inputs/functions.txt",
+      "inputs/if-branching.txt",
+      "inputs/integers.txt",
+      "inputs/keywords.txt",
+      "inputs/multiplication.txt",
+      "inputs/variables.txt",
+      "inputs/while.txt"
     };
     for(auto test : unitTests){
-      std::cout << "[+] Conducting test at location: " << test << std::endl;
-      std::ifstream file;
-      file.open(test);
-      i.switchInputStream(&file);
-      try{
-        int res = i.parse();
-        if(res > 0){
-          std::cerr << "[-] Test at location: " << test << " has failed!" << std::endl;
-          file.close();
-          return 1;
-        } else {
-          std::cout << i.str() << std::endl;
-        }
-      }
-      catch(DiabloBaseException& e){
-        std::cout << e.what() << std::endl;
-      }
-      file.close();
-      std::cout << std::endl;
+      int result = conduct_one(test);
+      if(result == EOF){ return; }
     }
+}
+
+int main(int argc, char **argv) {
+    conduct_all();
     return 0;
 }

@@ -12,8 +12,8 @@ OUTERINC = -I../lexical_analysis/includes
 
 
 all: scanner parser synthetic run
-bGang: scanner parser $(OBJS)
-	$(COMPILER) $(CFLAGS) main.cpp $(INC_PATH) $(OUTERINC) $(OBJS) $(LIBPATH) $(OUTERLIBS) src/maths.cpp src/stack_operations.cpp src/scanner.cpp src/parser.cpp src/interpreter.cpp -o bisonGang
+bisonBuild: scanner parser $(OBJS)
+	$(COMPILER) $(CFLAGS) main.cpp $(INC_PATH) $(OUTERINC) $(OBJS) $(LIBPATH) $(OUTERLIBS) src/maths.cpp src/stack_operations.cpp src/scanner.cpp src/parser.cpp src/interpreter.cpp -o $(OUTPUT)
 
 build: $(OBJS)
 test_static: create_static synthetic
@@ -53,7 +53,7 @@ run:
 	./$(OUTPUT)
 
 clean: 
-	rm -r build $(OUTPUT) $(OBJS) src/scanner.cpp src/parser.cpp src/parser.hpp src/*.hh
+	rm $(OUTPUT) $(OBJS) src/scanner.cpp src/parser.cpp src/parser.hpp src/*.hh
 
 debug: synthetic
 	gdb $(OUTPUT)

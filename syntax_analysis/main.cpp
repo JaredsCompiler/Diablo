@@ -26,18 +26,40 @@
  * 
  */
 
+// STL
+
 #include <iostream>
 #include <fstream>
 #include <vector>
+
+// EZAquarii
 
 #include "includes/scanner.h"
 #include "src/parser.hpp"
 #include "includes/interpreter.h"
 
+// Lexi
+
+#include "../lexical_analysis/includes/reader.hpp"
+
+// Synthetic
+
+#include "includes/balancer.hpp"
+
 using namespace Synthetic;
 using namespace std;
 
 int conduct_one(std::string test){
+    //sourceFile src(test);
+
+    //balancer B;
+    //const auto[state, line, lineno] = B.is_file_balanced(src);
+    //if(!state){
+      //std::cerr << "[-] File " << src.get_path() << " is not balanced" << std::endl;
+      //std::cerr << lineno << ": " << line << std::endl;
+      //return EOF;
+    //}
+
     Interpreter i;
     std::cout << "[+] Conducting test at location: " << test << std::endl;
     std::ifstream file;
@@ -85,6 +107,7 @@ void conduct_all(){
 }
 
 int main(int argc, char **argv) {
-    conduct_all();
+    conduct_one("inputs/boolean.txt");
+    conduct_one("inputs/conditionals.txt");
     return 0;
 }

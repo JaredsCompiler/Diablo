@@ -1,31 +1,180 @@
 \documentclass{article}
-\usepackage{tikz-qtree}
-\usepackage{mathtools}
-\usetikzlibrary{positioning}
+
+\usepackage{mathrsfs,amsmath}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{qtree}
+\usepackage{graphicx}
+\usepackage{syntax}
+\usepackage{listings}
+
+\usepackage[margin=1.4in]{geometry}
+
+\title{Syntactical Analyzer Documentation | CS 323}
+\author{Jared Dyreson\\ 
+        Chris Nutter \\
+        California State University, Fullerton}
+\date
+
+\newcommand{\surround}[1]{{\textless}#1{\textgreater}} 
+
+
+\usepackage [english]{babel}
+\usepackage [autostyle, english = american]{csquotes}
+\MakeOuterQuote{"}
+
+\titlespacing*{\section}
+{0pt}{5.5ex plus 1ex minus .2ex}{4.3ex plus .2ex}
+\titlespacing*{\subsection}
+{0pt}{5.5ex plus 1ex minus .2ex}{4.3ex plus .2ex}
+
+% Links %
+
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks,
+    citecolor=black,
+    filecolor=black,
+    linkcolor=black,
+    urlcolor=blue
+}
+
+% Code snippets %
+
+\definecolor{mGreen}{rgb}{0,0.6,0}
+\definecolor{mGray}{rgb}{0.5,0.5,0.5}
+\definecolor{mPurple}{rgb}{0.58,0,0.82}
+\definecolor{backgroundColour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{CStyle}{
+    backgroundcolor=\color{backgroundColour},   
+    commentstyle=\color{mGreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{mGray},
+    stringstyle=\color{mPurple},
+    basicstyle=\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2,
+    language=C
+}
+
 \begin{document}
 
-\begin{tikzpicture}
-\Tree [.\node(a) {E}; 
-          [.\node (b) {F}; ] 
-          [.\node (c) {+}; ] 
-          [.\node (d) {T};
-            [.\node (e) {T}; 
-              [.\node (f) {F}; [.\node (g) {8}; ]]]
-            [.\node (h) {*}; ]
-            [.\node (i) {F};
-              [.\node (j) {2}; ]
+\maketitle
+\tableofcontents
+
+\newpage
+
+\section{Credit}
+
+Synthetic is built upon the works of \textbf{ezaquraii}, with his beautiful work for
+Flex, GNU Bison integration and the ability to change file streams to make
+testing go by MUCH faster. If this project did not exist, we would not be here at
+this point. \href{https://github.com/ezaquarii/bison-flex-cpp-example}{Here is the} link to the original work, all other work is original.
+
+\section{Notes and Caveats}
+
+\begin{itemize}
+\item Given there are so many different functions that would need to be created for each individual grammar rule, \href{https://www.gnu.org/software/bison/}{GNU Bison} is was used to generate these trees
+\item Since this project is so interlaced with \href{https://github.com/westes/flex/blob/master/README.md}{Flex (Fast Lexer)}, the use of \textbf{Lexi} (our original lexer built for project \#1), could not be utilized.
+\end{itemize}
+
+\section{Types Allowed}
+
+\begin{itemize}
+\item bool
+\item long long int (unsigned 64-bit integers)
+\item float (for division and other computation requiring floating point arithmetic)
+\end{itemize}
+
+\section{Tokens Defined}
+
+\begin{itemize}
+\item <++>
+\end{itemize}
+
+\section{Rules}
+
+\begin{itemize}
+\item assignment
+\item statements $\rightarrow$ statement
+\begin{itemize}
+\item if
+\item for
+\item while
+\item do while
+\end{itemize}
+\item expression (arithmetic computation using long long integers)
+\item term (geometric computation using floating point integers)
+\end{itemize}
+
+
+\newpage
+
+\section{Process}
+
+\begin{itemize}
+\item Source file read in (all tests are inside the \textbf{inputs} directory)
+\item Gets lexxed using Flex
+\item Token stream is fed into GNU Bison
+\item Each individual token is then checked against grammar rules defined and intermediate code generation takes place here
+\item AST is then created after the code generation occurs
+\end{itemize}
+
+\newpage
+
+\section{Grammars}
+
+Some of these rules do have immediate left recursion and GNU Bison is able to account for these
+
+\subsection{Expressions}
+
+\begin{grammar}
+
+<expression> ::= NUMBER
+\alt <expression> ARITHMETIC\_OP <expression> 
+\alt LEFTPAR <expression> RIGHTPAR
+
+\end{grammar}
+
+\begin{lstlisting}[style=CStyle]
+! Testing addition and subtraction rules  !
+int func() {
+    ! No parens !
+    1 + 1
+    1 - 1
+
+
+    ! Parens !
+    (1 + 1)
+    (1 - 1)
+}
+\end{lstlisting}
+
+\section{Parse Tree Examples}
+
+\begin{figure}[!htb]
+
+\begin{center}
+
+\Tree[.if\_statement [.IF ] [.\surround{condition} 
+                             [.\surround{LEFTPAR} 
+                             [.\textrm{(} ] ] [.\surround{EXPR} 
+                                                [.\surround{ID} [.\textrm{a} ]] [.\textrm{+} ] [.\surround{ID} [.\textrm{b} ]]]
+                             [.\surround{RIGHTPAR} [.\textrm{)} ]]
+                        ] [.THEN ]
+            [.\surround{statement} [.\surround{function} [.\textrm{print} ]] ]
             ]
-          ]
-      ]
-\begin{scope}[every node/.style={font=\footnotesize}]
-\node[right=of a] (na) {\{E.v${}\coloneqq{}$+T.v\}};
-\node[right=of d] (nd) {\{T.v${}\coloneqq{}$F.v$^{*}$T.v\}};
-\node[right=of i] (ni) {\{F.v${}\coloneqq{}$2\}};
-\node[left=of b] (nb) {\{F.v${}\coloneqq{}$5\}};
-\node[left=of e] (ne) {\{T.v${}\coloneqq{}$F.v\}};
-\node[left=of f] (nf) {\{F.v${}\coloneqq{}$8\}};
-\foreach \i in {a,b,d,e,f,i}
-  \draw[dotted] (\i) -- (n\i);
-\end{scope}
-\end{tikzpicture}
+\caption{If statement parse tree}
+\end{center}
+\end{figure}
+
 \end{document}

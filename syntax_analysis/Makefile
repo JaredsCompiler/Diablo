@@ -13,7 +13,7 @@ OUTERINC = -I../lexical_analysis/includes
 
 all: scanner parser synthetic run
 bisonBuild: scanner parser $(OBJS)
-	$(COMPILER) $(CFLAGS) main.cpp $(INC_PATH) $(OUTERINC) $(OBJS) $(LIBPATH) $(OUTERLIBS) src/maths.cpp src/stack_operations.cpp src/scanner.cpp src/parser.cpp src/interpreter.cpp -o $(OUTPUT)
+	$(COMPILER) $(CFLAGS) main.cpp $(INC_PATH) $(OBJS) $(LIBPATH) src/maths.cpp src/stack_operations.cpp src/scanner.cpp src/parser.cpp src/interpreter.cpp -o $(OUTPUT)
 
 build: $(OBJS)
 test_static: create_static synthetic
@@ -38,7 +38,7 @@ templateCommand.o: src/templateCommand.cpp
 	$(COMPILER) $(CFLAGS) -c src/templateCommand.cpp
 
 synthetic: scanner parser $(OBJS) create_static get_lexi
-	$(COMPILER) $(CFLAGS) synthetic.cpp $(INC_PATH) $(OUTERINC) $(shell ls -d build/*) $(OBJS) $(LIBPATH) $(OUTERLIBS) src/maths.cpp src/stack_operations.cpp src/scanner.cpp src/parser.cpp src/interpreter.cpp -o synthetic
+	$(COMPILER) $(CFLAGS) main.cpp $(INC_PATH) $(OUTERINC) $(shell ls -d build/*) $(OBJS) $(LIBPATH) $(OUTERLIBS) src/maths.cpp src/stack_operations.cpp src/scanner.cpp src/parser.cpp src/interpreter.cpp -o synthetic
 
 balancer.o: src/balancer.cpp includes/balancer.hpp
 	$(COMPILER) $(CFLAGS) -c src/balancer.cpp
@@ -53,7 +53,7 @@ run:
 	./$(OUTPUT)
 
 clean: 
-	rm $(OUTPUT) $(OBJS) src/scanner.cpp src/parser.cpp src/parser.hpp src/*.hh
+	rm $(OUTPUT) $(OBJS) src/scanner.cpp src/parser.cpp src/parser.hpp src/*.hh build/*
 
 debug: synthetic
 	gdb $(OUTPUT)

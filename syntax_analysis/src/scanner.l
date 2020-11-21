@@ -72,60 +72,60 @@
 
 
 input|output {
-                cout << "Scanner: keyword [" << yytext << "]" << endl;
+                /*cout << "Scanner: keyword [" << yytext << "]" << endl;*/
                 return Synthetic::Parser::make_KEYWORD(yytext, Synthetic::location());
             }
 
 true|false {
-    cout << "Scanner: boolean [" << yytext << "]" << endl;
+    /*cout << "Scanner: boolean [" << yytext << "]" << endl;*/
     long long int value = (strcmp(yytext, "true") == 0) ? 1 : 0;
     return Synthetic::Parser::make_BOOLEAN(value, Synthetic::location());
 }
 
 int|float|bool {
-            cout << "Scanner: type [" << yytext << "]" << endl;
+            /*cout << "Scanner: type [" << yytext << "]" << endl;*/
             return Synthetic::Parser::make_PRIMITIVE_TYPE(yytext, Synthetic::location());
 }
 
 if {
-        cout << "Scanner: if statement" << endl;
+        /*cout << "Scanner: if statement" << endl;*/
         return Synthetic::Parser::make_IF(yytext, Synthetic::location());
 }
 
 else {
-        cout << "Scanner: else statement" << endl;
+        /*cout << "Scanner: else statement" << endl;*/
         return Synthetic::Parser::make_ELSE(yytext, Synthetic::location());
 }
 
 then {
-    cout << "Scanner: then statement" << endl;
+    /*cout << "Scanner: then statement" << endl;*/
     return Synthetic::Parser::make_THEN(yytext, Synthetic::location());
 }
 
 endif {
-    cout << "Scanner: endif statement" << endl;
+    /*cout << "Scanner: endif statement" << endl;*/
     return Synthetic::Parser::make_ENDIF(yytext, Synthetic::location());
 }
 
 for {
-    cout << "Scanner: for" << endl;
+    /*cout << "Scanner: for" << endl;*/
     return Synthetic::Parser::make_FOR(yytext, Synthetic::location());
 }
 
 forend {
-    cout << "Scanner: forend" << endl;
+    /*cout << "Scanner: forend" << endl;*/
     return Synthetic::Parser::make_FOREND(yytext, Synthetic::location());
 }
 
 while {
 
-    cout << "Scanner: while" << endl;
+    /*cout << "Scanner: while" << endl;*/
     return Synthetic::Parser::make_WHILE(yytext, Synthetic::location());
 }
 
 whileend {
 
-    cout << "Scanner: whileend" << endl;
+    /*cout << "Scanner: whileend" << endl;*/
     return Synthetic::Parser::make_WHILEEND(yytext, Synthetic::location());
 }
 
@@ -138,72 +138,71 @@ doend {
 }
 
 [a-z|A-Z][a-zA-Z0-9]*  {
-                cout << "Scanner: identifier [" << yytext << "]" << endl;
+                /*cout << "Scanner: identifier [" << yytext << "]" << endl;*/
                 return Synthetic::Parser::make_ID(yytext, Synthetic::location());
             }
 
 \+\+[a-z|A-Z][a-zA-Z0-9]*|[a-z|A-Z][a-zA-Z0-9]*\+\+  {
-                cout << "Scanner: incrementing [" << yytext << "]" << endl;
+                /*cout << "Scanner: incrementing [" << yytext << "]" << endl;*/
                 return Synthetic::Parser::make_ID_INC(yytext, Synthetic::location());
             }
 
 \-\-[a-z|A-Z][a-zA-Z0-9]*|[a-z|A-Z][a-zA-Z0-9]*\-\-  {
-                cout << "Scanner: decrementing [" << yytext << "]" << endl;
+                /*cout << "Scanner: decrementing [" << yytext << "]" << endl;*/
                 return Synthetic::Parser::make_ID_DEC(yytext, Synthetic::location());
             }
 
 \!.*\!      {
-                cout << "Scanner: comment [" << yytext << "]" << endl;
+                /*cout << "Scanner: comment [" << yytext << "]" << endl;*/
                 return Synthetic::Parser::make_COMMENT(yytext, Synthetic::location());
             }
 
             
 \(          {
-                cout << "Scanner: '('" << endl;
+                /*cout << "Scanner: '('" << endl;*/
                 /*cout << "Location is: " << Synthetic::location() << endl;*/
                 return Synthetic::Parser::make_LEFTPAR(Synthetic::location());
             }
             
 \)          { 
-                cout << "Scanner: ')'" << endl;
+                /*cout << "Scanner: ')'" << endl;*/
                 return Synthetic::Parser::make_RIGHTPAR(Synthetic::location());
             }
 \{  {
-
-                cout << "Scanner: '{'" << endl;
+                /*cout << "Scanner: '{'" << endl;*/
                 return Synthetic::Parser::make_LEFT_CURLY(Synthetic::location());
 }
             
 \}  {
 
-                cout << "Scanner: '}'" << endl;
+                /*cout << "Scanner: '}'" << endl;*/
                 return Synthetic::Parser::make_RIGHT_CURLY(Synthetic::location());
 }
 ;           {
-                cout << "Scanner: ';'" << endl;
+                /*cout << "Scanner: ';'" << endl;*/
                 return Synthetic::Parser::make_SEMICOLON(Synthetic::location());
             }
             
 ,           {
-                cout << "Scanner: ','" << endl;
+                /*cout << "Scanner: ','" << endl;*/
                 return Synthetic::Parser::make_COMMA(Synthetic::location());
             }
 [\+|\-]{1}   {
-                    cout << "Arithmetic operator recieved: " <<  yytext << endl;
+                    /*cout << "Arithmetic operator recieved: " <<  yytext << endl;*/
                     return Synthetic::Parser::make_ARITHMETIC_OP(yytext, Synthetic::location());
                 }
 
 [\*|\/]   {
-                    cout << "Geometric operator recieved: " <<  yytext << endl;
+                    /*cout << "Geometric operator recieved: " <<  yytext << endl;*/
                     return Synthetic::Parser::make_GEOMETRIC_OP(yytext, Synthetic::location());
             }
 \<|\>|\>\=|\<\=|and|or|not {
-                        cout << "Relation operator received: " << yytext << endl;
+                        /*cout << "Relation operator received: " << yytext << endl;*/
                         return Synthetic::Parser::make_RELATIONAL_OP(yytext, Synthetic::location());
                    }
 
 \=        {
-                cout << "assignment" << endl;
+                /*cout << "assignment" << endl;*/
                 return Synthetic::Parser::make_ASSIGN(Synthetic::location());
             }
             
@@ -213,13 +212,13 @@ doend {
 
 
 [-+]?[0-9]+ {
-                cout << "Scanner: decimal number [" << yytext << "]" << endl;
+                /*cout << "Scanner: decimal number [" << yytext << "]" << endl;*/
                 long long int number = strtoll(yytext, 0, 10);
                 return Synthetic::Parser::make_NUMBER(number, Synthetic::location());
             }
 
 [-+]?[0-9]+[\.]?[0-9]+ {
-                cout << "Scanner: double [" << yytext << "]" << endl;
+                /*cout << "Scanner: double [" << yytext << "]" << endl;*/
                 std::string::size_type sz;
                 float number = std::stof(yytext, &sz); 
                 

@@ -88,6 +88,7 @@
     // you can accomplish the same thing by inlining the code using preprocessor
     // x and y are same as in above static function
     // #define yylex(x, y) scanner.get_next_token()
+    #define YYDEBUG 1
     
     using namespace Synthetic;
 
@@ -184,7 +185,6 @@
 %type< std::vector<long long int> > expression; // 1 + 1 + 1
 %type< bool > condition; // true, false
 %type< double > factor; //
-%type< std::vector<long long int> > standIn; // 1 + 1 + 1
 %type< std::vector<double> > term; // (1 / 2 + 1)
 %type< double > id; // value pointed by ^ 
 
@@ -208,13 +208,13 @@ program :   { driver.clear(); }
         | program command
             {
                 /*const Command &cmd = $2;*/
-                cout << "command parsed, updating AST" << endl;
+                /*cout << "command parsed, updating AST" << endl;*/
                 /*driver.addCommand(cmd);*/
-                cout << endl << "prompt> ";
+                /*cout << endl << "prompt> ";*/
             }
         | program expression
         {
-            std::cout << "command parsed: [expression], updating AST..." << std::endl;
+            /*std::cout << "command parsed: [expression], updating AST..." << std::endl;*/
             const Command c = Command("expression", $2);
             driver.addCommand(c);
 
@@ -247,19 +247,22 @@ program :   { driver.clear(); }
             {
                 std::vector<long long int> v = {(long long int)$2};
                 const Command cmd = Command("condition", v);
-                cout << "command parsed, updating AST" << endl;
+                /*cout << "command parsed, updating AST" << endl;*/
                 driver.addCommand(cmd);
             }
         | program FLOAT
             {
                 std::vector<float> c = {$2};
                 const Command cmd = Command("float", c);
-                cout << "command parsed, updating AST" << endl;
+                /*cout << "command parsed, updating AST" << endl;*/
                 driver.addCommand(cmd);
             }
         ;
 
 /*
+* NOTE
+* NOT DOCUMENTED, here as a place holder until we get function calls working
+* 
 * EXAMPLES
 * 
 * if(expression) <- branch operations
@@ -274,21 +277,6 @@ command : ID LEFTPAR RIGHTPAR // function()
             string &id = $1;
             cout << "ID: " << id << endl;
             $$ = Command(id);
-        }
-    | ID LEFTPAR standIn RIGHTPAR // function(1, 2, 3, 4)
-        {
-            string &id = $1;
-            const std::vector<long long int> &args = $3;
-            cout << "function: " << id << ", " << args.size() << endl;
-            $$ = Command(id, args);
-        }
-    | LEFTPAR standIn RIGHTPAR
-        {
-           $$ = Command("filler", $2);
-        }
-    | standIn
-        {
-          $$ = Command("filler", $1);
         }
     | KEYWORD
         {
@@ -307,6 +295,7 @@ command : ID LEFTPAR RIGHTPAR // function()
 
 condition : expression RELATIONAL_OP expression 
     {
+        std::cout << "expression (" << $1.back() << ") RELATIONAL_OP (" << $2 << ") expression" <<  $3.back() << std::endl;
         long long int a = $1.back();
         long long int b = $3.back();
         // TODO
@@ -316,6 +305,7 @@ condition : expression RELATIONAL_OP expression
     }
     | LEFTPAR expression RELATIONAL_OP expression RIGHTPAR
     {
+        std::cout << "LEFTPAR expression (" << $2.back() << ") RELATIONAL_OP (" << $3 << ") expression (" << $4.back() << ") RIGHTPAR" << std::endl;
 
         long long int a = $2.back();
         long long int b = $4.back();
@@ -325,10 +315,12 @@ condition : expression RELATIONAL_OP expression
     }
     | BOOLEAN
     {
+        std::cout << "BOOLEAN (" << $1 << ")" << std::endl;
         $$ = ($1) ? true : false;
     }
     | LEFTPAR BOOLEAN RIGHTPAR
     {
+        std::cout << "LEFTPAR BOOLEAN (" << $2 << ") RIGHTPAR" << std::endl;
         $$ = ($2) ? true : false;
     }
 ;
@@ -350,12 +342,14 @@ condition : expression RELATIONAL_OP expression
 
 expression : NUMBER
         {
+            std::cout << "NUMBER (" << $1  << ") ";
             long long int number = $1;
             $$ = std::vector<long long int>();
             $$.push_back(number);
         }
     | expression ARITHMETIC_OP NUMBER
         {
+            std::cout << "<expression> ARITHMETIC_OP (" << $2 << ") NUMBER (" << $3  << ")" << std::endl << std::endl;
             long long int number = $3;
             std::vector<long long int> &args = $1;
             std::string oper = $2;
@@ -370,66 +364,15 @@ expression : NUMBER
         }
     | LEFTPAR expression RIGHTPAR
     {
-        std::cout << "got to " << "(" << "expression" << ")" << std::endl;
+        std::cout << "LEFTPAR <expression> RIGHTPAR" << std::endl;
         $$ = $2;
     }
-    /*| expression id ARITHMETIC_OP NUMBER*/
-    /*{*/
-        /*
-        * a + 10 , where a => 10. Therefore 20 should lie on the top of the stack
-        */
-        /*long long int value = $1.back();*/
-        /*std::vector<long long int> &args = $1;*/
-        /*args.push_back(compute(value, $4, $3));*/
-        /*$$ = args;*/
-    /*}*/
+    
+;
 
-    ;
-/*
-* I know this is duplicate code and can be remedied using template functions
-* You know, I'm something of a degenerate myself
-*/
-
-standIn : NUMBER
-        {
-            std::cout << "arguments: " << "number " << "(" << $1 << ")" << std::endl;
-            long long int number = $1;
-            $$ = std::vector<long long int>();
-            $$.push_back(number);
-        }
-    | standIn ARITHMETIC_OP NUMBER
-        {
-            long long int number = $3;
-            std::vector<long long int> &args = $1;
-            std::string oper = $2;
-
-            if(!args.empty()){
-                long long int top = args.back();
-                args.pop_back();
-                args.push_back(compute(top, number, oper));
-            }
-            else { args.push_back(number); }
-            $$ = args;
-        }
-    | LEFTPAR standIn RIGHTPAR
-    {
-        std::cout << "got to " << "(" << "expression" << ")" << std::endl;
-        $$ = $2;
-    }
-    /*| expression id ARITHMETIC_OP NUMBER*/
-    /*{*/
-        /*
-        * a + 10 , where a => 10. Therefore 20 should lie on the top of the stack
-        */
-        /*long long int value = $1.back();*/
-        /*std::vector<long long int> &args = $1;*/
-        /*args.push_back(compute(value, $4, $3));*/
-        /*$$ = args;*/
-    /*}*/
-
-    ;
 id : ID 
      {
+        std::cout << "ID ( " << $1 << ")" << std::endl;
         std::string variable = $1;
         double value = get_variable(symbolTable, variable);
         if(value == std::numeric_limits<double>::infinity()){
@@ -445,26 +388,31 @@ id : ID
 
 assignment : PRIMITIVE_TYPE ID SEMICOLON 
     {
+        std::cout << "PRIMITIVE_TYPE (" << $1 << ") " << "ID (" << $2 << ") " << "SEMICOLON (;)" << std::endl;
         symbolTable[$2] = 0;
     }
 
     | PRIMITIVE_TYPE ID ASSIGN expression SEMICOLON
     {
+        std::cout << "PRIMITIVE_TYPE (" << $1 << ") " << "ID (" << $2 << ")" << " ASSIGN (=) expression (" << $4.back() << ") SEMICOLON (;)" << std::endl;
         long long int value = $4.back();
         symbolTable[$2] = (float)value;
     }
     | ID ASSIGN expression SEMICOLON
     {
+        std::cout << "ID (" << $1 << ") ASSIGN (=) expresion (" << $3.back() << ") SEMICOLON (;)" << std::endl;
         long long int value = $3.back();
         symbolTable[$1] = (float)value;
     }
     | PRIMITIVE_TYPE ID ASSIGN term SEMICOLON
     {
+        std::cout << "PRIMITIVE_TYPE (" << $1 << ") ID (" << $2 << ") ASSIGN (=) term (" << $4.back() << ") SEMICOLON (;)" << std::endl;
         double value = $4.back();
         symbolTable[$2] = (float)value;
     }
     | ID ASSIGN term SEMICOLON
     {
+        std::cout << "ID (" << $1 << ") ASSIGN (=) term (" <<  $3.back() << ") SEMICOLON (;)" << std::endl;
         double value = $3.back();
         symbolTable[$1] = (float)value;
     }
@@ -480,12 +428,14 @@ assignment : PRIMITIVE_TYPE ID SEMICOLON
 */
 
 term : factor {
+        std::cout << "factor (" << $1 << ")" << std::endl;
         double number = $1;
         $$ = std::vector<double>();
         $$.push_back(number);
        }
     | term GEOMETRIC_OP factor
         {
+            std::cout << "term (" << $1.back() << ") GEOMETRIC_OP (" << $2 << ") factor (" << $3 << std::endl;
             double number = $3;
             std::vector<double> &args = $1;
             std::string oper = $2;
@@ -500,24 +450,29 @@ term : factor {
         }
     | LEFTPAR term RIGHTPAR
     {
+        std::cout << "LEFTPAR term (" << $2 << ") RIGHTPAR" << std::endl;
         $$ = $2;
     }
     | id
     {
+        std::cout << "id (" << $1 << ")" << std::endl;
         $$ = std::vector<double>($1);
     }
 ;
 
 factor : id ID
         {
+          std::cout  << "id (" << $1 << ") ID (" << $2 << ")" << std::endl;
           $$ = $1;
         }
         | NUMBER
         {
+            std::cout << "NUMBER (" << $1 << ")" << std::endl;
             $$ = $1;
         }
         | LEFTPAR expression RIGHTPAR
         {
+            std::cout << "LEFTPAR expression (" << $2.back() << ") RIGHTPAR" << std::endl;
             $$ = $2.back();
         }
 ;
@@ -525,6 +480,7 @@ factor : id ID
 statements : statement statements
         | statement
         {
+            std::cout << "<statement> ";
             Synthetic::Command c("statement");
             std::vector<Synthetic::Command> container = {c};
             $$ = container;
@@ -533,23 +489,29 @@ statements : statement statements
 
 statement : assignment 
     {
+        std::cout << "<assignment> ";
         $$ = Command("statement");
     }
     | if_statement
     {
+        std::cout  << "<if_statement>";
         $$ = Command("if_statement");
     }
     | for_statement
     {
+        std::cout << "<for_statement>";
         $$ = Command("for_statement");
     }
     | while_statement
     {
+        std::cout  << "<while_statement>";
         $$ = Command("while_statement");
     }
 ;
 
-if_statement : IF condition THEN statements ENDIF {} // do i need to bubble this up ? 
+if_statement : IF condition THEN statements ENDIF {
+    std::cout << "IF " << "condition (" << $2 << ")" << std::endl;
+} // do i need to bubble this up ? 
                | IF condition THEN statements ELSE statements ENDIF {}
 ;
 

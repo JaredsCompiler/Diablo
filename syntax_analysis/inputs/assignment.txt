@@ -4,4 +4,5 @@ int value = 10;
 int a  =  15;
 int b = 20;
 
-int value = (a + b);
+int c = 10 * 20;
+int d = 50 / 10;

@@ -1,3 +1,0 @@
-int value = a + b;
-int example = (a + b);
-int another = ((a + b);

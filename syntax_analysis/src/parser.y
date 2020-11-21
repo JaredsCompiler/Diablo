@@ -295,7 +295,7 @@ command : ID LEFTPAR RIGHTPAR // function()
 
 condition : expression RELATIONAL_OP expression 
     {
-        std::cout << "expression (" << $1.back() << ") RELATIONAL_OP (" << $2 << ") expression" <<  $3.back() << std::endl;
+        std::cout << "expression (" << $1.back() << ") RELATIONAL_OP (" << $2 << ") expression" <<  $3.back() << std::endl << std::endl;
         long long int a = $1.back();
         long long int b = $3.back();
         // TODO
@@ -305,7 +305,7 @@ condition : expression RELATIONAL_OP expression
     }
     | LEFTPAR expression RELATIONAL_OP expression RIGHTPAR
     {
-        std::cout << "LEFTPAR expression (" << $2.back() << ") RELATIONAL_OP (" << $3 << ") expression (" << $4.back() << ") RIGHTPAR" << std::endl;
+        std::cout << "LEFTPAR expression (" << $2.back() << ") RELATIONAL_OP (" << $3 << ") expression (" << $4.back() << ") RIGHTPAR" << std::endl << std::endl;
 
         long long int a = $2.back();
         long long int b = $4.back();
@@ -472,7 +472,7 @@ factor : id ID
         }
         | LEFTPAR expression RIGHTPAR
         {
-            std::cout << "LEFTPAR expression (" << $2.back() << ") RIGHTPAR" << std::endl;
+            std::cout << "LEFTPAR <expression> (" << $2.back() << ") RIGHTPAR" << std::endl;
             $$ = $2.back();
         }
 ;
@@ -480,7 +480,7 @@ factor : id ID
 statements : statement statements
         | statement
         {
-            std::cout << "<statement> ";
+            std::cout << "<statement> " << std::endl; 
             Synthetic::Command c("statement");
             std::vector<Synthetic::Command> container = {c};
             $$ = container;
@@ -494,17 +494,17 @@ statement : assignment
     }
     | if_statement
     {
-        std::cout  << "<if_statement>";
+        std::cout  << "<if_statement> ";
         $$ = Command("if_statement");
     }
     | for_statement
     {
-        std::cout << "<for_statement>";
+        std::cout << "<for_statement> ";
         $$ = Command("for_statement");
     }
     | while_statement
     {
-        std::cout  << "<while_statement>";
+        std::cout  << "<while_statement> ";
         $$ = Command("while_statement");
     }
 ;
@@ -512,13 +512,13 @@ statement : assignment
 if_statement : IF condition THEN statements ENDIF {
     std::cout << "IF <condition> ";
     std::cout << " THEN <statements> ";
-    std::cout << " ENDIF";
+    std::cout << " ENDIF" << std::endl;
 } // do i need to bubble this up ? 
             | IF condition THEN statements ELSE statements ENDIF {
                 std::cout << "IF <condition>";
                 std::cout << " THEN <statements> ";
                 std::cout << " ELSE <statements> ";
-                std::cout << " ENDIF";
+                std::cout << " ENDIF" << std::endl;
             }
 ;
 
@@ -530,9 +530,9 @@ for_statement : FOR LEFTPAR PRIMITIVE_TYPE ID ASSIGN expression SEMICOLON ID REL
         *    int value = 0;
         * forend
         */
-        std::cout << "FOR LEFTPAR PRIMITIVE_TYPE (" << $3 << ") ID (" << $4 << ") ASSIGN (=) <expression> ";
+        std::cout << " FOR LEFTPAR PRIMITIVE_TYPE (" << $3 << ") ID (" << $4 << ") ASSIGN (=) <expression> ";
         std::cout << " SEMICOLON (;) ID (" << $8 << ") RELATIONAL_OP (" << $9 << ")" << "<expression> ";
-        std::cout << "SEMICOLON (;) ID_INC (" << $10.back() << ") RIGHTPAR <statements> ";
+        std::cout << "  SEMICOLON (;) ID_INC (" << $10.back() << ") RIGHTPAR <statements> ";
         std::cout << " FOREND " << std::endl;
 
     }
@@ -544,12 +544,28 @@ for_statement : FOR LEFTPAR PRIMITIVE_TYPE ID ASSIGN expression SEMICOLON ID REL
         *    int value = 0;
         * forend
         */
+        std::cout << " FOR LEFTPAR PRIMITIVE_TYPE (" << $3 << ") ID (" << $4 << ") ASSIGN << <expression> " ;
+        std::cout << " SEMICOLON (;) ID (" << $8 << ") RELATIONAL_OP (" << $9 << ") <expression> ";
+        std::cout << " SEMICOLON (;) ID_DEC (--) RIGHTPAR <statements> ";
+        std::cout << " FOREND" << std::endl;
     }
 ;
 
-while_statement : WHILE condition statements WHILEEND {}
-                  | DO statement WHILE condition DOEND {}
-                  | DO statements WHILE condition DOEND {}
+while_statement : WHILE condition statements WHILEEND {
+    std::cout << "WHILE <condition> " ;
+    std::cout << " <statements> ";
+    std::cout << " WHILEEND" << std::endl;
+}
+                | DO statement WHILE condition DOEND {
+    std::cout << " DO <statement> ";
+    std::cout << " WHILE <condition> ";
+    std::cout << " DOEND" << std::endl;
+}
+                | DO statements WHILE condition DOEND {
+    std::cout << " DO <statements> ";
+    std::cout << " WHILE <condition> ";
+    std::cout << " DOEND" << std::endl;
+}
 ;
 
 %%

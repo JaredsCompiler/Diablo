@@ -159,22 +159,85 @@ int func() {
 }
 \end{lstlisting}
 
-\section{Parse Tree Examples}
+\subsection{ID}
 
-\begin{figure}[!htb]
+\begin{grammar}
+<id> ::= ID
+\end{grammar}
 
-\begin{center}
+\begin{lstlisting}[style=CStyle]
+! Identifiers !
 
-\Tree[.if\_statement [.IF ] [.\surround{condition} 
-                             [.\surround{LEFTPAR} 
-                             [.\textrm{(} ] ] [.\surround{EXPR} 
-                                                [.\surround{ID} [.\textrm{a} ]] [.\textrm{+} ] [.\surround{ID} [.\textrm{b} ]]]
-                             [.\surround{RIGHTPAR} [.\textrm{)} ]]
-                        ] [.THEN ]
-            [.\surround{statement} [.\surround{function} [.\textrm{print} ]] ]
-            ]
-\caption{If statement parse tree}
-\end{center}
-\end{figure}
+void func(){
+    ! Matches numbers and variable names !
+    1
+    2
+
+    a
+    ab
+    abc
+}
+
+\end{lstlisting}
+
+\subsection{Assignment}
+
+\begin{grammar}
+<assignment> ::= PRIMITIVE\_TYPE ID SEMICOLON
+\alt PRIMITIVE\_TYPE ID ASSIGN <expression> SEMICOLON
+\alt ID ASSIGN <expression> SEMICOLON
+\alt PRIMITIVE\_TYPE ID ASSIGN <term> SEMICOLON
+\alt ID ASSIGN <term> SEMICOLON
+\end{grammar}
+
+\subsection{Term}
+
+\begin{grammar}
+<term> ::= <factor>
+\alt <term> GEOMETRIC\_OP <factor>
+\alt LEFTPAR <term> RIGHTPAR
+\alt <id>
+\end{grammar}
+
+\subsection{Factor}
+
+\begin{grammar}
+<factor> ::= <id> ID
+\alt NUMBER
+\alt LEFTPAR <expression> RIGHTPAR
+
+\end{grammar}
+
+\subsection{Statements}
+
+\begin{grammar}
+<statements> ::= <statement> <statements>
+\alt <statement>
+\end{grammar}
+
+\subsection{Statement}
+
+\begin{grammar}
+<statement> ::= <assignment>
+\alt <if\_statement>
+\alt <for\_statement>
+\alt <while\_statement>
+
+\end{grammar}
+
+\subsection{If Statement}
+
+\begin{grammar}
+<if\_statement> ::= IF <condition> THEN <statements> ENDIF
+\alt IF <condition> THEN <statements> ELSE <statements> ENDIF
+
+\end{grammar}
+
+\subsection{For Loop}
+
+\begin{grammar}
+
+<for\_statement> ::= FOR LEFTPAR PRIMITIVE\_TYPE <ID> ASSIGN <expression> SEMICOLON ID RELATIONAL_OP expression SEMICOLON ID_INC RIGHTPAR statements FOREND
+\end{grammar}
 
 \end{document}

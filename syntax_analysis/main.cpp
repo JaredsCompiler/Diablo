@@ -78,7 +78,7 @@ void version(){
 
 void help(){
   printf(
-    "Usage: ./synthetic [input]"
+    "Usage: ./synthetic [input]\n"
   );
 }
 

@@ -53,7 +53,7 @@ run:
 	./$(OUTPUT) -h
 
 clean: 
-	rm $(OUTPUT) $(OBJS) src/scanner.cpp src/parser.cpp src/parser.hpp src/*.hh build/*
+	rm $(OUTPUT) $(OBJS) src/scanner.cpp src/parser.cpp src/parser.hpp src/*.hh
 
 debug: synthetic
 	gdb $(OUTPUT)

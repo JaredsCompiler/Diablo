@@ -450,7 +450,7 @@ term : factor {
         }
     | LEFTPAR term RIGHTPAR
     {
-        std::cout << "LEFTPAR term (" << $2 << ") RIGHTPAR" << std::endl;
+        std::cout << "LEFTPAR term (" << $2.back() << ") RIGHTPAR" << std::endl;
         $$ = $2;
     }
     | id
@@ -510,9 +510,16 @@ statement : assignment
 ;
 
 if_statement : IF condition THEN statements ENDIF {
-    std::cout << "IF " << "condition (" << $2 << ")" << std::endl;
+    std::cout << "IF <condition> ";
+    std::cout << " THEN <statements> ";
+    std::cout << " ENDIF";
 } // do i need to bubble this up ? 
-               | IF condition THEN statements ELSE statements ENDIF {}
+            | IF condition THEN statements ELSE statements ENDIF {
+                std::cout << "IF <condition>";
+                std::cout << " THEN <statements> ";
+                std::cout << " ELSE <statements> ";
+                std::cout << " ENDIF";
+            }
 ;
 
 for_statement : FOR LEFTPAR PRIMITIVE_TYPE ID ASSIGN expression SEMICOLON ID RELATIONAL_OP expression SEMICOLON ID_INC RIGHTPAR statements FOREND
@@ -523,6 +530,10 @@ for_statement : FOR LEFTPAR PRIMITIVE_TYPE ID ASSIGN expression SEMICOLON ID REL
         *    int value = 0;
         * forend
         */
+        std::cout << "FOR LEFTPAR PRIMITIVE_TYPE (" << $3 << ") ID (" << $4 << ") ASSIGN (=) <expression> ";
+        std::cout << " SEMICOLON (;) ID (" << $8 << ") RELATIONAL_OP (" << $9 << ")" << "<expression> ";
+        std::cout << "SEMICOLON (;) ID_INC (" << $10.back() << ") RIGHTPAR <statements> ";
+        std::cout << " FOREND " << std::endl;
 
     }
     | FOR LEFTPAR PRIMITIVE_TYPE ID ASSIGN expression SEMICOLON ID RELATIONAL_OP expression SEMICOLON ID_DEC RIGHTPAR statements FOREND

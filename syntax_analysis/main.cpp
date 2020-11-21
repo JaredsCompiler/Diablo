@@ -155,7 +155,6 @@ void conduct_all(){
       "inputs/functions.txt",
       "inputs/if-branching.txt",
       "inputs/integers.txt",
-      "inputs/keywords.txt",
       "inputs/multiplication.txt",
       "inputs/variables.txt",
       "inputs/while.txt"

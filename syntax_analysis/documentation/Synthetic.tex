@@ -1,0 +1,413 @@
+\documentclass{article}
+
+\usepackage{mathrsfs,amsmath}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{qtree}
+\usepackage{graphicx}
+\usepackage{syntax}
+\usepackage{listings}
+
+\usepackage[margin=1.4in]{geometry}
+
+\title{Syntactical Analyzer Documentation | CS 323}
+\author{Jared Dyreson\\ 
+        Chris Nutter \\
+        California State University, Fullerton}
+\date
+
+\newcommand{\surround}[1]{{\textless}#1{\textgreater}} 
+
+
+\usepackage [english]{babel}
+\usepackage [autostyle, english = american]{csquotes}
+\MakeOuterQuote{"}
+
+\titlespacing*{\section}
+{0pt}{5.5ex plus 1ex minus .2ex}{4.3ex plus .2ex}
+\titlespacing*{\subsection}
+{0pt}{5.5ex plus 1ex minus .2ex}{4.3ex plus .2ex}
+
+% Links %
+
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks,
+    citecolor=black,
+    filecolor=black,
+    linkcolor=black,
+    urlcolor=blue
+}
+
+% Code snippets %
+
+\definecolor{mGreen}{rgb}{0,0.6,0}
+\definecolor{mGray}{rgb}{0.5,0.5,0.5}
+\definecolor{mPurple}{rgb}{0.58,0,0.82}
+\definecolor{backgroundColour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{CStyle}{
+    backgroundcolor=\color{backgroundColour},   
+    commentstyle=\color{mGreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{mGray},
+    stringstyle=\color{mPurple},
+    basicstyle=\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2,
+    language=C
+}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+
+\newpage
+
+\section{Credit}
+
+Synthetic is built upon the works of \textbf{ezaquraii}, with his beautiful work for
+Flex, GNU Bison integration and the ability to change file streams to make
+testing go by MUCH faster. If this project did not exist, we would not be here at
+this point. \href{https://github.com/ezaquarii/bison-flex-cpp-example}{Here is the} link to the original work, all other work is original.
+
+\section{Notes and Caveats}
+
+\begin{itemize}
+\item Given there are so many different functions that would need to be created for each individual grammar rule, \href{https://www.gnu.org/software/bison/}{GNU Bison} is was used to generate these trees
+\item Since this project is so interlaced with \href{https://github.com/westes/flex/blob/master/README.md}{Flex (Fast Lexer)}, the use of \textbf{Lexi} (our original lexer built for project \#1), could not be utilized.
+\end{itemize}
+
+\section{Types Allowed}
+
+\begin{itemize}
+\item bool
+\item long long int (unsigned 64-bit integers)
+\item float (for division and other computation requiring floating point arithmetic)
+\end{itemize}
+
+\newpage
+
+\section{Tokens Defined}
+
+\subsection{Separators}
+
+\begin{itemize}
+\item LEFTPAR $\rightarrow$ (
+\item RIGHTPAR $\rightarrow$ )
+\item LEFT\_CURLY $\rightarrow$ \{
+\item RIGHT\_CURLY $\rightarrow$ \}
+\end{itemize}
+
+\subsection{Delimiters}
+
+\begin{itemize}
+\item SEMICOLON $\rightarrow$ ;
+\item COMMA $\rightarrow$ ,
+\end{itemize}
+
+\subsection{Operators}
+
+\begin{itemize}
+
+\item ASSIGN $\rightarrow$ =
+\item GEOMETRIC\_OP $\rightarrow$ *  /
+\item ARITHMETIC\_OP $\rightarrow$ +  -
+\item RELATIONAL\_OP $\rightarrow$ $>$  $<$ $<=$ $>=$ \&\& \text{\textbar\textbar}
+\item ID\_INC $\rightarrow$ $++$
+\item ID\_DEC $\rightarrow$ $--$
+\end{itemize}
+
+\subsection{Reserved Words | Primitive Types}
+
+\begin{itemize}
+\item bool
+\item int
+\item float
+\end{itemize}
+
+\subsection{Reserved Words | Control Flow}
+
+\begin{itemize}
+\item if
+\item else
+\item then
+\item endif
+\item for
+\item forend
+\item while
+\item whileend
+\item do
+\item doend
+\end{itemize}
+
+\section{Rules}
+
+\begin{itemize}
+\item assignment
+\item statements $\rightarrow$ statement
+\begin{itemize}
+\item if
+\item for
+\item while
+\item do while
+\end{itemize}
+\item expression (arithmetic computation using long long integers)
+\item term (geometric computation using floating point integers)
+\end{itemize}
+
+
+\newpage
+
+\section{Process}
+
+\begin{itemize}
+\item Source file read in (all tests are inside the \textbf{inputs} directory)
+\item Gets lexxed using Flex
+\item Token stream is fed into GNU Bison
+\item Each individual token is then checked against grammar rules defined and intermediate code generation takes place here
+\item AST is then created after the code generation occurs
+\end{itemize}
+
+\section{Grammars}
+
+Some of these rules do have immediate left recursion and GNU Bison is able to account for these
+
+\subsection{Expressions}
+
+\begin{grammar}
+
+<expression> ::= NUMBER
+\alt <expression> ARITHMETIC\_OP <expression> 
+\alt LEFTPAR <expression> RIGHTPAR
+
+\end{grammar}
+
+\begin{lstlisting}[style=CStyle]
+! Testing addition and subtraction rules  !
+int func() {
+    ! No parens !
+    1 + 1
+    1 - 1
+
+
+    ! Parens !
+    (1 + 1)
+    (1 - 1)
+}
+\end{lstlisting}
+
+\newpage
+
+\subsection{ID}
+
+\begin{grammar}
+<id> ::= ID
+\end{grammar}
+
+\begin{lstlisting}[style=CStyle]
+! Identifiers !
+
+void func(){
+    ! Matches numbers and variable names !
+    1
+    2
+
+    a
+    ab
+    abc
+}
+
+\end{lstlisting}
+
+\subsection{Assignment}
+
+\begin{grammar}
+<assignment> ::= PRIMITIVE\_TYPE ID SEMICOLON
+\alt PRIMITIVE\_TYPE ID ASSIGN <expression> SEMICOLON
+\alt ID ASSIGN <expression> SEMICOLON
+\alt PRIMITIVE\_TYPE ID ASSIGN <term> SEMICOLON
+\alt ID ASSIGN <term> SEMICOLON
+\end{grammar}
+
+\begin{lstlisting}[style=CStyle]
+! Assignments !
+
+void func(){
+    ! This is a test for assignment !
+
+    int value = 10;
+    int a  =  15;
+    int b = 20;
+
+    int c = 10 * 20;
+    int d = 50 / 10;
+}
+\end{lstlisting}
+
+\newpage
+
+\subsection{Term}
+
+\begin{grammar}
+<term> ::= <factor>
+\alt <term> GEOMETRIC\_OP <factor>
+\alt LEFTPAR <term> RIGHTPAR
+\alt <id>
+\end{grammar}
+
+\begin{lstlisting}[style=CStyle]
+void func(){
+    10 * 20 * 30;
+    50 / 10 / 5;
+    (10 * 10 * 10);
+    exampleVar;
+}
+\end{lstlisting}
+
+
+\subsection{Factor}
+
+\begin{grammar}
+<factor> ::= <id> ID
+\alt NUMBER
+\alt LEFTPAR <expression> RIGHTPAR
+
+\end{grammar}
+
+\begin{lstlisting}[style=CStyle]
+
+
+void func() {
+    ! Gets the value of exampleVar and places it onto a temporary stack to be computed ! 
+
+    exampleVar
+
+    ! Does the same but puts 10 directly, no lookup required !
+    10
+
+    ! Computes 10 + 10 and places 20 onto the stack !
+
+    (10 + 10)
+}
+\end{lstlisting}
+
+\newpage
+
+\subsection{Statements}
+
+\begin{grammar}
+<statements> ::= <statement> <statements>
+\alt <statement>
+\end{grammar}
+
+\begin{lstlisting}[style=CStyle]
+
+! Mix and match statements !
+
+void func(){
+    int value = 10;
+    if (true) then
+        value = 100;
+    else
+        for(int i = 0; i < 10; ++i) 
+            ! pass !
+        endfor
+    endif
+}
+
+\end{lstlisting}
+
+\subsection{Statement}
+
+\begin{grammar}
+<statement> ::= <assignment>
+\alt <if\_statement>
+\alt <for\_statement>
+\alt <while\_statement>
+
+\end{grammar}
+
+\subsection{If Statement}
+
+\begin{grammar}
+<if\_statement> ::= IF <condition> THEN <statements> ENDIF
+\alt IF <condition> THEN <statements> ELSE <statements> ENDIF
+
+\end{grammar}
+
+\begin{lstlisting}[style=CStyle]
+
+void func() {
+    if (10 < 12) then
+        int value = 10;
+    else
+        int var = 10;
+    endif
+}
+
+\end{lstlisting}
+
+\newpage
+
+\subsection{For Loop}
+
+\begin{grammar}
+<for\_statement> ::= FOR LEFTPAR PRIMITIVE\_TYPE <ID> ASSIGN <expression> SEMICOLON ID RELATIONAL\_OP <expression> SEMICOLON ID\_INC RIGHTPAR <statements> FOREND
+\end{grammar}
+
+\begin{lstlisting}[style=CStyle]
+for (int i = 0; i < 10; i++)
+    int first = 0;
+    for (int i = 0; i < 10; i++)
+        int second = 0;
+    forend
+forend
+
+
+for (int i = 0; i < 10; ++i)
+    int first = 0;
+    for (int i = 0; i < 10; ++i)
+        int second = 0;
+    forend
+forend
+
+
+for (int i = 0; i < 10; --i)
+    int first = 0;
+    for (int i = 0; i < 10; --i)
+        int second = 0;
+    forend
+forend
+\end{lstlisting}
+
+\subsection{While Loop}
+
+\begin{grammar}
+<while\_statement> ::= WHILE <condition> <statements> WHILEEND
+\alt DO <statement> WHILE <condition> DOEND
+\alt DO <statements> WHILE <condition> DOEND
+\end{grammar}
+
+\begin{lstlisting}[style=CStyle]
+
+while(value < 10)
+    value--;
+whileend
+
+do
+  value++;
+while(value < 10)
+doend
+\end{lstlisting}
+
+\end{document}

@@ -31,6 +31,7 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <cstring>
 
 // EZAquarii
 
@@ -48,6 +49,65 @@
 
 using namespace Synthetic;
 using namespace std;
+
+const char* AUTHORS[] = {
+  "Jared Dyreson",
+  "Chris Nutter"
+};
+
+int showhelp = 0, showversion = 0, conductall = 0;
+
+const char* INSTITUTION = "California State University Fullerton";
+
+void conduct_all(void);
+void setoption(const char* arg, const char* s, const char* t, int* value);
+void init(int argc, const char* argv[]);
+void help(void);
+void version(void);
+int conduct_one(std::string test);
+
+void version(){
+  printf(
+    "Synthetic Grammar Checking (%s) 1.0\n"
+    "Copyright (C) 2020 Comrade Software Foundation, Inc.\n"
+    "MIT License\n"
+    "This is free software, and provided as is without warranty\n"
+    "Written by %s and %s\n",
+  INSTITUTION, AUTHORS[0], AUTHORS[1]); 
+}
+
+void help(){
+  printf(
+    "Usage: ./synthetic [input]"
+  );
+}
+
+void setoption(const char* arg, const char* s, const char* t, int* value) {
+    
+  if ((strcmp(arg, s) == 0) || ((t != NULL && strcmp(arg, t) == 0))) { *value = 1; }
+    
+}
+
+void init(int argc, const char* argv[]) {
+
+  while (argc-- > 0) {
+    const char* arg = *argv;
+
+    setoption(arg, "-v",    "--version",   &showversion);
+    setoption(arg, "-h",    "--help",      &showhelp);
+    setoption(arg, "-a",    "--all",       &conductall);
+
+}
+
+  // ================================= //
+
+  if (showversion)  { version();  exit(0); }
+  if (showhelp)     { help();     exit(0); }
+  if (conductall)   { conduct_all(); exit(0); }                    
+
+}
+
+// ================================================================ //
 
 int conduct_one(std::string test){
     //sourceFile src(test);
@@ -106,8 +166,25 @@ void conduct_all(){
     }
 }
 
-int main(int argc, char **argv) {
+/*int main(int argc, char **argv) {
     conduct_one("inputs/boolean.txt");
     conduct_one("inputs/conditionals.txt");
     return 0;
+}*/
+
+// ================================================================ //
+
+int main(int argc, const char* argv[]) {
+
+    if(argc < 2){
+        help();
+        return 1;
+    }
+
+    init(--argc, ++argv);
+    conduct_one(argv[0]);
+
+    return 0;
+
 }
+

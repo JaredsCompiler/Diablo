@@ -50,7 +50,7 @@ DiabloExceptions.o: src/DiabloExceptions.cpp includes/DiabloExceptions.hpp
 	$(COMPILER) $(CFLAGS) -c src/DiabloExceptions.cpp
 
 run:
-	./$(OUTPUT)
+	./$(OUTPUT) -h
 
 clean: 
 	rm $(OUTPUT) $(OBJS) src/scanner.cpp src/parser.cpp src/parser.hpp src/*.hh build/*

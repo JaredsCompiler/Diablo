@@ -31,6 +31,7 @@
 #include "templateCommand.cpp"
 
 #include <sstream>
+#include <iterator>
 
 using namespace Synthetic;
 
@@ -38,7 +39,8 @@ Interpreter::Interpreter() :
     m_scanner(*this),
     m_parser(m_scanner, *this),
     m_location(0),
-    m_commands()
+    m_commands(),
+    symbol_table()
 {
 
 }
@@ -55,11 +57,14 @@ void Interpreter::clear() {
 
 std::string Interpreter::str() const {
     std::stringstream s;
-    s << "Interpreter: " << m_commands.size() << " commands received from command line." << endl;
-    for(int i = 0; i < m_commands.size(); i++) {
-        s << " * [FLOATS] " << m_commands[i].fstr() << endl;
-        s << " * [LONG LONG INTS] " << m_commands[i].llstr() << endl;
-        s << endl;
+    //s << "Interpreter: " << m_commands.size() << " commands received from command line." << endl;
+    //for(int i = 0; i < m_commands.size(); i++) {
+        //s << " * [FLOATS] " << m_commands[i].fstr() << endl;
+        //s << " * [LONG LONG INTS] " << m_commands[i].llstr() << endl;
+        //s << endl;
+    //}
+    for(auto element : symbol_table){
+      s << element.first << "  " << element.second  << " " << std::endl;
     }
     return s.str();
 }
@@ -80,4 +85,16 @@ void Interpreter::increaseLocation(unsigned int loc) {
 
 unsigned int Interpreter::location() const {
     return m_location;
+}
+
+void Interpreter::addSymbol(std::string variable, long long int value) {
+    this->symbol_table[variable] = value;
+}
+
+long long int Interpreter::getSymbol(std::string variable){
+  for (auto it = this->symbol_table.begin(); it != symbol_table.end(); ++it){
+    if (it->first == variable){ return it->second; }
+  }
+  // not found
+  return std::numeric_limits<long long int>::infinity();
 }

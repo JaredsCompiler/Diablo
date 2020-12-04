@@ -30,6 +30,8 @@
 #define INTERPRETER_H
 
 #include <vector>
+#include <map>
+#include <string>
 
 #include "scanner.h"
 
@@ -96,12 +98,16 @@ private:
     
     // Used to get last Scanner location. Used in error messages.
     unsigned int location() const;
+
+    void addSymbol(std::string, long long int);
+    long long int getSymbol(std::string); // returns infinity if not found
     
 private:
     Scanner m_scanner; // reads in from file stream
     Parser m_parser; // 
     std::vector<Command> m_commands;  // Example AST
     unsigned int m_location;          // Used by scanner
+    std::map<std::string, long long int> symbol_table; // Used across the program to give variable values
 };
 
 }

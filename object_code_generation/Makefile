@@ -1,14 +1,14 @@
-OBJS = command.o  DiabloExceptions.o Instruction.o Assembler.o Symbol.o SymbolTable.o # include balancer.o after, needed for synthetic.cpp
+OBJS = command.o  DiabloExceptions.o # include balancer.o after, needed for synthetic.cpp
 COMPILER = clang++
 CFLAGS = -Wc++17-extensions -Wall
 OUTPUT = synthetic
 LIBNAME = syntheticLib
 
 LIBPATH = -L bin/static/$(LIBNAME)
-OUTERLIBS = -L ../lexical_analysis/bin/static/lexiLib
+#OUTERLIBS = -L ../lexical_analysis/bin/static/lexiLib
 
 INC_PATH = -Iincludes
-OUTERINC = -I../lexical_analysis/includes
+#OUTERINC = -I../lexical_analysis/includes
 
 
 all: scanner parser synthetic run
@@ -34,21 +34,8 @@ parser: src/parser.y
 command.o: includes/command.h src/command.cpp
 	$(COMPILER) $(CFLAGS) -c src/command.cpp
 
-# TODO
-# these classes were added in Seminal
-
-Instruction.o: includes/Instruction.hpp src/Instruction.cpp
-	$(COMPILER) $(CFLAGS) -c src/Instruction.cpp
-
-Assembler.o: includes/Assembler.hpp src/Assembler.cpp
-	$(COMPILER) $(CFLAGS) -c src/Assembler.cpp
-
-Symbol.o: includes/Symbol.hpp src/Symbol.cpp
-	$(COMPILER) $(CFLAGS) -c src/Symbol.cpp
-
-SymbolTable.o: includes/SymbolTable.hpp src/SymbolTable.cpp
-	$(COMPILER) $(CFLAGS) -c src/SymbolTable.cpp
-# END TODO
+templateCommand.o: src/templateCommand.cpp
+	$(COMPILER) $(CFLAGS) -c src/templateCommand.cpp
 
 synthetic: scanner parser $(OBJS) create_static get_lexi
 	$(COMPILER) $(CFLAGS) main.cpp $(INC_PATH) $(OUTERINC) $(shell ls -d build/*) $(OBJS) $(LIBPATH) $(OUTERLIBS) src/maths.cpp src/stack_operations.cpp src/scanner.cpp src/parser.cpp src/interpreter.cpp -o synthetic

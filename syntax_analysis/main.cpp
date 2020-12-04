@@ -47,6 +47,13 @@
 
 #include "includes/balancer.hpp"
 
+// Seminal
+
+#include "includes/Assembler.hpp"
+#include "includes/Instruction.hpp"
+#include "includes/Symbol.hpp"
+#include "includes/SymbolTable.hpp"
+
 using namespace Synthetic;
 using namespace std;
 
@@ -110,16 +117,6 @@ void init(int argc, const char* argv[]) {
 // ================================================================ //
 
 int conduct_one(std::string test){
-    //sourceFile src(test);
-
-    //balancer B;
-    //const auto[state, line, lineno] = B.is_file_balanced(src);
-    //if(!state){
-      //std::cerr << "[-] File " << src.get_path() << " is not balanced" << std::endl;
-      //std::cerr << lineno << ": " << line << std::endl;
-      //return EOF;
-    //}
-
     Interpreter i;
     std::cout << "[+] Conducting test at location: " << test << std::endl;
     std::ifstream file;
@@ -174,6 +171,20 @@ void conduct_all(){
 // ================================================================ //
 
 int main(int argc, const char* argv[]) {
+    Assembler ass = Assembler();
+    Instruction instr = Instruction();
+    ass.push(instr);
+    std::cout << instr << std::endl;
+    std::cout << ass << std::endl;
+    Symbol s = Symbol("int", "value", 24);
+    SymbolTable table = SymbolTable();
+
+    if(!s.typeMismatch()){
+      table.insert("value", s);
+      std::cout << "inserted " << s.name_() << " with value of " << s.value_() << " at the location of " << s.location_() << std::endl;
+    } else {
+      std::cout << "could not insert, there was a type mismatch from " << s.type_() << " to value of " << s.value_() << std::endl;
+    }
 
     if(argc < 2){
         help();

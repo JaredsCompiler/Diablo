@@ -215,7 +215,7 @@ program :   { driver.clear(); }
             }
         | program expression
         {
-            /*std::cout << "command parsed: [expression], updating AST..." << std::endl;*/
+            /*dout << "command parsed: [expression], updating AST..." << std::endl;*/
             const Command c = Command("expression", $2);
             driver.addCommand(c);
 
@@ -296,7 +296,7 @@ command : ID LEFTPAR RIGHTPAR // function()
 
 condition : expression RELATIONAL_OP expression 
     {
-        /*std::cout << "expression (" << $1.back() << ") RELATIONAL_OP (" << $2 << ") expression" <<  $3.back() << std::endl << std::endl;*/
+        /*dout << "expression (" << $1.back() << ") RELATIONAL_OP (" << $2 << ") expression" <<  $3.back() << std::endl << std::endl;*/
 
         dout << "expression (" << $1.back() << ") RELATIONAL_OP (" << $2 << ") expression" <<  $3.back() << std::endl << std::endl;
         long long int a = $1.back();
@@ -308,7 +308,7 @@ condition : expression RELATIONAL_OP expression
     }
     | LEFTPAR expression RELATIONAL_OP expression RIGHTPAR
     {
-        std::cout << "LEFTPAR expression (" << $2.back() << ") RELATIONAL_OP (" << $3 << ") expression (" << $4.back() << ") RIGHTPAR" << std::endl << std::endl;
+        dout << "LEFTPAR expression (" << $2.back() << ") RELATIONAL_OP (" << $3 << ") expression (" << $4.back() << ") RIGHTPAR" << std::endl << std::endl;
 
         long long int a = $2.back();
         long long int b = $4.back();
@@ -318,12 +318,12 @@ condition : expression RELATIONAL_OP expression
     }
     | BOOLEAN
     {
-        std::cout << "BOOLEAN (" << $1 << ")" << std::endl;
+        dout << "BOOLEAN (" << $1 << ")" << std::endl;
         $$ = ($1) ? true : false;
     }
     | LEFTPAR BOOLEAN RIGHTPAR
     {
-        std::cout << "LEFTPAR BOOLEAN (" << $2 << ") RIGHTPAR" << std::endl;
+        dout << "LEFTPAR BOOLEAN (" << $2 << ") RIGHTPAR" << std::endl;
         $$ = ($2) ? true : false;
     }
 ;
@@ -345,14 +345,14 @@ condition : expression RELATIONAL_OP expression
 
 expression : NUMBER
         {
-            std::cout << "NUMBER (" << $1  << ") ";
+            dout << "NUMBER (" << $1  << ") ";
             long long int number = $1;
             $$ = std::vector<long long int>();
             $$.push_back(number);
         }
     | expression ARITHMETIC_OP NUMBER
         {
-            std::cout << "<expression> ARITHMETIC_OP (" << $2 << ") NUMBER (" << $3  << ")" << std::endl << std::endl;
+            dout << "<expression> ARITHMETIC_OP (" << $2 << ") NUMBER (" << $3  << ")" << std::endl << std::endl;
             long long int number = $3;
             std::vector<long long int> &args = $1;
             std::string oper = $2;
@@ -367,7 +367,7 @@ expression : NUMBER
         }
     | LEFTPAR expression RIGHTPAR
     {
-        std::cout << "LEFTPAR <expression> RIGHTPAR" << std::endl;
+        dout << "LEFTPAR <expression> RIGHTPAR" << std::endl;
         $$ = $2;
     }
     
@@ -375,7 +375,7 @@ expression : NUMBER
 
 id : ID 
      {
-        /*std::cout << "ID ( " << $1 << ")" << std::endl;*/
+        /*dout << "ID ( " << $1 << ")" << std::endl;*/
         /*std::string variable = $1;*/
         /*long long int value = driver.getSymbol(variable);*/
         /*[>double value = get_variable(symbolTable, variable);<]*/
@@ -384,7 +384,7 @@ id : ID
             /*snprintf(buff, sizeof(buff), "[ERROR] Variable %s is undefined", variable.c_str());*/
             /*throw VariableNotDeclaredException(buff, __FILE__, __LINE__, __FUNCTION__, "Nothing");*/
         /*} else {*/
-            /*std::cout << "variable [" << variable << "] with value of --> " << "[" << value << "]" << std::endl;*/
+            /*dout << "variable [" << variable << "] with value of --> " << "[" << value << "]" << std::endl;*/
         /*}*/
         $$ = 1.0;
         /*$$ = value;*/
@@ -393,15 +393,15 @@ id : ID
 
 assignment : PRIMITIVE_TYPE ID SEMICOLON 
     {
-        std::cout << "PRIMITIVE_TYPE (" << $1 << ") " << "ID (" << $2 << ") " << "SEMICOLON (;)" << std::endl;
-        Symbol S = Symbol($1, $2, 0); // int value; ==> int value = 0;
+        dout << "PRIMITIVE_TYPE (" << $1 << ") " << "ID (" << $2 << ") " << "SEMICOLON (;)" << std::endl;
+        Symbol S = Symbol($1, $2, 0); // inhttps://www.youtube.com/watch?v=F177-VTSGS://www.youtube.com/watch?v=F177-VTSGSMt value; ==> int value = 0;
         driver.addSymbol(S);
         /*symbolTable[$2] = driver.getSymbol($2);*/
     }
 
     | PRIMITIVE_TYPE ID ASSIGN expression SEMICOLON
     {
-        std::cout << "PRIMITIVE_TYPE (" << $1 << ") " << "ID (" << $2 << ")" << " ASSIGN (=) expression (" << $4.back() << ") SEMICOLON (;)" << std::endl;
+        dout << "PRIMITIVE_TYPE (" << $1 << ") " << "ID (" << $2 << ")" << " ASSIGN (=) expression (" << $4.back() << ") SEMICOLON (;)" << std::endl;
         long long int value = $4.back();
         Symbol S = Symbol($1, $2, value);
         driver.addSymbol(S);
@@ -410,7 +410,7 @@ assignment : PRIMITIVE_TYPE ID SEMICOLON
     }
     | ID ASSIGN expression SEMICOLON
     {
-        std::cout << "ID (" << $1 << ") ASSIGN (=) expresion (" << $3.back() << ") SEMICOLON (;)" << std::endl;
+        dout << "ID (" << $1 << ") ASSIGN (=) expresion (" << $3.back() << ") SEMICOLON (;)" << std::endl;
         long long int value = $3.back();
         // TODO
         // lookup symbol and check type
@@ -422,7 +422,7 @@ assignment : PRIMITIVE_TYPE ID SEMICOLON
     }
     | PRIMITIVE_TYPE ID ASSIGN term SEMICOLON
     {
-        std::cout << "PRIMITIVE_TYPE (" << $1 << ") ID (" << $2 << ") ASSIGN (=) term (" << $4.back() << ") SEMICOLON (;)" << std::endl;
+        dout << "PRIMITIVE_TYPE (" << $1 << ") ID (" << $2 << ") ASSIGN (=) term (" << $4.back() << ") SEMICOLON (;)" << std::endl;
         double value = $4.back();
         Symbol S = Symbol($1, $2, (int)value);
         /*driver.addSymbol($2, value);*/
@@ -430,7 +430,7 @@ assignment : PRIMITIVE_TYPE ID SEMICOLON
     }
     | ID ASSIGN term SEMICOLON
     {
-        std::cout << "ID (" << $1 << ") ASSIGN (=) term (" <<  $3.back() << ") SEMICOLON (;)" << std::endl;
+        dout << "ID (" << $1 << ") ASSIGN (=) term (" <<  $3.back() << ") SEMICOLON (;)" << std::endl;
         double value = $3.back();
         // TODO
         // lookup symbol and check type
@@ -450,7 +450,7 @@ assignment : PRIMITIVE_TYPE ID SEMICOLON
 */
 
 term : factor {
-        std::cout << "factor (" << $1 << ")" << std::endl;
+        dout << "factor (" << $1 << ")" << std::endl;
         double number = $1;
         $$ = std::vector<double>();
         $$.push_back(number);
@@ -472,29 +472,29 @@ term : factor {
         }
     | LEFTPAR term RIGHTPAR
     {
-        std::cout << "LEFTPAR term (" << $2.back() << ") RIGHTPAR" << std::endl;
+        dout << "LEFTPAR term (" << $2.back() << ") RIGHTPAR" << std::endl;
         $$ = $2;
     }
     | id
     {
-        std::cout << "id (" << $1 << ")" << std::endl;
+        dout << "id (" << $1 << ")" << std::endl;
         $$ = std::vector<double>($1);
     }
 ;
 
 factor : id ID
         {
-          std::cout  << "id (" << $1 << ") ID (" << $2 << ")" << std::endl;
+          dout  << "id (" << $1 << ") ID (" << $2 << ")" << std::endl;
           $$ = $1;
         }
         | NUMBER
         {
-            std::cout << "NUMBER (" << $1 << ")" << std::endl;
+            dout << "NUMBER (" << $1 << ")" << std::endl;
             $$ = $1;
         }
         | LEFTPAR expression RIGHTPAR
         {
-            std::cout << "LEFTPAR <expression> (" << $2.back() << ") RIGHTPAR" << std::endl;
+            dout << "LEFTPAR <expression> (" << $2.back() << ") RIGHTPAR" << std::endl;
             $$ = $2.back();
         }
 ;
@@ -502,7 +502,7 @@ factor : id ID
 statements : statement statements
         | statement
         {
-            std::cout << "<statement> " << std::endl; 
+            dout << "<statement> " << std::endl; 
             Synthetic::Command c("statement");
             std::vector<Synthetic::Command> container = {c};
             $$ = container;
@@ -511,36 +511,36 @@ statements : statement statements
 
 statement : assignment 
     {
-        std::cout << "<assignment> ";
+        dout << "<assignment> ";
         $$ = Command("statement");
     }
     | if_statement
     {
-        std::cout  << "<if_statement> ";
+        dout  << "<if_statement> ";
         $$ = Command("if_statement");
     }
     | for_statement
     {
-        std::cout << "<for_statement> ";
+        dout << "<for_statement> ";
         $$ = Command("for_statement");
     }
     | while_statement
     {
-        std::cout  << "<while_statement> ";
+        dout  << "<while_statement> ";
         $$ = Command("while_statement");
     }
 ;
 
 if_statement : IF condition THEN statements ENDIF {
-    std::cout << "IF <condition> ";
-    std::cout << " THEN <statements> ";
-    std::cout << " ENDIF" << std::endl;
+    dout << "IF <condition> ";
+    dout << " THEN <statements> ";
+    dout << " ENDIF" << std::endl;
 } // do i need to bubble this up ? 
             | IF condition THEN statements ELSE statements ENDIF {
-                std::cout << "IF <condition>";
-                std::cout << " THEN <statements> ";
-                std::cout << " ELSE <statements> ";
-                std::cout << " ENDIF" << std::endl;
+                dout << "IF <condition>";
+                dout << " THEN <statements> ";
+                dout << " ELSE <statements> ";
+                dout << " ENDIF" << std::endl;
             }
 ;
 
@@ -552,10 +552,10 @@ for_statement : FOR LEFTPAR PRIMITIVE_TYPE ID ASSIGN expression SEMICOLON ID REL
         *    int value = 0;
         * forend
         */
-        std::cout << " FOR LEFTPAR PRIMITIVE_TYPE (" << $3 << ") ID (" << $4 << ") ASSIGN (=) <expression> ";
-        std::cout << " SEMICOLON (;) ID (" << $8 << ") RELATIONAL_OP (" << $9 << ")" << "<expression> ";
-        std::cout << "  SEMICOLON (;) ID_INC (" << $10.back() << ") RIGHTPAR <statements> ";
-        std::cout << " FOREND " << std::endl;
+        dout << " FOR LEFTPAR PRIMITIVE_TYPE (" << $3 << ") ID (" << $4 << ") ASSIGN (=) <expression> ";
+        dout << " SEMICOLON (;) ID (" << $8 << ") RELATIONAL_OP (" << $9 << ")" << "<expression> ";
+        dout << "  SEMICOLON (;) ID_INC (" << $10.back() << ") RIGHTPAR <statements> ";
+        dout << " FOREND " << std::endl;
 
     }
     | FOR LEFTPAR PRIMITIVE_TYPE ID ASSIGN expression SEMICOLON ID RELATIONAL_OP expression SEMICOLON ID_DEC RIGHTPAR statements FOREND
@@ -566,27 +566,27 @@ for_statement : FOR LEFTPAR PRIMITIVE_TYPE ID ASSIGN expression SEMICOLON ID REL
         *    int value = 0;
         * forend
         */
-        std::cout << " FOR LEFTPAR PRIMITIVE_TYPE (" << $3 << ") ID (" << $4 << ") ASSIGN << <expression> " ;
-        std::cout << " SEMICOLON (;) ID (" << $8 << ") RELATIONAL_OP (" << $9 << ") <expression> ";
-        std::cout << " SEMICOLON (;) ID_DEC (--) RIGHTPAR <statements> ";
-        std::cout << " FOREND" << std::endl;
+        dout << " FOR LEFTPAR PRIMITIVE_TYPE (" << $3 << ") ID (" << $4 << ") ASSIGN << <expression> " ;
+        dout << " SEMICOLON (;) ID (" << $8 << ") RELATIONAL_OP (" << $9 << ") <expression> ";
+        dout << " SEMICOLON (;) ID_DEC (--) RIGHTPAR <statements> ";
+        dout << " FOREND" << std::endl;
     }
 ;
 
 while_statement : WHILE condition statements WHILEEND {
-    std::cout << "WHILE <condition> " ;
-    std::cout << " <statements> ";
-    std::cout << " WHILEEND" << std::endl;
+    dout << "WHILE <condition> " ;
+    dout << " <statements> ";
+    dout << " WHILEEND" << std::endl;
 }
                 | DO statement WHILE condition DOEND {
-    std::cout << " DO <statement> ";
-    std::cout << " WHILE <condition> ";
-    std::cout << " DOEND" << std::endl;
+    dout << " DO <statement> ";
+    dout << " WHILE <condition> ";
+    dout << " DOEND" << std::endl;
 }
                 | DO statements WHILE condition DOEND {
-    std::cout << " DO <statements> ";
-    std::cout << " WHILE <condition> ";
-    std::cout << " DOEND" << std::endl;
+    dout << " DO <statements> ";
+    dout << " WHILE <condition> ";
+    dout << " DOEND" << std::endl;
 }
 ;
 

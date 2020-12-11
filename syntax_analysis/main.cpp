@@ -54,6 +54,8 @@
 #include "includes/Symbol.hpp"
 #include "includes/SymbolTable.hpp"
 
+#define DEBUG 1
+
 using namespace Synthetic;
 using namespace std;
 
@@ -169,8 +171,9 @@ void conduct_all(){
 }*/
 
 // ================================================================ //
+//
 
-int main(int argc, const char* argv[]) {
+void testing(){
     Assembler ass = Assembler();
     Instruction instr = Instruction();
     ass.push(instr);
@@ -180,11 +183,28 @@ int main(int argc, const char* argv[]) {
     SymbolTable table = SymbolTable();
 
     if(!s.typeMismatch()){
-      table.insert("value", s);
+      table.insert(s);
       std::cout << "inserted " << s.name_() << " with value of " << s.value_() << " at the location of " << s.location_() << std::endl;
     } else {
       std::cout << "could not insert, there was a type mismatch from " << s.type_() << " to value of " << s.value_() << std::endl;
     }
+
+    std::cout << ass.getInstruction("+") << std::endl;
+    std::cout << ass.getInstruction("-") << std::endl;
+    std::cout << ass.getInstruction("*") << std::endl;
+    std::cout << ass.getInstruction("/") << std::endl;
+    std::cout << ass.getInstruction("<") << std::endl;
+    std::cout << ass.getInstruction("<=") << std::endl;
+    std::cout << ass.getInstruction(">=") << std::endl;
+    std::cout << ass.getInstruction(">") << std::endl;
+    std::cout << ass.getInstruction("!=") << std::endl;
+
+    std::cout << table << std::endl;
+}
+
+int main(int argc, const char* argv[]) {
+
+    //testing();
 
     if(argc < 2){
         help();

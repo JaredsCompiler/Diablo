@@ -39,3 +39,8 @@ class VariableNotDeclaredException : public DiabloBaseException {
     */
     using DiabloBaseException::DiabloBaseException;
 };
+
+class TypeMismatchException : public DiabloBaseException {
+    public:
+      using DiabloBaseException::DiabloBaseException;
+};

@@ -29,3 +29,56 @@ std::ostream& operator<<(std::ostream& out, const Assembler& assembler){
 
   return out;
 }
+
+std::string Assembler::getInstruction(std::string str){
+  arthimetic_code ac = mathHash(str);
+  compare_code cc = compareHash(str);
+  std::string value = "---";
+
+  if(ac == eMathNotFound && cc == eCompNotFound){ return value; }
+
+  if(ac != eMathNotFound){
+    switch(ac){
+      case eAdd:
+        value = "ADD";
+        break;
+      case eSub:
+        value = "SUB";
+        break;
+      case eMul:
+        value = "MUL";
+        break;
+      case eDiv:
+        value = "DIV";
+        break;
+      case eMathNotFound:
+        break;
+    }
+  } else {
+    switch(cc){
+      case eGreater:
+        value = "GRT";
+        break;
+      case eLess:
+        value = "LES";
+        break;
+      case eGreaterEqual:
+        value = "GEQ";
+        break;
+      case eLessEqual:
+        value =  "LEQ";
+        break;
+      case eExplicitCompare:
+        value = "EQU";
+        break;
+      case eExplicitCompareReverse:
+        value = "NEQ";
+        break;
+      case eCompNotFound:
+        break;
+    }
+  }
+
+  return value;
+
+}

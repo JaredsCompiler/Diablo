@@ -8,6 +8,7 @@ class Instruction {
     Instruction();
     Instruction(std::string, int, int);
     friend std::ostream& operator<<(std::ostream& out, const Instruction& instruction);
+    std::string getOperator();
 
   private:
     std::string operator_;

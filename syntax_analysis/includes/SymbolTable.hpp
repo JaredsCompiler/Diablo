@@ -7,8 +7,11 @@ class SymbolTable {
   public:
     SymbolTable();
     
-    void insert(std::string, Symbol&);
+    void insert(Symbol&);
     Symbol obtain(std::string);
+
+    friend std::ostream& operator<<(std::ostream& out, const SymbolTable& symbolTable);
+    long long int sizeOfSymbol(Symbol);
 
   private:
     std::map<std::string, Symbol> map;

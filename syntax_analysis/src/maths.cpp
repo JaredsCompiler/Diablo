@@ -11,6 +11,7 @@ compare_code compareHash(std::string str){
   if(str == ">="){ return eGreaterEqual; }
   if(str == "<="){ return eLessEqual; }
   if(str == "=="){ return eExplicitCompare; }
+  if(str == "!="){ return eExplicitCompareReverse; }
   if(str == "&&"){ return eDoubleAnd; }
   if(str == "||"){ return eDoubleOr; }
   return eCompNotFound;
@@ -84,6 +85,9 @@ bool compare(uint64_t a, uint64_t b, std::string c){
       break;
     case eExplicitCompare:
       val = (a == b);
+      break;
+    case eExplicitCompareReverse:
+      val = !(a == b);
       break;
     case eCompNotFound:
       break;

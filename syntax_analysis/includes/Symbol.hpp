@@ -11,6 +11,7 @@ class Symbol {
 
     bool typeDeclared();
     bool typeMismatch();
+    bool isDefined();
 
     long long int value_();
     std::string type_();

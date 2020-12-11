@@ -6,9 +6,9 @@ SymbolTable::SymbolTable(){
   this->baseAddress = 5000; // we will assume that our symbol table lives in the memory space spanning from 5000 to inf
 }
 
-void SymbolTable::insert(std::string pattern, Symbol& symbol){
+void SymbolTable::insert(Symbol& symbol){
   symbol.setLocation(this->baseAddress + this->currentAddress);
-  this->map[pattern] = symbol;
+  this->map[symbol.name_()] = symbol;
   this->currentAddress+=4;
 }
 
@@ -19,4 +19,20 @@ Symbol SymbolTable::obtain(std::string pattern){
   // not found
   return Symbol();
 
+}
+
+
+std::ostream& operator<<(std::ostream& out, const SymbolTable& symbolTable){
+  out << "Identifier\t" << "Memory Location\t\t" << "Type\t\t" << "Value\n";
+  for(auto symbol : symbolTable.map){
+    out << symbol.first << "\t\t\t" << symbol.second.location_() << "\t\t" << symbol.second.type_() << "\t\t" << symbol.second.value_() <<  "\n";
+  }
+
+  return out;
+}
+
+long long int SymbolTable::sizeOfSymbol(Symbol s){
+  std::string label = s.type_();
+  if(label == "int"){ return 4; }
+  if(label == "bool"){ return 1; }
 }

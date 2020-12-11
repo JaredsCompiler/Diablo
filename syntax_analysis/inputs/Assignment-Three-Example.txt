@@ -1,8 +1,5 @@
-int i, max, sum;
-sum = 0;
-i = 1;
-input ( max);
-while (i < max) {
-sum = sum + i;
-i = i + 1;
-}
+! Small program to be converted to ASM !
+
+int value = 10;
+
+! value == 10  !

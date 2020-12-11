@@ -16,6 +16,8 @@ Symbol::Symbol(std::string type, std::string name, long long int value){
   this->location = 0;
 }
 
+bool Symbol::isDefined(){ return !(this->type == "<EMPTY>"); }
+
 bool Symbol::typeDeclared(){ return this->typeIsDelcared; }
 
 bool Symbol::typeMismatch(){

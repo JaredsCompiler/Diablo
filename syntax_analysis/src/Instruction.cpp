@@ -26,3 +26,7 @@ std::ostream& operator<<(std::ostream& out, const Instruction& instruction){
 
   return out;
 }
+
+std::string Instruction::getOperator(){
+  return this->operator_;
+}

@@ -28,7 +28,6 @@
 
 #include "interpreter.h"
 #include "../includes/command.h"
-#include "templateCommand.cpp"
 
 #include <sstream>
 #include <iterator>
@@ -57,15 +56,7 @@ void Interpreter::clear() {
 
 std::string Interpreter::str() const {
     std::stringstream s;
-    //s << "Interpreter: " << m_commands.size() << " commands received from command line." << endl;
-    //for(int i = 0; i < m_commands.size(); i++) {
-        //s << " * [FLOATS] " << m_commands[i].fstr() << endl;
-        //s << " * [LONG LONG INTS] " << m_commands[i].llstr() << endl;
-        //s << endl;
-    //}
-    for(auto element : symbol_table){
-      s << element.first << "  " << element.second  << " " << std::endl;
-    }
+    s  << symbol_table << std::endl;
     return s.str();
 }
 
@@ -87,14 +78,10 @@ unsigned int Interpreter::location() const {
     return m_location;
 }
 
-void Interpreter::addSymbol(std::string variable, long long int value) {
-    this->symbol_table[variable] = value;
+void Interpreter::addSymbol(Symbol S) {
+    this->symbol_table.insert(S);
 }
 
-long long int Interpreter::getSymbol(std::string variable){
-  for (auto it = this->symbol_table.begin(); it != symbol_table.end(); ++it){
-    if (it->first == variable){ return it->second; }
-  }
-  // not found
-  return std::numeric_limits<long long int>::infinity();
+Symbol Interpreter::getSymbol(std::string variable){
+  return this->symbol_table.obtain(variable);
 }

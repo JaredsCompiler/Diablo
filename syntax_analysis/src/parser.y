@@ -51,7 +51,9 @@
     #include "../includes/maths.hpp"
     #include "../includes/stack_operations.hpp"
     #include "../includes/DiabloExceptions.hpp"
-    #include "templateCommand.cpp"
+    #include "../includes/Debugging.hpp"
+
+    #include "../includes/Symbol.hpp"
 
     using namespace std;
 
@@ -59,21 +61,6 @@
         class Scanner;
         class Interpreter;
     }
-
-    
-    #ifdef DEBUG
-    #define DEBUG_MSG(str) do { std::cout << str << std::endl; } while( false )
-    #else
-    #define DEBUG_MSG(str) do { } while ( false )
-    #endif
-
-    #define DEBUG 1
-
-    /*int main()*/
-    /*{*/
-        /*DEBUG_MSG("Hello" << ' ' << "World!" << 1 );*/
-        /*return 0;*/
-    /*}*/
 
 }
 // Bison calls yylex() function that must be provided by us to suck tokens
@@ -309,7 +296,9 @@ command : ID LEFTPAR RIGHTPAR // function()
 
 condition : expression RELATIONAL_OP expression 
     {
-        std::cout << "expression (" << $1.back() << ") RELATIONAL_OP (" << $2 << ") expression" <<  $3.back() << std::endl << std::endl;
+        /*std::cout << "expression (" << $1.back() << ") RELATIONAL_OP (" << $2 << ") expression" <<  $3.back() << std::endl << std::endl;*/
+
+        dout << "expression (" << $1.back() << ") RELATIONAL_OP (" << $2 << ") expression" <<  $3.back() << std::endl << std::endl;
         long long int a = $1.back();
         long long int b = $3.back();
         // TODO
@@ -386,17 +375,17 @@ expression : NUMBER
 
 id : ID 
      {
-        std::cout << "ID ( " << $1 << ")" << std::endl;
-        std::string variable = $1;
-        long long int value = driver.getSymbol(variable);
-        /*double value = get_variable(symbolTable, variable);*/
-        if(value == std::numeric_limits<long long int>::infinity()){
-            char buff[BUFSIZ];
-            snprintf(buff, sizeof(buff), "[ERROR] Variable %s is undefined", variable.c_str());
-            throw VariableNotDeclaredException(buff, __FILE__, __LINE__, __FUNCTION__, "Nothing");
-        } else {
-            std::cout << "variable [" << variable << "] with value of --> " << "[" << value << "]" << std::endl;
-        }
+        /*std::cout << "ID ( " << $1 << ")" << std::endl;*/
+        /*std::string variable = $1;*/
+        /*long long int value = driver.getSymbol(variable);*/
+        /*[>double value = get_variable(symbolTable, variable);<]*/
+        /*if(value == std::numeric_limits<long long int>::infinity()){*/
+            /*char buff[BUFSIZ];*/
+            /*snprintf(buff, sizeof(buff), "[ERROR] Variable %s is undefined", variable.c_str());*/
+            /*throw VariableNotDeclaredException(buff, __FILE__, __LINE__, __FUNCTION__, "Nothing");*/
+        /*} else {*/
+            /*std::cout << "variable [" << variable << "] with value of --> " << "[" << value << "]" << std::endl;*/
+        /*}*/
         $$ = 1.0;
         /*$$ = value;*/
      }
@@ -405,7 +394,8 @@ id : ID
 assignment : PRIMITIVE_TYPE ID SEMICOLON 
     {
         std::cout << "PRIMITIVE_TYPE (" << $1 << ") " << "ID (" << $2 << ") " << "SEMICOLON (;)" << std::endl;
-        driver.addSymbol($2, 0);
+        Symbol S = Symbol($1, $2, 0); // int value; ==> int value = 0;
+        driver.addSymbol(S);
         /*symbolTable[$2] = driver.getSymbol($2);*/
     }
 
@@ -413,28 +403,39 @@ assignment : PRIMITIVE_TYPE ID SEMICOLON
     {
         std::cout << "PRIMITIVE_TYPE (" << $1 << ") " << "ID (" << $2 << ")" << " ASSIGN (=) expression (" << $4.back() << ") SEMICOLON (;)" << std::endl;
         long long int value = $4.back();
-        driver.addSymbol($2, value);
+        Symbol S = Symbol($1, $2, value);
+        driver.addSymbol(S);
+        /*driver.addSymbol($2, value);*/
         /*symbolTable[$2] = (float)value;*/
     }
     | ID ASSIGN expression SEMICOLON
     {
         std::cout << "ID (" << $1 << ") ASSIGN (=) expresion (" << $3.back() << ") SEMICOLON (;)" << std::endl;
         long long int value = $3.back();
-        driver.addSymbol($1, value);
+        // TODO
+        // lookup symbol and check type
+
+        /*Symbol S = Symbol($1, $2, value);*/
+        /*driver.addSymbol(S);*/
+        /*driver.addSymbol($1, value);*/
         /*symbolTable[$1] = (float)value;*/
     }
     | PRIMITIVE_TYPE ID ASSIGN term SEMICOLON
     {
         std::cout << "PRIMITIVE_TYPE (" << $1 << ") ID (" << $2 << ") ASSIGN (=) term (" << $4.back() << ") SEMICOLON (;)" << std::endl;
         double value = $4.back();
-        driver.addSymbol($2, value);
+        Symbol S = Symbol($1, $2, (int)value);
+        /*driver.addSymbol($2, value);*/
         /*symbolTable[$2] = (float)value;*/
     }
     | ID ASSIGN term SEMICOLON
     {
         std::cout << "ID (" << $1 << ") ASSIGN (=) term (" <<  $3.back() << ") SEMICOLON (;)" << std::endl;
         double value = $3.back();
-        driver.addSymbol($1, value);
+        // TODO
+        // lookup symbol and check type
+        /*Symbol S = Symbol($1, )*/
+        /*driver.addSymbol($1, value);*/
         /*symbolTable[$1] = (float)value;*/
     }
 
@@ -456,7 +457,7 @@ term : factor {
        }
     | term GEOMETRIC_OP factor
         {
-            std::cout << "term (" << $1.back() << ") GEOMETRIC_OP (" << $2 << ") factor (" << $3 << std::endl;
+            dout << "term (" << $1.back() << ") GEOMETRIC_OP (" << $2 << ") factor (" << $3 << std::endl;
             double number = $3;
             std::vector<double> &args = $1;
             std::string oper = $2;

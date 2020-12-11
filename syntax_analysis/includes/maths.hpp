@@ -1,9 +1,12 @@
+#pragma once
+
 enum compare_code {
   eLess,
   eGreater,
   eLessEqual,
   eGreaterEqual,
   eExplicitCompare,
+  eExplicitCompareReverse,
   eDoubleAnd,
   eDoubleOr,
   eCompNotFound

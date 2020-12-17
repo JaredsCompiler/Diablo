@@ -92,10 +92,6 @@
     #define YYDEBUG 1
     
     using namespace Synthetic;
-
-    std::map<std::string, double> symbolTable = {
-        {"a", 10}
-    };
 }
 
 %lex-param { Synthetic::Scanner &scanner }
@@ -375,6 +371,12 @@ expression : NUMBER
 
 id : ID 
      {
+        Symbol _S = driver.getSymbol($1);
+        if(!_S.isDefined()){
+            std::cerr << "[-] " << $1 << " has not been defined" << std::endl;
+        } else {
+            $$ = _S.value_();
+        }
         /*dout << "ID ( " << $1 << ")" << std::endl;*/
         /*std::string variable = $1;*/
         /*long long int value = driver.getSymbol(variable);*/
@@ -386,7 +388,7 @@ id : ID
         /*} else {*/
             /*dout << "variable [" << variable << "] with value of --> " << "[" << value << "]" << std::endl;*/
         /*}*/
-        $$ = 1.0;
+        /*$$ = 1.0;*/
         /*$$ = value;*/
      }
 ;
@@ -394,49 +396,79 @@ id : ID
 assignment : PRIMITIVE_TYPE ID SEMICOLON 
     {
         dout << "PRIMITIVE_TYPE (" << $1 << ") " << "ID (" << $2 << ") " << "SEMICOLON (;)" << std::endl;
-        Symbol S = Symbol($1, $2, 0); // inhttps://www.youtube.com/watch?v=F177-VTSGS://www.youtube.com/watch?v=F177-VTSGSMt value; ==> int value = 0;
-        driver.addSymbol(S);
-        /*symbolTable[$2] = driver.getSymbol($2);*/
+
+        Symbol S = Symbol($1, $2, 0);
+
+        if(S.isDefined()){
+            std::cerr << "[-] Variable " << $2 << " has already been defined!" << std::endl;
+        } else {
+            driver.addSymbol(S);
+        }
     }
 
     | PRIMITIVE_TYPE ID ASSIGN expression SEMICOLON
     {
         dout << "PRIMITIVE_TYPE (" << $1 << ") " << "ID (" << $2 << ")" << " ASSIGN (=) expression (" << $4.back() << ") SEMICOLON (;)" << std::endl;
-        long long int value = $4.back();
+        unsigned long long int value = $4.back();
+
+        Symbol _S = driver.getSymbol($1);
         Symbol S = Symbol($1, $2, value);
-        driver.addSymbol(S);
-        /*driver.addSymbol($2, value);*/
-        /*symbolTable[$2] = (float)value;*/
+
+        if(_S.isDefined()){
+            std::cerr << "[-] Variable " << $2 << " has already been defined!" << std::endl;
+        } 
+        else if(S.typeMismatch()){
+            std::cerr << "[-] Cannot assign " << $2 << " with value of " << value << " ; type mismatch!" << std::endl;
+        } else {
+            driver.addSymbol(S);
+        }
     }
     | ID ASSIGN expression SEMICOLON
     {
         dout << "ID (" << $1 << ") ASSIGN (=) expresion (" << $3.back() << ") SEMICOLON (;)" << std::endl;
         long long int value = $3.back();
-        // TODO
-        // lookup symbol and check type
 
-        /*Symbol S = Symbol($1, $2, value);*/
-        /*driver.addSymbol(S);*/
-        /*driver.addSymbol($1, value);*/
-        /*symbolTable[$1] = (float)value;*/
+        Symbol S = driver.getSymbol($1);
+        if(!S.isDefined() || S.typeMismatch()){
+            std::cerr << "[-] Variable " << $1 << " is undefined " << std::endl;
+        } else {
+           long long int prev = S.value_();
+           std::cout << "[+] Updating " << $1 << " with value of " << prev << " to the value of " << value  << std::endl;
+           S.setValue(value);
+           driver.addSymbol(S);
+        }
+
     }
     | PRIMITIVE_TYPE ID ASSIGN term SEMICOLON
     {
         dout << "PRIMITIVE_TYPE (" << $1 << ") ID (" << $2 << ") ASSIGN (=) term (" << $4.back() << ") SEMICOLON (;)" << std::endl;
-        double value = $4.back();
-        Symbol S = Symbol($1, $2, (int)value);
-        /*driver.addSymbol($2, value);*/
-        /*symbolTable[$2] = (float)value;*/
+        unsigned long long int value = (unsigned long long int)$4.back();
+
+        Symbol _S = driver.getSymbol($1);
+        Symbol S = Symbol($1, $2, value);
+        if(_S.isDefined()){
+            std::cerr << "[-] Variable " << $2 << " has already been defined!" << std::endl;
+        } else if(S.typeMismatch()){
+            std::cerr << "[-] Cannot assign " << $2 << " with value of " << value << " ; type mismatch!" << std::endl;
+        } else {
+            driver.addSymbol(S);
+        }
     }
     | ID ASSIGN term SEMICOLON
     {
         dout << "ID (" << $1 << ") ASSIGN (=) term (" <<  $3.back() << ") SEMICOLON (;)" << std::endl;
-        double value = $3.back();
-        // TODO
-        // lookup symbol and check type
-        /*Symbol S = Symbol($1, )*/
-        /*driver.addSymbol($1, value);*/
-        /*symbolTable[$1] = (float)value;*/
+
+        unsigned long long int value = (unsigned long long int)$3.back();
+
+        Symbol S = driver.getSymbol($1);
+        if(!S.isDefined() || S.typeMismatch()){
+            std::cerr << "[-] Variable " << $1 << " is undefined " << std::endl;
+        } else {
+           long long int prev = S.value_();
+           std::cout << "[+] Updating " << $1 << " with value of " << prev << " to the value of " << value  << std::endl;
+           S.setValue(value);
+           driver.addSymbol(S);
+        }
     }
 
 ;

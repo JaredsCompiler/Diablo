@@ -16,7 +16,7 @@ Symbol::Symbol(std::string type, std::string name, long long int value){
   this->location = 0;
 }
 
-bool Symbol::isDefined(){ return !(this->type == "<EMPTY>"); }
+bool Symbol::isDefined(){ return !(this->value == std::numeric_limits<long long int>::infinity()); }
 
 bool Symbol::typeDeclared(){ return this->typeIsDelcared; }
 
@@ -35,4 +35,8 @@ unsigned long long int Symbol::location_(){ return this->location; }
 
 void Symbol::setLocation(unsigned long long int loc){
   this->location = loc;
+}
+
+void Symbol::setValue(unsigned long long int v){
+  this->value = v;
 }

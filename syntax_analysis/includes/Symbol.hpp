@@ -19,6 +19,7 @@ class Symbol {
     unsigned long long int location_();
 
     void setLocation(unsigned long long int);
+    void setValue(unsigned long long int);
 
     private:
       std::string type;

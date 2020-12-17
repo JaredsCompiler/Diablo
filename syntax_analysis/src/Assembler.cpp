@@ -2,6 +2,7 @@
 
 Assembler::Assembler(){
   this->instructions = std::vector<Instruction>();
+  this->location = 0;
 }
 
 /*
@@ -18,13 +19,29 @@ Instruction Assembler::peek() {
   return this->instructions.back();
 }
 
+size_t Assembler::location_(){
+  return this->location;
+}
+
+void Assembler::updateLocation(int pos){
+  this->location = pos;
+}
+
 void Assembler::push(Instruction instruction){
   this->instructions.push_back(instruction);
 }
 
+bool Assembler::shouldDispenseInstruction(){
+  return this->_should_dispense;
+}
+
+void Assembler::setDispense(bool fl){
+  this->_should_dispense = fl;
+}
+
 std::ostream& operator<<(std::ostream& out, const Assembler& assembler){
-  for(auto instruction : assembler.instructions){
-    out << instruction;
+  for(size_t i = 0; i < assembler.instructions.size(); ++i){
+    out << i << " " << assembler.instructions[i] << std::endl;
   }
 
   return out;
@@ -33,7 +50,7 @@ std::ostream& operator<<(std::ostream& out, const Assembler& assembler){
 std::string Assembler::getInstruction(std::string str){
   arthimetic_code ac = mathHash(str);
   compare_code cc = compareHash(str);
-  std::string value = "---";
+  std::string value = "NIL";
 
   if(ac == eMathNotFound && cc == eCompNotFound){ return value; }
 

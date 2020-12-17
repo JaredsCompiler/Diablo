@@ -7,7 +7,7 @@ class SymbolTable {
   public:
     SymbolTable();
     
-    void insert(Symbol&);
+    void insert(Symbol&, bool);
     Symbol obtain(std::string);
 
     friend std::ostream& operator<<(std::ostream& out, const SymbolTable& symbolTable);

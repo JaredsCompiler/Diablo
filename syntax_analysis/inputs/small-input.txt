@@ -1,1 +1,11 @@
-(
+int val = 10 + 10;
+val = 10;
+
+int value = 10 / 10;
+
+int tuple = 20 * 10;
+
+tuple = 10 * 189;
+
+10 > 0
+10 >= 0

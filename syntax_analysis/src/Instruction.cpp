@@ -21,8 +21,15 @@ Instruction::Instruction(std::string s, int l, int p){
 
 }
 
+Instruction::Instruction(std::string s, int p){
+  this->operator_ = s;
+  this->position = p;
+  this->quantifier = std::numeric_limits<int>::infinity();
+}
+
 std::ostream& operator<<(std::ostream& out, const Instruction& instruction){
-  out << instruction.position << "  " << instruction.operator_ << "\t" << instruction.quantifier;
+  std::string q_ = (instruction.quantifier == std::numeric_limits<int>::infinity() && instruction.quantifier != 0) ? std::string(" ") : std::to_string(instruction.quantifier);
+  out << instruction.operator_ << "\t" << q_;
 
   return out;
 }
@@ -30,3 +37,12 @@ std::ostream& operator<<(std::ostream& out, const Instruction& instruction){
 std::string Instruction::getOperator(){
   return this->operator_;
 }
+
+void Instruction::updateQuantity(int val){
+  this->quantifier = val;
+}
+
+void Instruction::updateOperator(std::string s){
+  this->operator_ = s;
+}
+

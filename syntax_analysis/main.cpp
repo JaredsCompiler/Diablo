@@ -54,7 +54,7 @@
 #include "includes/Symbol.hpp"
 #include "includes/SymbolTable.hpp"
 
-#define DEBUG 1
+//#define DEBUG 1
 
 using namespace Synthetic;
 using namespace std;
@@ -131,6 +131,7 @@ int conduct_one(std::string test){
         file.close();
         return 1;
       } else {
+        std::cout << "[+] Symbol Table" << std::endl;
         std::cout << i.str() << std::endl;
       }
     }
@@ -140,6 +141,9 @@ int conduct_one(std::string test){
     }
     file.close();
     std::cout << std::endl;
+
+    std::cout << "[+] Assembler output" << std::endl;
+    std::cout << i.getAssembler() << std::endl;
     return 0;
 }
 
@@ -182,12 +186,12 @@ void testing(){
     Symbol s = Symbol("int", "value", 24);
     SymbolTable table = SymbolTable();
 
-    if(!s.typeMismatch()){
-      table.insert(s);
-      std::cout << "inserted " << s.name_() << " with value of " << s.value_() << " at the location of " << s.location_() << std::endl;
-    } else {
-      std::cout << "could not insert, there was a type mismatch from " << s.type_() << " to value of " << s.value_() << std::endl;
-    }
+    //if(!s.typeMismatch()){
+      //table.insert(s);
+      //std::cout << "inserted " << s.name_() << " with value of " << s.value_() << " at the location of " << s.location_() << std::endl;
+    //} else {
+      //std::cout << "could not insert, there was a type mismatch from " << s.type_() << " to value of " << s.value_() << std::endl;
+    //}
 
     std::cout << ass.getInstruction("+") << std::endl;
     std::cout << ass.getInstruction("-") << std::endl;

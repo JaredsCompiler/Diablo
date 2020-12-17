@@ -6,10 +6,12 @@ SymbolTable::SymbolTable(){
   this->baseAddress = 5000; // we will assume that our symbol table lives in the memory space spanning from 5000 to inf
 }
 
-void SymbolTable::insert(Symbol& symbol){
+void SymbolTable::insert(Symbol& symbol, bool update_mem){
   symbol.setLocation(this->baseAddress + this->currentAddress);
   this->map[symbol.name_()] = symbol;
-  this->currentAddress+=4;
+  if(update_mem){
+    this->currentAddress+=4;
+  }
 }
 
 Symbol SymbolTable::obtain(std::string pattern){

@@ -31,6 +31,7 @@
 
 #include <sstream>
 #include <iterator>
+#include <string>
 
 using namespace Synthetic;
 
@@ -39,7 +40,8 @@ Interpreter::Interpreter() :
     m_parser(m_scanner, *this),
     m_location(0),
     m_commands(),
-    symbol_table()
+    symbol_table(),
+    assembler_()
 {
 
 }
@@ -78,10 +80,39 @@ unsigned int Interpreter::location() const {
     return m_location;
 }
 
-void Interpreter::addSymbol(Symbol S) {
-    this->symbol_table.insert(S);
+void Interpreter::addSymbol(Symbol S, bool update_mem) {
+    this->symbol_table.insert(S, update_mem);
 }
 
 Symbol Interpreter::getSymbol(std::string variable){
   return this->symbol_table.obtain(variable);
+}
+
+void Interpreter::addInstruction(Instruction I){
+  this->assembler_.push(I);
+}
+
+Instruction Interpreter::generateInstruction(std::string i){
+  std::string _inst_code = this->assembler_.getInstruction(i);
+  size_t location = this->assembler_.location_() + 1;
+  this->assembler_.updateLocation(location);
+  return Instruction(_inst_code, location);
+}
+
+Instruction Interpreter::generateBlankInstruction(std::string i){
+  size_t location = this->assembler_.location_() + 1;
+  this->assembler_.updateLocation(location);
+  return Instruction(i, location);
+}
+
+Assembler Interpreter::getAssembler(){
+  return this->assembler_;
+}
+
+void Interpreter::setDispenseFlag(bool f){
+  this->assembler_.setDispense(f);
+}
+
+bool Interpreter::shouldDispenseFlag(){
+  return this->assembler_.shouldDispenseInstruction();
 }

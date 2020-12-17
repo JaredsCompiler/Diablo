@@ -292,14 +292,30 @@ command : ID LEFTPAR RIGHTPAR // function()
 
 condition : expression RELATIONAL_OP expression 
     {
-        /*dout << "expression (" << $1.back() << ") RELATIONAL_OP (" << $2 << ") expression" <<  $3.back() << std::endl << std::endl;*/
-
         dout << "expression (" << $1.back() << ") RELATIONAL_OP (" << $2 << ") expression" <<  $3.back() << std::endl << std::endl;
         long long int a = $1.back();
         long long int b = $3.back();
         // TODO
         // throw error if operator not found or condition does not evaluate
-        $$ = compare(a, b, $2);
+        
+        Instruction operation_ =  driver.generateInstruction($2);
+        Instruction push_one_ = driver.generateBlankInstruction("PUSHI");
+        Instruction push_two_ = driver.generateBlankInstruction("PUSHI");
+
+        push_one_.updateQuantity(a);
+        push_two_.updateQuantity(b);
+
+        bool _c = compare(a, b, $2);
+
+        Instruction resultant_ = driver.generateBlankInstruction("PUSHI");
+        resultant_.updateQuantity((int)_c);
+
+        driver.addInstruction(push_one_);
+        driver.addInstruction(push_two_);
+        driver.addInstruction(operation_);
+        driver.addInstruction(resultant_);
+
+        $$ = _c;
 
     }
     | LEFTPAR expression RELATIONAL_OP expression RIGHTPAR
@@ -344,6 +360,13 @@ expression : NUMBER
             dout << "NUMBER (" << $1  << ") ";
             long long int number = $1;
             $$ = std::vector<long long int>();
+
+            Instruction push_one_ = driver.generateBlankInstruction("PUSHI");
+
+            push_one_.updateQuantity((int)number);
+            driver.addInstruction(push_one_);
+            driver.setDispenseFlag(false);
+
             $$.push_back(number);
         }
     | expression ARITHMETIC_OP NUMBER
@@ -353,12 +376,37 @@ expression : NUMBER
             std::vector<long long int> &args = $1;
             std::string oper = $2;
 
+            long long int top = args.back();
+
             if(!args.empty()){
-                long long int top = args.back();
                 args.pop_back();
                 args.push_back(compute(top, number, oper));
             }
             else { args.push_back(number); }
+
+            /*
+            * PUSHI $1
+            * PUSHI $3
+            * ADD
+            * ! Leave current value on top of stack !
+            */
+
+
+            Instruction operation_ = driver.generateInstruction($2);
+
+            Instruction push_one_ = driver.generateBlankInstruction("PUSHI");
+            Instruction push_two_ = driver.generateBlankInstruction("PUSHI");
+
+            push_one_.updateQuantity(top);
+            push_two_.updateQuantity(number);
+
+            if(driver.shouldDispenseFlag()){
+                driver.addInstruction(push_one_);
+                driver.setDispenseFlag(true);
+            }
+            driver.addInstruction(push_two_);
+            driver.addInstruction(operation_);
+
             $$ = args;
         }
     | LEFTPAR expression RIGHTPAR
@@ -398,11 +446,22 @@ assignment : PRIMITIVE_TYPE ID SEMICOLON
         dout << "PRIMITIVE_TYPE (" << $1 << ") " << "ID (" << $2 << ") " << "SEMICOLON (;)" << std::endl;
 
         Symbol S = Symbol($1, $2, 0);
+        
+        Instruction initial_push = driver.generateBlankInstruction("PUSHI");
+        initial_push.updateQuantity(0);
+
 
         if(S.isDefined()){
             std::cerr << "[-] Variable " << $2 << " has already been defined!" << std::endl;
         } else {
-            driver.addSymbol(S);
+            driver.addSymbol(S, true);
+            driver.addInstruction(initial_push);
+
+            auto _S = driver.getSymbol($2);
+            Instruction push_val_ = driver.generateBlankInstruction("POPM");
+            push_val_.updateQuantity(_S.location_());
+
+            driver.addInstruction(push_val_);
         }
     }
 
@@ -411,7 +470,7 @@ assignment : PRIMITIVE_TYPE ID SEMICOLON
         dout << "PRIMITIVE_TYPE (" << $1 << ") " << "ID (" << $2 << ")" << " ASSIGN (=) expression (" << $4.back() << ") SEMICOLON (;)" << std::endl;
         unsigned long long int value = $4.back();
 
-        Symbol _S = driver.getSymbol($1);
+        Symbol _S = driver.getSymbol($2);
         Symbol S = Symbol($1, $2, value);
 
         if(_S.isDefined()){
@@ -420,7 +479,13 @@ assignment : PRIMITIVE_TYPE ID SEMICOLON
         else if(S.typeMismatch()){
             std::cerr << "[-] Cannot assign " << $2 << " with value of " << value << " ; type mismatch!" << std::endl;
         } else {
-            driver.addSymbol(S);
+            driver.addSymbol(S, true);
+            auto _t = driver.getSymbol($2);
+
+            Instruction initial_push = driver.generateBlankInstruction("PUSHM");
+            initial_push.updateQuantity(_t.location_());
+
+            driver.addInstruction(initial_push);
         }
     }
     | ID ASSIGN expression SEMICOLON
@@ -432,10 +497,15 @@ assignment : PRIMITIVE_TYPE ID SEMICOLON
         if(!S.isDefined() || S.typeMismatch()){
             std::cerr << "[-] Variable " << $1 << " is undefined " << std::endl;
         } else {
-           long long int prev = S.value_();
-           std::cout << "[+] Updating " << $1 << " with value of " << prev << " to the value of " << value  << std::endl;
-           S.setValue(value);
-           driver.addSymbol(S);
+            /*long long int prev = S.value_();*/
+            /*std::cout << "[+] Updating " << $1 << " with value of " << prev << " to the value of " << value  << std::endl;*/
+            S.setValue(value);
+            driver.addSymbol(S, false);
+
+            Instruction initial_push = driver.generateBlankInstruction("PUSHM");
+            initial_push.updateQuantity(S.location_());
+
+            driver.addInstruction(initial_push);
         }
 
     }
@@ -451,7 +521,14 @@ assignment : PRIMITIVE_TYPE ID SEMICOLON
         } else if(S.typeMismatch()){
             std::cerr << "[-] Cannot assign " << $2 << " with value of " << value << " ; type mismatch!" << std::endl;
         } else {
-            driver.addSymbol(S);
+
+            driver.addSymbol(S, true);
+            auto _t = driver.getSymbol($2);
+
+            Instruction initial_push = driver.generateBlankInstruction("PUSHM");
+            initial_push.updateQuantity(_t.location_());
+
+            driver.addInstruction(initial_push);
         }
     }
     | ID ASSIGN term SEMICOLON
@@ -464,10 +541,15 @@ assignment : PRIMITIVE_TYPE ID SEMICOLON
         if(!S.isDefined() || S.typeMismatch()){
             std::cerr << "[-] Variable " << $1 << " is undefined " << std::endl;
         } else {
-           long long int prev = S.value_();
-           std::cout << "[+] Updating " << $1 << " with value of " << prev << " to the value of " << value  << std::endl;
-           S.setValue(value);
-           driver.addSymbol(S);
+           /*long long int prev = S.value_();*/
+           /*std::cout << "[+] Updating " << $1 << " with value of " << prev << " to the value of " << value  << std::endl;*/
+            S.setValue(value);
+            driver.addSymbol(S, false);
+
+            Instruction initial_push = driver.generateBlankInstruction("PUSHM");
+            initial_push.updateQuantity(S.location_());
+
+            driver.addInstruction(initial_push);
         }
     }
 
@@ -485,6 +567,12 @@ term : factor {
         dout << "factor (" << $1 << ")" << std::endl;
         double number = $1;
         $$ = std::vector<double>();
+
+        Instruction push_one_ = driver.generateBlankInstruction("PUSHI");
+
+        push_one_.updateQuantity((int)number);
+        driver.addInstruction(push_one_);
+
         $$.push_back(number);
        }
     | term GEOMETRIC_OP factor
@@ -494,12 +582,29 @@ term : factor {
             std::vector<double> &args = $1;
             std::string oper = $2;
 
+            double top = args.back();
             if(!args.empty()){
-                double top = args.back();
                 args.pop_back();
                 args.push_back(compute(top, number, oper));
             }
             else { args.push_back(number); }
+
+            Instruction operation_ = driver.generateInstruction($2);
+
+            Instruction push_one_ = driver.generateBlankInstruction("PUSHI");
+            Instruction push_two_ = driver.generateBlankInstruction("PUSHI");
+
+            push_one_.updateQuantity((int)top);
+            push_two_.updateQuantity(number);
+
+            if(driver.shouldDispenseFlag()){
+                driver.addInstruction(push_one_);
+                driver.setDispenseFlag(true);
+            }
+
+            driver.addInstruction(push_two_);
+            driver.addInstruction(operation_);
+
             $$ = args;
         }
     | LEFTPAR term RIGHTPAR

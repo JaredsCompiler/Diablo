@@ -32,6 +32,7 @@
 #include <sstream>
 #include <iterator>
 #include <string>
+#include <stack>
 
 using namespace Synthetic;
 
@@ -41,7 +42,8 @@ Interpreter::Interpreter() :
     m_location(0),
     m_commands(),
     symbol_table(),
-    assembler_()
+    assembler_(),
+    calculations_()
 {
 
 }
@@ -115,4 +117,14 @@ void Interpreter::setDispenseFlag(bool f){
 
 bool Interpreter::shouldDispenseFlag(){
   return this->assembler_.shouldDispenseInstruction();
+}
+
+void Interpreter::insertElementForCalculation(int v){
+  this->calculations_.push(v);
+}
+
+int Interpreter::getElementForCalculation(){
+  int _v = this->calculations_.top();
+  this->calculations_.pop();
+  return _v;
 }

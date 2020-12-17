@@ -297,6 +297,7 @@ condition : expression RELATIONAL_OP expression
         long long int b = $3.back();
         // TODO
         // throw error if operator not found or condition does not evaluate
+        // make this rule more efficient, duplicate code.
         
         Instruction operation_ =  driver.generateInstruction($2);
         Instruction push_one_ = driver.generateBlankInstruction("PUSHI");
@@ -326,17 +327,45 @@ condition : expression RELATIONAL_OP expression
         long long int b = $4.back();
         // TODO
         // throw error if operator not found or condition does not evaluate
-        $$ = compare(a, b, $3);
+        // I KNOW THIS IS DUPLICATE CODE, IT TOO MAKES ME SOB
+
+        Instruction operation_ =  driver.generateInstruction($3);
+        Instruction push_one_ = driver.generateBlankInstruction("PUSHI");
+        Instruction push_two_ = driver.generateBlankInstruction("PUSHI");
+
+        push_one_.updateQuantity(a);
+        push_two_.updateQuantity(b);
+
+        bool _c = compare(a, b, $3);
+
+        Instruction resultant_ = driver.generateBlankInstruction("PUSHI");
+        resultant_.updateQuantity((int)_c);
+
+        driver.addInstruction(push_one_);
+        driver.addInstruction(push_two_);
+        driver.addInstruction(operation_);
+        driver.addInstruction(resultant_);
+
+        $$ = _c;
     }
     | BOOLEAN
     {
         dout << "BOOLEAN (" << $1 << ")" << std::endl;
-        $$ = ($1) ? true : false;
+        bool _v = ($1) ? true : false;
+        // ahhhh we need to preserve these values
+        // using a stack MIGHT invert the calculations, TODO
+        // mostly for preserving scope of conditionals in statements
+        driver.insertElementForCalculation(_v);
+        $$ = _v;
     }
     | LEFTPAR BOOLEAN RIGHTPAR
     {
         dout << "LEFTPAR BOOLEAN (" << $2 << ") RIGHTPAR" << std::endl;
-        $$ = ($2) ? true : false;
+        bool _v = ($2) ? true : false;
+        // ahhhh we need to preserve these values
+        // mostly for preserving scope of conditionals in statements
+        driver.insertElementForCalculation(_v);
+        $$ = _v;
     }
 ;
 
@@ -412,6 +441,8 @@ expression : NUMBER
     | LEFTPAR expression RIGHTPAR
     {
         dout << "LEFTPAR <expression> RIGHTPAR" << std::endl;
+        // README
+        // Seems that there does not need to be any ASM here, the code gets handled recursively
         $$ = $2;
     }
     
@@ -419,12 +450,16 @@ expression : NUMBER
 
 id : ID 
      {
+        std::cout << "[-] Unused variable " << $1 << " ; will not create any instructions for this line" << std::endl;
         Symbol _S = driver.getSymbol($1);
         if(!_S.isDefined()){
             std::cerr << "[-] " << $1 << " has not been defined" << std::endl;
         } else {
             $$ = _S.value_();
         }
+        // TODO
+        // Very fancy error handling, rn i'm fighting for my life
+
         /*dout << "ID ( " << $1 << ")" << std::endl;*/
         /*std::string variable = $1;*/
         /*long long int value = driver.getSymbol(variable);*/

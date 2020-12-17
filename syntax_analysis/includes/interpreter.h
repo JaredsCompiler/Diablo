@@ -32,6 +32,7 @@
 #include <vector>
 #include <map>
 #include <string>
+#include <stack>
 
 #include "scanner.h"
 #include "Symbol.hpp"
@@ -115,6 +116,9 @@ private:
     void setDispenseFlag(bool);
     bool shouldDispenseFlag();
 
+    void insertElementForCalculation(int);
+    int getElementForCalculation();
+
     
 private:
     Scanner m_scanner; // reads in from file stream
@@ -123,6 +127,7 @@ private:
     unsigned int m_location;          // Used by scanner
     SymbolTable symbol_table; // Used across the program to give variable values
     Assembler assembler_; // generate dat sweet, sweet ASM
+    std::stack<int> calculations_;
 };
 
 }
